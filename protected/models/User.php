@@ -1,150 +1,1 @@
-<?php
-
-/**
- * This is the model class for table "{{user}}".
- *
- * The followings are the available columns in table '{{user}}':
- * @property integer $id
- * @property string $username
- * @property string $name
- * @property string $password_hash
- * @property string $password_reset_token
- * @property string $email
- * @property integer $role
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
- *
- * The followings are the available model relations:
- * @property AuthResources[] $authResources
- * @property MasterRole $role0
- */
-class User extends CActiveRecord {
-
-    const STATUS_INACTIVE = 0;
-    const STATUS_ACTIVE = 1;
-
-    public $new_password;
-    public $confirm_password;
-
-    /**
-     * @return string the associated database table name
-     */
-    public function tableName() {
-        return '{{user}}';
-    }
-
-    /**
-     * @return array validation rules for model attributes.
-     */
-    public function rules() {
-        // NOTE: you should only define rules for those attributes that
-        // will receive user inputs.
-        return array(
-            array('username, name, email', 'required', 'on' => 'create,update'),
-            array('username,email', 'unique'),
-            array('email', 'email'),
-            array('email', 'required', 'on' => 'forgotpassword'),
-            array('confirm_password', 'compare', 'compareAttribute' => 'new_password', 'on' => 'update'),
-            array('role, status, created_at, updated_at', 'numerical', 'integerOnly' => true),
-            array('username, name, password_hash, password_reset_token, email,new_password', 'length', 'max' => 255),
-            array('new_password', 'compare', 'compareAttribute' => 'confirm_password', 'on' => 'reset'),
-            array('new_password, confirm_password', 'required', 'on' => 'reset'),
-            // The following rule is used by search().
-            // @todo Please remove those attributes that should not be searched.
-            array('id, username, name, password_hash, password_reset_token, email, role, status, created_at, updated_at,confirm_password,new_password', 'safe', 'on' => 'search'),
-        );
-    }
-
-    /**
-     * @return array relational rules.
-     */
-    public function relations() {
-        // NOTE: you may need to adjust the relation name and the related
-        // class name for the relations automatically generated below.
-        return array(
-            'authResources' => array(self::HAS_MANY, 'AuthResources', 'Master_User_ID'),
-            'roleMdl' => array(self::BELONGS_TO, 'MasterRole', 'role'),
-        );
-    }
-
-    /**
-     * @return array customized attribute labels (name=>label)
-     */
-    public function attributeLabels() {
-        return array(
-            'id' => 'ID',
-            'username' => 'Operator name',
-            'name' => 'Name',
-            'password_hash' => 'Password Hash',
-            'password_reset_token' => 'Password Reset Token',
-            'email' => 'Email',
-            'role' => 'Role',
-            'status' => 'Status',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
-        );
-    }
-
-    /**
-     * Retrieves a list of models based on the current search/filter conditions.
-     *
-     * Typical usecase:
-     * - Initialize the model fields with values from filter form.
-     * - Execute this method to get CActiveDataProvider instance which will filter
-     * models according to data in model fields.
-     * - Pass data provider to CGridView, CListView or any similar widget.
-     *
-     * @return CActiveDataProvider the data provider that can return the models
-     * based on the search/filter conditions.
-     */
-    public function search() {
-        // @todo Please modify the following code to remove attributes that should not be searched.
-
-        $criteria = new CDbCriteria;
-
-        $criteria->compare('id', $this->id);
-        $criteria->compare('username', $this->username, true);
-        $criteria->compare('name', $this->name, true);
-        $criteria->compare('password_hash', $this->password_hash, true);
-        $criteria->compare('password_reset_token', $this->password_reset_token, true);
-        $criteria->compare('email', $this->email, true);
-        $criteria->compare('role', $this->role);
-        $criteria->compare('status', $this->status);
-        $criteria->compare('created_at', $this->created_at);
-        $criteria->compare('updated_at', $this->updated_at);
-
-        return new CActiveDataProvider($this, array(
-            'criteria' => $criteria,
-            'pagination' => array(
-                'pageSize' => PAGE_SIZE,
-            )
-        ));
-    }
-
-    public function dataProvider() {
-        return new CActiveDataProvider($this, array(
-            'pagination' => array(
-                'pageSize' => PAGE_SIZE,
-            )
-        ));
-    }
-
-    /**
-     * Returns the static model of the specified AR class.
-     * Please note that you should have this exact method in all your CActiveRecord descendants!
-     * @param string $className active record class name.
-     * @return User the static model class
-     */
-    public static function model($className = __CLASS__) {
-        return parent::model($className);
-    }
-
-    protected function afterValidate() {
-        if ($this->scenario == 'update' && !empty($this->confirm_password)) {
-            $this->password_hash = Myclass::encrypt($this->confirm_password);
-        }
-
-        return parent::afterValidate();
-    }
-}
+<?php/** * This is the model class for table "{{user}}". * * The followings are the available columns in table '{{user}}': * @property integer $user_id * @property string $first_name * @property string $last_name * @property string $email_id * @property string $mobile_no * @property string $address * @property string $dojoin * @property string $dobirtrh * @property string $status * @property string $created_at * @property integer $created_by * @property string $modified_at * @property integer $modified_by */class User extends CActiveRecord {    /**     * @return string the associated database table name     */    public function tableName() {        return '{{user}}';    }    /**     * @return array validation rules for model attributes.     */    public function rules() {        // NOTE: you should only define rules for those attributes that        // will receive user inputs.        return array(            array('first_name, email_id, created_at, created_by', 'required'),            array('email_id','email'),            array('created_by, modified_by', 'numerical', 'integerOnly' => true),            array('first_name, last_name, email_id', 'length', 'max' => 255),            array('mobile_no', 'length', 'max' => 100),            array('status', 'length', 'max' => 1),            array('address, dojoin, dobirtrh, modified_at', 'safe'),            // The following rule is used by search().            // @todo Please remove those attributes that should not be searched.            array('user_id, first_name, last_name, email_id, mobile_no, address, dojoin, dobirtrh, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),        );    }    /**     * @return array relational rules.     */    public function relations() {        // NOTE: you may need to adjust the relation name and the related        // class name for the relations automatically generated below.        return array(        );    }    /**     * @return array customized attribute labels (name=>label)     */    public function attributeLabels() {        return array(            'user_id' => 'User',            'first_name' => 'First Name',            'last_name' => 'Last Name',            'email_id' => 'Email ID',            'mobile_no' => 'Mobile No',            'address' => 'Address',            'dojoin' => 'Date of Joining',            'dobirtrh' => 'Date of Birth',            'status' => 'Status',            'created_at' => 'Created At',            'created_by' => 'Created By',            'modified_at' => 'Modified At',            'modified_by' => 'Modified By',        );    }    /**     * Retrieves a list of models based on the current search/filter conditions.     *     * Typical usecase:     * - Initialize the model fields with values from filter form.     * - Execute this method to get CActiveDataProvider instance which will filter     * models according to data in model fields.     * - Pass data provider to CGridView, CListView or any similar widget.     *     * @return CActiveDataProvider the data provider that can return the models     * based on the search/filter conditions.     */    public function search() {        // @todo Please modify the following code to remove attributes that should not be searched.        $criteria = new CDbCriteria;        $criteria->compare('user_id', $this->user_id);        $criteria->compare('first_name', $this->first_name, true);        $criteria->compare('last_name', $this->last_name, true);        $criteria->compare('email_id', $this->email_id, true);        $criteria->compare('mobile_no', $this->mobile_no, true);        $criteria->compare('address', $this->address, true);        $criteria->compare('dojoin', $this->dojoin, true);        $criteria->compare('dobirtrh', $this->dobirtrh, true);        $criteria->compare('status', $this->status, true);        $criteria->compare('created_at', $this->created_at, true);        $criteria->compare('created_by', $this->created_by);        $criteria->compare('modified_at', $this->modified_at, true);        $criteria->compare('modified_by', $this->modified_by);        return new CActiveDataProvider($this, array(            'criteria' => $criteria,            'pagination' => array(                'pageSize' => PAGE_SIZE,            )        ));    }    /**     * Returns the static model of the specified AR class.     * Please note that you should have this exact method in all your CActiveRecord descendants!     * @param string $className active record class name.     * @return User the static model class     */    public static function model($className = __CLASS__) {        return parent::model($className);    }    public function dataProvider() {        return new CActiveDataProvider($this, array(            'pagination' => array(                'pageSize' => PAGE_SIZE,            )        ));    }    protected function beforeValidate() {        if ($this->isNewRecord) {            $this->created_at = new CDbExpression('NOW()');            $this->created_by = Yii::app()->user->id;        } else {            $this->modified_at = new CDbExpression('NOW()');            $this->modified_by = Yii::app()->user->id;        }        return parent::beforeValidate();    }}

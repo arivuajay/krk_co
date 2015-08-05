@@ -1,24 +1,11 @@
 <?php
 
-// this contains the application parameters that can be maintained via GUI
 return array(
-	//Category Module
-//	'category-list'=>'category/category/index',
-//	'category-create/pid/<pid>'=>'category/category/create',
-//	'category-create'=>'category/category/create',	
-//	'category-view/id/<id>'=>'category/category/view',
-
-	//Items Module
-//	'items'=>'items/items/index',
-//	'create-item'=>'items/items/create',
-//	'update-item/id/<id>'=>'items/items/update',
-	
-	//User Module
-	//'user-create'=>'/user/default/create',
-
-        //Product Module
-//        'products-create'=>'products/products/create',
-"/message/view/message_id/<message_id>"=>"message/view",
-"/importcsv"=>"importcsv/default/index",
-
+    'gii' => 'gii',
+    'gii/<controller:\w+>' => 'gii/<controller>',
+    'gii/<controller:\w+>/<action:\w+>' => 'gii/<controller>/<action>',
+    '<controller:\w+>/<id:\d+>' => '<controller>/view',
+    '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+    '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+    'login'=>'/site/users/login',
 );

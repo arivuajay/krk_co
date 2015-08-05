@@ -1,61 +1,63 @@
 <?php
+$whitelist = array('127.0.0.1', '::1');
+if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
+    $mailsendby = 'smtp';
+} else {
+    $mailsendby = 'phpmail';
+}
+
 // Custom Params Value
 return array(
-	//Global Settings
-	'ENV'=>'development',
-	'SITE_LOGO'=>'/images/logo.png',
-	'SML_SITE_LOGO'=>'/images/sml_logo.png',
-	'SITEURL'=> 'http://184.106.189.143:9007',
-        //Registration Settings
-        'REGISTER_ACTIVATION'=>false,
-    
-        //EMAIL Settings
-        'SMTPHOST'=>'smtp.gmail.com',
-        'SMTPPORT'=>'465',  // Port: 465 or 587 
-        'SMTPUSERNAME'=>'arivuoptisol@gmail.com',
-	'SMTPPASS'=>'9788686092',
-        'SMTPAUTH'=>true,    // Auth : true or false
-        'SMTPSECURE'=>'ssl', // Secure :tls or ssl
-	
-        'EMAILLAYOUT'=>'file',  // file(file concept) or db(db_concept)
-        'EMAILTEMPLATE'=>'/mailtemplate/',
-        'EMAILHEADERIMAGE'=>'/images/email-header.png',
-        'INFOEMAIL'=>'info@empresasctm.com',
-        'SITESUPPORTEMAIL'=>'support@empresasctm.com',
-        'NOREPLYMAIL'=>'noreply@empresasctm.com',
-        'CONTACTMAIL'=>'contact@empresasctm.com',
-    
-	//Product Settings
-	'IMAGE_FOLDER'=>'/images/',
-	'PRO_IMAGE_PATH'=>'/images/product_images/',
-	'PRO_LARGE_IMAGE_PATH'=>'/images/product_images/large/',
-	'PRO_DEFAULT_IMAGE'=>'default.jpg',
-	'FORMAT_DATE'=>'Y-m-d',
-	'JS_FORMAT_DATE'=>'yy-mm-dd',
-	'QUOTE_PREFIX'=>'Q_',
-	'SO_PREFIX'=>'SO_',
-	'INVOICE_PREFIX'=>'INV_',
-	'PAYMENT_PREFIX'=>'PAY_',
-	'MANUAL_PREFIX'=>'MAN_',    
-	'MEMO_PREFIX'=>'MEM_',
-	'VENDOR_PREFIX'=>'VEN_',
-	'PO_REQ_PREFIX'=>'PR_',
-	'SAMPLE_PREFIX'=>'SAM_',
-	'PO_PREFIX'=>'PO_',
+    //Global Settings
+    'EMAILLAYOUT' => 'file', // file(file concept) or db(db_concept)
+    'EMAILTEMPLATE' => '/mailtemplate/',
+    'MAILSENDBY' => $mailsendby,
+    //EMAIL Settings
+    'SMTPHOST' => 'smtp.gmail.com',
+    'SMTPPORT' => '465', // Port: 465 or 587
+    'SMTPUSERNAME' => 'marudhuofficial@gmail.com',
+    'SMTPPASS' => 'ninja12345',
+    'SMTPAUTH' => true, // Auth : true or false
+    'SMTPSECURE' => 'ssl', // Secure :tls or ssl
+    'NOREPLYMAIL' => 'noreply@krkinternational.com',
+    'CONTACTMAIL' => 'contact@krkinternational.com',
+    'JS_SHORT_DATE_FORMAT' => 'yy-mm-dd',
+    'PHP_SHORT_DATE_FORMAT' => 'Y-m-d',
 
-	//base path
-	'B_PATH'=>"/home/ctmsite/ctm/",
-	'UPLOAD_PATH'=>"/upload/importCsv/",
-	'FILE_PREFIX'=>'',
-	'DOWNLOAD_PATH' => 'downloads/',
-    
-        //Notification Images
-    	'NOTIFY_FINANCE_IMAGE'=>'/images/icons/notification/p_finance.png',
-    	'NOTIFY_HOME_IMAGE'=>'/images/icons/notification/p_home.png',
-    	'NOTIFY_PROCURMENT_IMAGE'=>'/images/icons/notification/p_procurment.png',
-    	'NOTIFY_PRODUCTIONS_IMAGE'=>'/images/icons/notification/p_productions.png',
-    	'NOTIFY_PRODUCTS_IMAGE'=>'/images/icons/notification/p_products.png',
-    	'NOTIFY_SALES_IMAGE'=>'/images/icons/notification/p_sales.png',
-    	'NOTIFY_SETTINGS_IMAGE'=>'/images/icons/notification/p_settings.png',
-	'NOTIFY_USER_IMAGE'=>'/images/icons/notification/p_user.png',
-);  
+    //Product Settings
+    'UPLOAD_DIR' => 'uploads',
+    'EMAILHEADERIMAGE' => '/themes/adminlte/img/header-logo.png',
+
+    'PAGE_SIZE' => '10',
+
+    'SITENAME' => 'Wipocos',
+    'EMAILHEADERIMAGE' => '',
+
+    'DEFAULT_COUNTRY_ID' => '2',
+    'DEFAULT_NATIONALITY_ID' => '2',
+    'DEFAULT_LANGUAGE_ID' => '5',
+
+    'DEFAULT_AUTHOR_RIGHT_HOLDER_ID' => '1',
+    'DEFAULT_AUTHOR_GROUP_RIGHT_HOLDER_ID' => '1',
+    'DEFAULT_AUTHOR_MANAGED_RIGHTS_TERRITORY_ID' => '8',
+
+
+    'DEFAULT_PERFORMER_RIGHT_HOLDER_ID' => '1',
+    'DEFAULT_PERFORMER_GROUP_RIGHT_HOLDER_ID' => '1',
+
+    'DEFAULT_PUBLISHER_RIGHT_HOLDER_ID' => '23',
+    'DEFAULT_PUBLISHER_GROUP_RIGHT_HOLDER_ID' => '2',
+
+    'DEFAULT_PRODUCER_RIGHT_HOLDER_ID' => '3',
+    'DEFAULT_PRODUCER_GROUP_RIGHT_HOLDER_ID' => '3',
+
+    'DEFAULT_FACTOR_ID' => '5',
+    'DEFAULT_TYPE_ID' => '4',
+    'DEFAULT_RECORD_TYPE_ID' => '1',
+
+    'DEFAULT_SOCIETY_ID' => '10',
+
+    'DEFAULT_WORK_RIGHTHOLDER_AUTHOR_ROLE' => '7',
+    'DEFAULT_WORK_RIGHTHOLDER_PERFORMER_ROLE' => '8',
+);
+
