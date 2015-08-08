@@ -150,6 +150,19 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
         </div>
     </div><!-- /.box-body-->
 </div>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Liner Master</h3></div>
+    <div class="panel-body">
+        <?php // $this->renderPartial('_liner_form', compact('liner_model')); ?>
+    </div>
+    <div class="panel-footer" id="foot_family_form">
+        <?php // $this->renderPartial('_liner_index', compact('liner_model')); ?>
+    </div>
+</div>
+
+
 <?php
 $actTab = (is_null($tab)) ? "company" : $tab;
 $script = <<< JS
