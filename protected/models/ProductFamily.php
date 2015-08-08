@@ -141,4 +141,13 @@ class ProductFamily extends CActiveRecord {
         return parent::beforeValidate();
     }
 
+    public static function ProductFamilyList($is_active = TRUE, $key = NULL) {
+        if ($is_active && $key == NULL)
+            $lists = CHtml::listData(self::model()->active()->findAll(array('order' => 'pro_family_name')), 'pro_family_id', 'pro_family_name');
+        else
+            $lists = CHtml::listData(self::model()->findAll(array('order' => 'pro_family_name')), 'pro_family_id', 'pro_family_name');
+        if ($key != NULL)
+            return $lists[$key];
+        return $lists;
+    }
 }

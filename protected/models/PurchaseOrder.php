@@ -1,32 +1,28 @@
 <?php
 
 /**
- * This is the model class for table "{{product}}".
+ * This is the model class for table "{{purchase_order}}".
  *
- * The followings are the available columns in table '{{product}}':
- * @property integer $product_id
- * @property integer $pro_family_id
- * @property string $pro_name
+ * The followings are the available columns in table '{{purchase_order}}':
+ * @property integer $po_id
+ * @property string $po_number
+ * @property string $po_date
+ * @property integer $po_company_id
+ * @property integer $po_vendor_id
  * @property string $status
- * @property integer $created_by
  * @property string $created_at
+ * @property string $created_by
+ * @property integer $modified_at
  * @property integer $modified_by
- * @property string $modified_at
  *
  * The followings are the available model relations:
- * @property ProductFamily $proFamily
+ * @property Vendor $poVendor
+ * @property Company $poCompany
+ * @property PurchaseOrderDetails[] $purchaseOrderDetails
  */
-class Product extends CActiveRecord {
+class PurchaseOrder extends CActiveRecord {
 
-    public $MAX_ID;
-
-    /**
-     * @return string the associated database table name
-     */
-    public function getProduct_code($id = null) {
-        if ($this->product_id)
-            return "P" . str_pad($this->product_id, 3, 0, STR_PAD_LEFT);
-    }
+    const CODE_LENGTH = 6;
 
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
@@ -34,12 +30,12 @@ class Product extends CActiveRecord {
             'active' => array('condition' => "$alias.status = '1'"),
         );
     }
-
+    
     /**
      * @return string the associated database table name
      */
     public function tableName() {
-        return '{{product}}';
+        return '{{purchase_order}}';
     }
 
     /**
@@ -49,14 +45,15 @@ class Product extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('pro_family_id, pro_name, created_by, created_at', 'required'),
-            array('pro_family_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
-            array('pro_name', 'length', 'max' => 255),
+            array('po_date', 'required'),
+            array('po_company_id, po_vendor_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
+            array('po_number', 'length', 'max' => 50),
             array('status', 'length', 'max' => 1),
-            array('modified_at', 'safe'),
+            array('po_number', 'unique'),
+            array('created_at, created_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('product_id, pro_family_id, pro_name, status, created_by, created_at, modified_by, modified_at', 'safe', 'on' => 'search'),
+            array('po_id, po_number, po_date, po_company_id, po_vendor_id, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -67,7 +64,9 @@ class Product extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
-            'proFamily' => array(self::BELONGS_TO, 'ProductFamily', 'pro_family_id'),
+            'poVendor' => array(self::BELONGS_TO, 'Vendor', 'po_vendor_id'),
+            'poCompany' => array(self::BELONGS_TO, 'Company', 'po_company_id'),
+            'purchaseOrderDetails' => array(self::HAS_MANY, 'PurchaseOrderDetails', 'po_id'),
         );
     }
 
@@ -76,14 +75,16 @@ class Product extends CActiveRecord {
      */
     public function attributeLabels() {
         return array(
-            'product_id' => 'Product',
-            'pro_family_id' => 'Pro Family',
-            'pro_name' => 'Pro Name',
+            'po_id' => 'Po',
+            'po_number' => 'PO Number',
+            'po_date' => 'PO Date',
+            'po_company_id' => 'Company',
+            'po_vendor_id' => 'Vendor',
             'status' => 'Status',
-            'created_by' => 'Created By',
             'created_at' => 'Created At',
-            'modified_by' => 'Modified By',
+            'created_by' => 'Created By',
             'modified_at' => 'Modified At',
+            'modified_by' => 'Modified By',
         );
     }
 
@@ -104,14 +105,16 @@ class Product extends CActiveRecord {
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('product_id', $this->product_id);
-        $criteria->compare('pro_family_id', $this->pro_family_id);
-        $criteria->compare('pro_name', $this->pro_name, true);
+        $criteria->compare('po_id', $this->po_id);
+        $criteria->compare('po_number', $this->po_number, true);
+        $criteria->compare('po_date', $this->po_date, true);
+        $criteria->compare('po_company_id', $this->po_company_id);
+        $criteria->compare('po_vendor_id', $this->po_vendor_id);
         $criteria->compare('status', $this->status, true);
-        $criteria->compare('created_by', $this->created_by);
         $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('created_by', $this->created_by, true);
+        $criteria->compare('modified_at', $this->modified_at);
         $criteria->compare('modified_by', $this->modified_by);
-        $criteria->compare('modified_at', $this->modified_at, true);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
@@ -125,7 +128,7 @@ class Product extends CActiveRecord {
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return Product the static model class
+     * @return PurchaseOrder the static model class
      */
     public static function model($className = __CLASS__) {
         return parent::model($className);
@@ -139,25 +142,7 @@ class Product extends CActiveRecord {
         ));
     }
 
-    protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
-
-        return parent::beforeValidate();
-    }
-
-    public static function ProductList($is_active = TRUE, $key = NULL) {
-        if ($is_active && $key == NULL)
-            $lists = CHtml::listData(self::model()->active()->findAll(array('order' => 'pro_name')), 'product_id', 'pro_name');
-        else
-            $lists = CHtml::listData(self::model()->findAll(array('order' => 'pro_name')), 'product_id', 'pro_name');
-        if ($key != NULL)
-            return $lists[$key];
-        return $lists;
+    protected function beforeSave() {
+        return parent::beforeSave();
     }
 }

@@ -31,6 +31,22 @@ class MastersController extends Controller {
         }
     }
 
+    public function actionGetVarietybyProductId($id, $pro_id = '') {
+        $products = ProductVariety::model()->active()->findAll("product_id = '$id'");
+
+        $data = CHtml::listData($products, 'variety_id', 'variety_name');
+
+        echo "<option value=''>Select Variety</option>";
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($pro_id) && $pro_id == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+
     public function actionCompany_save($id = null) {
         $new = false;
         if (is_null($id)) {

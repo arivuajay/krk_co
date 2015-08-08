@@ -137,4 +137,13 @@ class Company extends CActiveRecord {
         return parent::beforeValidate();
     }
 
+    public static function CompanyList($is_active = TRUE, $key = NULL) {
+        if ($is_active && $key == NULL)
+            $lists = CHtml::listData(self::model()->active()->findAll(array('order' => 'company_name')), 'company_id', 'company_name');
+        else
+            $lists = CHtml::listData(self::model()->findAll(array('order' => 'company_name')), 'company_id', 'company_name');
+        if ($key != NULL)
+            return $lists[$key];
+        return $lists;
+    }
 }
