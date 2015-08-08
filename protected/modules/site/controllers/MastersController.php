@@ -12,7 +12,7 @@ class MastersController extends Controller {
         $grade_model = new ProductGrade();
         $vendor_model = new Vendor();
 
-        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model','vendor_model'));
+        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model', 'vendor_model'));
     }
 
     public function actionGetProductbyFamily($id, $pro_id = '') {
@@ -521,6 +521,80 @@ class MastersController extends Controller {
         $record->grade_id = $max_id + 1;
 
         echo $record->grade_code;
+        Yii::app()->end();
+    }
+
+//    ========================================================================
+
+    public function actionVendor_save($id = null) {
+        $new = false;
+        if (is_null($id)) {
+            $vendor_model = new Vendor;
+            $new = true;
+        } else {
+            $vendor_model = $this->loadVendorModel($id);
+        }
+
+        // Uncomment the following line if AJAX validation is needed
+        $this->performVendorAjaxValidation($vendor_model);
+
+        if (isset($_POST['Vendor'])) {
+            $vendor_model->attributes = $_POST['Vendor'];
+            if ($vendor_model->validate()) {
+                $vendor_model->save(false);
+                $note = ($new) ? "Created Vendor successfully." : "Updated Vendor successfully.";
+                Myclass::addAuditTrail($note, "user");
+                Yii::app()->user->setFlash('success', $note);
+                $this->redirect(array('index'));
+            }
+        }
+
+        echo $this->renderPartial('_vendor_form', compact('vendor_model'), true, true);
+        Yii::app()->end();
+    }
+
+    public function actionVendor_delete($id) {
+        try {
+            $model = $this->loadVendorModel($id);
+            $model->delete();
+            Myclass::addAuditTrail("Deleted Vendor successfully.", "user");
+        } catch (CDbException $e) {
+            throw new CHttpException(404, $e->getMessage());
+        }
+
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (!isset($_GET['ajax'])) {
+            Yii::app()->user->setFlash('success', 'Vendor Deleted Successfully!!!');
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        }
+    }
+
+    public function loadVendorModel($id) {
+        $model = Vendor::model()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    protected function performVendorAjaxValidation($model) {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'vendor-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+    }
+
+    public function actionGetvendorcode() {
+        $max_id = 0;
+        $criteria = new CDbCriteria;
+        $criteria->select = 'MAX(vendor_id) as MAX_ID';
+        $record = Vendor::model()->find($criteria);
+
+        if ($record) {
+            $max_id = $record->MAX_ID;
+        }
+        $record->vendor_id = $max_id + 1;
+
+        echo $record->vendor_code;
         Yii::app()->end();
     }
 

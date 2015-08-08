@@ -28,6 +28,8 @@
  */
 class Vendor extends CActiveRecord {
 
+    public $MAX_ID;
+
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
@@ -41,7 +43,7 @@ class Vendor extends CActiveRecord {
     }
 
     public function getNameWithType() {
-            return $this->vendor_name."-".$this->vendorType->vendor_type;
+        return $this->vendor_name . "-" . $this->vendorType->vendor_type;
     }
 
     /**
@@ -90,21 +92,22 @@ class Vendor extends CActiveRecord {
             'vendor_id' => 'Vendor',
             'vendor_type_id' => 'Vendor Type',
             'vendor_name' => 'Vendor Name',
-            'vendor_address' => 'Vendor Address',
-            'vendor_city' => 'Vendor City',
-            'vendor_country' => 'Vendor Country',
-            'vendor_contact_person' => 'Vendor Contact Person',
-            'vendor_mobile_no' => 'Vendor Mobile No',
-            'vendor_office_no' => 'Vendor Office No',
-            'vendor_email' => 'Vendor Email',
-            'vendor_website' => 'Vendor Website',
-            'vendor_trade_mark' => 'Vendor Trade Mark',
-            'vendor_remarks' => 'Vendor Remarks',
+            'vendor_address' => 'Address',
+            'vendor_city' => 'City',
+            'vendor_country' => 'Country',
+            'vendor_contact_person' => 'Contact Person',
+            'vendor_mobile_no' => 'Mobile No',
+            'vendor_office_no' => 'Office No',
+            'vendor_email' => 'Email ID',
+            'vendor_website' => 'Website',
+            'vendor_trade_mark' => 'Trade Mark',
+            'vendor_remarks' => 'Remarks',
             'status' => 'Status',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'modified_at' => 'Modified At',
             'modified_by' => 'Modified By',
+            'vendor_code' => 'Vendor Code',
         );
     }
 
@@ -168,6 +171,18 @@ class Vendor extends CActiveRecord {
                 'pageSize' => PAGE_SIZE,
             )
         ));
+    }
+
+    protected function beforeValidate() {
+        if ($this->isNewRecord) {
+            $this->created_at = new CDbExpression('NOW()');
+            $this->created_by = Yii::app()->user->id;
+        } else {
+            $this->modified_at = new CDbExpression('NOW()');
+            $this->modified_by = Yii::app()->user->id;
+        }
+
+        return parent::beforeValidate();
     }
 
     public static function VendorList($is_active = TRUE, $key = NULL) {
