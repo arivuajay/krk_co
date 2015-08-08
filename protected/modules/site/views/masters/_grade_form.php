@@ -1,10 +1,13 @@
 <?php
+$grade_family = '';
+
 if ($grade_model->isNewRecord) {
     $act_url = Yii::app()->createUrl('/site/masters/grade_save');
     $btn_name = 'ADD';
 } else {
     $act_url = Yii::app()->createUrl('/site/masters/grade_save', array('id' => $grade_model->grade_id));
     $btn_name = 'UPDATE';
+    $grade_family = $grade_model->product->proFamily->pro_family_id;
 }
 $form = $this->beginWidget('CActiveForm', array(
     'id' => 'product-grade-form',
@@ -15,16 +18,14 @@ $form = $this->beginWidget('CActiveForm', array(
         ));
 
 $family = CHtml::listData(ProductFamily::model()->active()->findAll(),'pro_family_id','pro_family_name');
-
-$grade_family = '';
 ?>
 <div class="form-group">
-    <?php echo CHtml::dropDownList('grade_family_id',$grade_family, $family, array('class' => 'form-control','empty'=>'Select Family',
+    <?php echo CHtml::dropDownList('grade_family_id',$grade_family, $family, array('class' => 'form-control','prompt'=>'Select Family',
         'ajax' => array(
             'type'=>'GET',
-            'url'=>Yii::app()->createUrl('/site/masters/getProductbyFamily'), //or $this->createUrl('loadcities') if '$this' extends CController
+            'url'=>Yii::app()->createUrl('/site/masters/getProductbyFamily'),
             'update'=>'#ProductGrade_product_id',
-            'data'=>array('id'=>'js:this.value'))));
+            'data'=>array('id'=>'js:this.value','pro_id'=>$grade_model->product_id))));
     ?>
 </div>
 <div class="form-group">
@@ -50,4 +51,14 @@ $grade_family = '';
 <?php if (!$grade_model->isNewRecord) { ?>
     <button type="reset" class="btn btn-default" id="cancel_company_form">CANCEL</button>
 <?php } ?>
-<?php $this->endWidget(); ?>
+<?php $this->endWidget();
+if($grade_family != ''){
+$script = <<< JS
+$(function(){
+    $('#grade_family_id').trigger('change');
+});
+JS;
+
+Yii::app()->clientScript->registerScript('_grade_js', $script);
+}
+?>

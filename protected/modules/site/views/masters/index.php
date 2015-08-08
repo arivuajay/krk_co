@@ -47,8 +47,6 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                         </div>
                     </div>
                 </div>
-
-
                 <div class="tab-pane" id="permit">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
@@ -91,7 +89,7 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                 <div class="tab-pane" id="variety">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Product Master</h3></div>
+                            <h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Variety Master</h3></div>
                         <div class="panel-body">
                             <?php $this->renderPartial('_variety_index', compact('variety_model')); ?>
                         </div>
@@ -103,7 +101,7 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                 <div class="tab-pane" id="size">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Product Master</h3></div>
+                            <h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Size Master</h3></div>
                         <div class="panel-body">
                             <?php $this->renderPartial('_size_index', compact('size_model')); ?>
                         </div>
@@ -128,16 +126,31 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
         </div>
     </div><!-- /.box-body-->
 </div>
-<?php
-//$new_comp_url = Yii::app()->createUrl('/site/masters/company_save');
-//$script = <<< JS
-//$(document).ready(function(){
-//    $('#cancel_company_form').click(function(){
-//        $('form#company-form').attr('action','$new_comp_url');
-//    });
-//});
-//JS;
 
+<div class="box box-solid">
+    <div class="box-header well">
+        <!-- tools box -->
+        <div class="pull-right box-tools">
+            <button class="btn btn-primary btn-sm pull-right" data-widget='collapse' data-toggle="tooltip" title="Collapse" style="margin-right: 5px;"><i class="fa fa-minus"></i></button>
+        </div><!-- /. tools -->
+
+        <i class="fa fa-th"></i>
+        <h3 class="box-title">Vendor Master</h3>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="col-lg-6" id="foot_vendor_form">
+                    <?php $this->renderPartial('_vendor_form', compact('vendor_model')); ?>
+                </div>
+                <div class="col-lg-6">
+                    <?php $this->renderPartial('_vendor_index', compact('vendor_model')); ?>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.box-body-->
+</div>
+<?php
 $actTab = (is_null($tab)) ? "company" : $tab;
 $script = <<< JS
 $(document).ready(function(){

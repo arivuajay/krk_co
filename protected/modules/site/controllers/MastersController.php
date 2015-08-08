@@ -10,18 +10,25 @@ class MastersController extends Controller {
         $variety_model = new ProductVariety();
         $size_model = new ProductSize();
         $grade_model = new ProductGrade();
+        $vendor_model = new Vendor();
 
-        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model','size_model','grade_model'));
+        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model','vendor_model'));
     }
 
-    public function actionGetProductbyFamily($id) {
+    public function actionGetProductbyFamily($id, $pro_id = '') {
         $products = Product::model()->active()->findAll("pro_family_id = '$id'");
 
         $data = CHtml::listData($products, 'product_id', 'pro_name');
 
         echo "<option value=''>Select Products</option>";
-        foreach ($data as $value => $name)
-            echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($pro_id) && $pro_id == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
     }
 
     public function actionCompany_save($id = null) {
@@ -443,8 +450,7 @@ class MastersController extends Controller {
         Yii::app()->end();
     }
 
-//============================================================================================================
-        public function actionGrade_save($id = null) {
+    public function actionGrade_save($id = null) {
         $new = false;
         if (is_null($id)) {
             $grade_model = new ProductGrade;
@@ -465,8 +471,7 @@ class MastersController extends Controller {
                 $this->redirect(array('index', 'tab' => 'grade'));
             }
         }
-
-        echo $this->renderPartial('_size_form', compact('grade_model'), true, true);
+        echo $this->renderPartial('_grade_form', compact('grade_model'), true, true);
         Yii::app()->end();
     }
 

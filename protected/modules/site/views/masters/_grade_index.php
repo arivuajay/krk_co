@@ -7,12 +7,12 @@ $gridColumns = array(
         'header' => 'Actions',
         'class' => 'booster.widgets.TbButtonColumn',
         'htmlOptions' => array('style' => 'width: 180px;;text-align:center', 'vAlign' => 'middle', 'class' => 'action_column'),
-        'template' => '{edit}{delete}',
+        'template' => '{edit_grade}{delete}',
         'buttons' => array(
             'delete' => array(
                 'url' => 'Yii::app()->createUrl("/site/masters/grade_delete", array("id"=>$data->grade_id))'
             ),
-            'edit' => array(
+            'edit_grade' => array(
                 'label' => '<i class="glyphicon glyphicon-pencil"></i>',
                 'options' => array('title' => 'Update'),
                 'url' => 'Yii::app()->createUrl("/site/masters/grade_save", array("id"=>$data->grade_id))',
