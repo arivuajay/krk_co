@@ -57,7 +57,6 @@ $this->breadcrumbs=array(
 	'attributes'=>array(
 		'vendor_id',
 		'vendor_type_id',
-		'vendor_code',
 		'vendor_name',
 		'vendor_address',
 		'vendor_city',

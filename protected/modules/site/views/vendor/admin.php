@@ -47,12 +47,11 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 	'columns'=>array(
 		'vendor_id',
 		'vendor_type_id',
-		'vendor_code',
 		'vendor_name',
 		'vendor_address',
 		'vendor_city',
-		/*
 		'vendor_country',
+		/*
 		'vendor_contact_person',
 		'vendor_mobile_no',
 		'vendor_office_no',

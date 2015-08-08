@@ -25,14 +25,6 @@
                     </div>
 
                                         <div class="form-group">
-                        <?php echo $form->labelEx($model,'vendor_code',  array('class' => 'col-sm-2 control-label')); ?>
-                        <div class="col-sm-5">
-                        <?php echo $form->textField($model,'vendor_code',array('class'=>'form-control','size'=>10,'maxlength'=>10)); ?>
-                        <?php echo $form->error($model,'vendor_code'); ?>
-                        </div>
-                    </div>
-
-                                        <div class="form-group">
                         <?php echo $form->labelEx($model,'vendor_name',  array('class' => 'col-sm-2 control-label')); ?>
                         <div class="col-sm-5">
                         <?php echo $form->textField($model,'vendor_name',array('class'=>'form-control','size'=>50,'maxlength'=>50)); ?>

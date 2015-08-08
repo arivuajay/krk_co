@@ -13,10 +13,6 @@
 	<?php echo CHtml::encode($data->vendor_type_id); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('vendor_code')); ?>:</b>
-	<?php echo CHtml::encode($data->vendor_code); ?>
-	<br />
-
 	<b><?php echo CHtml::encode($data->getAttributeLabel('vendor_name')); ?>:</b>
 	<?php echo CHtml::encode($data->vendor_name); ?>
 	<br />
@@ -33,11 +29,11 @@
 	<?php echo CHtml::encode($data->vendor_country); ?>
 	<br />
 
-	<?php /*
 	<b><?php echo CHtml::encode($data->getAttributeLabel('vendor_contact_person')); ?>:</b>
 	<?php echo CHtml::encode($data->vendor_contact_person); ?>
 	<br />
 
+	<?php /*
 	<b><?php echo CHtml::encode($data->getAttributeLabel('vendor_mobile_no')); ?>:</b>
 	<?php echo CHtml::encode($data->vendor_mobile_no); ?>
 	<br />

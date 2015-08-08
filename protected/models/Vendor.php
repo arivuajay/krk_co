@@ -6,7 +6,6 @@
  * The followings are the available columns in table '{{vendor}}':
  * @property integer $vendor_id
  * @property integer $vendor_type_id
- * @property string $vendor_code
  * @property string $vendor_name
  * @property string $vendor_address
  * @property string $vendor_city
@@ -23,6 +22,9 @@
  * @property integer $created_by
  * @property string $modified_at
  * @property integer $modified_by
+ *
+ * The followings are the available model relations:
+ * @property VendorType $vendorType
  */
 class Vendor extends CActiveRecord {
 
@@ -34,8 +36,12 @@ class Vendor extends CActiveRecord {
     }
 
     public function getVendor_code($id = null) {
-        if ($this->product_id)
-            return "P" . str_pad($this->product_id, 3, 0, STR_PAD_LEFT);
+        if ($this->vendor_id)
+            return "VC" . str_pad($this->vendor_id, 7, 0, STR_PAD_LEFT);
+    }
+
+    public function getNameWithType() {
+            return $this->vendor_name."-".$this->vendorType->vendor_type;
     }
 
     /**
@@ -52,9 +58,8 @@ class Vendor extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('vendor_type_id, vendor_code, vendor_name, vendor_address, vendor_country, vendor_contact_person, vendor_email, created_at', 'required'),
+            array('vendor_type_id, vendor_name, vendor_address, vendor_country, vendor_contact_person, vendor_email, created_at', 'required'),
             array('vendor_type_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
-            array('vendor_code', 'length', 'max' => 10),
             array('vendor_name', 'length', 'max' => 50),
             array('vendor_city, vendor_country, vendor_contact_person, vendor_email, vendor_website, vendor_trade_mark', 'length', 'max' => 255),
             array('vendor_mobile_no, vendor_office_no', 'length', 'max' => 100),
@@ -62,7 +67,7 @@ class Vendor extends CActiveRecord {
             array('vendor_remarks, modified_at', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('vendor_id, vendor_type_id, vendor_code, vendor_name, vendor_address, vendor_city, vendor_country, vendor_contact_person, vendor_mobile_no, vendor_office_no, vendor_email, vendor_website, vendor_trade_mark, vendor_remarks, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('vendor_id, vendor_type_id, vendor_name, vendor_address, vendor_city, vendor_country, vendor_contact_person, vendor_mobile_no, vendor_office_no, vendor_email, vendor_website, vendor_trade_mark, vendor_remarks, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -73,6 +78,7 @@ class Vendor extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            'vendorType' => array(self::BELONGS_TO, 'VendorType', 'vendor_type_id'),
         );
     }
 
@@ -83,7 +89,6 @@ class Vendor extends CActiveRecord {
         return array(
             'vendor_id' => 'Vendor',
             'vendor_type_id' => 'Vendor Type',
-            'vendor_code' => 'Vendor Code',
             'vendor_name' => 'Vendor Name',
             'vendor_address' => 'Vendor Address',
             'vendor_city' => 'Vendor City',
@@ -122,7 +127,6 @@ class Vendor extends CActiveRecord {
 
         $criteria->compare('vendor_id', $this->vendor_id);
         $criteria->compare('vendor_type_id', $this->vendor_type_id);
-        $criteria->compare('vendor_code', $this->vendor_code, true);
         $criteria->compare('vendor_name', $this->vendor_name, true);
         $criteria->compare('vendor_address', $this->vendor_address, true);
         $criteria->compare('vendor_city', $this->vendor_city, true);
@@ -164,6 +168,16 @@ class Vendor extends CActiveRecord {
                 'pageSize' => PAGE_SIZE,
             )
         ));
+    }
+
+    public static function VendorList($is_active = TRUE, $key = NULL) {
+        if ($is_active && $key == NULL)
+            $lists = CHtml::listData(self::model()->active()->findAll(), 'vendor_id', 'nameWithType');
+        else
+            $lists = CHtml::listData(self::model()->findAll(), 'vendor_id', 'nameWithType');
+        if ($key != NULL)
+            return $lists[$key];
+        return $lists;
     }
 
 }

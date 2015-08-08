@@ -30,13 +30,12 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
 <?php
         $gridColumns = array(
 		'vendor_type_id',
-		'vendor_code',
 		'vendor_name',
 		'vendor_address',
 		'vendor_city',
 		'vendor_country',
-		/*
 		'vendor_contact_person',
+		/*
 		'vendor_mobile_no',
 		'vendor_office_no',
 		'vendor_email',

@@ -22,11 +22,6 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'vendor_code'); ?>
-		<?php echo $form->textField($model,'vendor_code',array('class'=>'form-control','size'=>10,'maxlength'=>10)); ?>
-	</div>
-
-	<div class="row">
 		<?php echo $form->label($model,'vendor_name'); ?>
 		<?php echo $form->textField($model,'vendor_name',array('class'=>'form-control','size'=>50,'maxlength'=>50)); ?>
 	</div>
