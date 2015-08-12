@@ -21,7 +21,7 @@ class UserIdentity extends CUserIdentity {
      * @return boolean whether authentication succeeds.
      */
     public function authenticate() {
-        $user = Admin::model()->find('username = :U', array(':U' => $this->username));
+        $user = User::model()->find('username = :U', array(':U' => $this->username));
 
         if ($user === null):
             $this->errorCode = self::ERROR_USERNAME_INVALID;
@@ -60,8 +60,8 @@ class UserIdentity extends CUserIdentity {
     }
 
     protected function setUserData($user) {
-        $this->_id = $user->id;
-        $this->setState('name', $user->name);
+        $this->_id = $user->user_id;
+        $this->setState('name', $user->first_name);
         return;
     }
 

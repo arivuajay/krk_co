@@ -1,6 +1,6 @@
 <?php
 ini_set('display_errors',true);
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_WARNING & ~E_NOTICE);
 
 // change the following paths if necessary
 $yii=dirname(__FILE__).'/framework/yii.php';

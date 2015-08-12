@@ -30,7 +30,9 @@ return array(
 
     'PAGE_SIZE' => '10',
 
-    'SITENAME' => 'Wipocos',
+    'SITENAME' => 'KRK',
+    'INFOEMAIL' => 'info@krk.com',
+    'SITESUPPORTEMAIL' => 'info@krk.com',
 
 );
 
