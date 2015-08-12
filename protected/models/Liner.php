@@ -24,7 +24,7 @@ class Liner extends CActiveRecord {
     /**
      * @return string the associated database table name
      */
-    public function getProduct_code($id = null) {
+    public function getLiner_code($id = null) {
         if ($this->liner_id)
             return "LC" . str_pad($this->liner_id, 4, 0, STR_PAD_LEFT);
     }

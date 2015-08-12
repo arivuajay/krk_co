@@ -29,10 +29,10 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
     <div class="row">
 <?php
         $gridColumns = array(
-		'po_number',
+		'purchase_order_code',
 		'po_date',
-		'po_company_id',
-		'po_vendor_id',
+		'poCompany.company_name',
+		'poVendor.vendor_name',
 		array(
                 'header' => 'Actions',
                 'class' => 'booster.widgets.TbButtonColumn',

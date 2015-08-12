@@ -44,11 +44,13 @@ class PurchaseOrderDetails extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('po_id, po_det_prod_fmly_id, po_det_product_id, po_det_variety_id, po_det_grade, po_det_size', 'required'),
+            array('po_det_prod_fmly_id, po_det_product_id, po_det_variety_id, po_det_grade, po_det_size', 'required', 'on' => 'add_product,save'),
+            array('po_id', 'required', 'on' => 'save'),
+//            array('po_id, po_det_prod_fmly_id, po_det_product_id, po_det_variety_id, po_det_grade, po_det_size', 'required'),
             array('po_id, po_det_prod_fmly_id, po_det_product_id, po_det_variety_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
             array('po_det_grade, po_det_size', 'length', 'max' => 500),
             array('po_det_net_weight, po_det_container_qty, po_det_cotton_qty, po_det_price', 'numerical', 'integerOnly' => false),
-            array('po_det_currency, status', 'length', 'max' => 1),
+            array('status', 'length', 'max' => 1),
             array('created_at, created_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -154,6 +156,33 @@ class PurchaseOrderDetails extends CActiveRecord {
                 'pageSize' => PAGE_SIZE,
             )
         ));
+    }
+
+    protected function beforeValidate() {
+        if ($this->po_det_grade)
+            $this->po_det_grade = CJSON::encode($this->po_det_grade);
+        if ($this->po_det_size)
+            $this->po_det_size = CJSON::encode($this->po_det_size);
+
+        return parent::beforeValidate();
+    }
+
+    protected function beforeSave() {
+        if ($this->po_det_grade && is_array($this->po_det_grade))
+            $this->po_det_grade = CJSON::encode($this->po_det_grade);
+        if ($this->po_det_size && is_array($this->po_det_size))
+            $this->po_det_size = CJSON::encode($this->po_det_size);
+
+        return parent::beforeSave();
+    }
+
+    protected function afterFind() {
+        if ($this->po_det_grade)
+            $this->po_det_grade = CJSON::decode($this->po_det_grade);
+        if ($this->po_det_size)
+            $this->po_det_size = CJSON::decode($this->po_det_size);
+
+        return parent::afterFind();
     }
 
 }

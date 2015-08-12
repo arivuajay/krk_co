@@ -14,7 +14,7 @@ class BaseInflector
      * @var array the rules for converting a word into its plural form.
      * The keys are the regular expressions and the values are the corresponding replacements.
      */
-    public static $plurals = [
+    public static $plurals = array(
         '/([nrlm]ese|deer|fish|sheep|measles|ois|pox|media)$/i' => '\1',
         '/^(sea[- ]bass)$/i' => '\1',
         '/(m)ove$/i' => '\1oves',
@@ -44,12 +44,12 @@ class BaseInflector
         '/s$/' => 's',
         '/^$/' => '',
         '/$/' => 's',
-    ];
+    );
     /**
      * @var array the rules for converting a word into its singular form.
      * The keys are the regular expressions and the values are the corresponding replacements.
      */
-    public static $singulars = [
+    public static $singulars = array(
         '/([nrlm]ese|deer|fish|sheep|measles|ois|pox|media|ss)$/i' => '\1',
         '/^(sea[- ]bass)$/i' => '\1',
         '/(s)tatuses$/i' => '\1tatus',
@@ -88,12 +88,12 @@ class BaseInflector
         '/eaus$/' => 'eau',
         '/^(.*us)$/' => '\\1',
         '/s$/i' => '',
-    ];
+    );
     /**
      * @var array the special rules for converting a word between its plural form and singular form.
      * The keys are the special words in singular form, and the values are the corresponding plural form.
      */
-    public static $specials = [
+    public static $specials = array(
         'atlas' => 'atlases',
         'beef' => 'beefs',
         'brother' => 'brothers',
@@ -205,11 +205,11 @@ class BaseInflector
         'whiting' => 'whiting',
         'wildebeest' => 'wildebeest',
         'Yengeese' => 'Yengeese',
-    ];
+    );
     /**
      * @var array fallback map for transliteration used by [[slug()]] when intl isn't available.
      */
-    public static $transliteration = [
+    public static $transliteration = array(
         'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'AE', 'Ç' => 'C',
         'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I',
         'Ð' => 'D', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ő' => 'O',
@@ -220,7 +220,7 @@ class BaseInflector
         'ð' => 'd', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ő' => 'o',
         'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ü' => 'u', 'ű' => 'u', 'ý' => 'y', 'þ' => 'th',
         'ÿ' => 'y',
-    ];
+    );
     /**
      * @var mixed Either a [[Transliterator]] or a string from which a [[Transliterator]]
      * can be built for transliteration used by [[slug()]] when intl is available.
@@ -307,11 +307,11 @@ class BaseInflector
      */
     public static function camel2words($name, $ucwords = true)
     {
-        $label = trim(strtolower(str_replace([
+        $label = trim(strtolower(str_replace(array(
             '-',
             '_',
             '.'
-        ], ' ', preg_replace('/(?<![A-Z])[A-Z]/', ' \0', $name))));
+        ), ' ', preg_replace('/(?<![A-Z])[A-Z]/', ' \0', $name))));
 
         return $ucwords ? ucwords($label) : $label;
     }

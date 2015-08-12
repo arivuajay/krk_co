@@ -63,7 +63,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                 <div class="form-group">
                     <?php echo $form->labelEx($model, 'dojoin', array('class' => 'col-sm-2 control-label')); ?>
                     <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'dojoin', array('class' => 'form-control datepicker', 'value' => (isset($model->dojoin) && $model->dojoin != '0000-00-00') ? date('Y-m-d', strtotime($model->dojoin)) : '')); ?>
+                        <?php echo $form->textField($model, 'dojoin', array('class' => 'form-control datepicker', 'value' => (isset($model->dojoin) && $model->dojoin != '0000-00-00') ? date(PHP_USER_DATE_FORMAT, strtotime($model->dojoin)) : '')); ?>
                         <?php echo $form->error($model, 'dojoin'); ?>
                     </div>
                 </div>
@@ -71,7 +71,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                 <div class="form-group">
                     <?php echo $form->labelEx($model, 'dobirtrh', array('class' => 'col-sm-2 control-label')); ?>
                     <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'dobirtrh', array('class' => 'form-control datepicker', 'value' => (isset($model->dobirtrh) && $model->dobirtrh != '0000-00-00') ? date('Y-m-d', strtotime($model->dobirtrh)) : '')); ?>
+                        <?php echo $form->textField($model, 'dobirtrh', array('class' => 'form-control datepicker', 'value' => (isset($model->dobirtrh) && $model->dobirtrh != '0000-00-00') ? date(PHP_USER_DATE_FORMAT, strtotime($model->dobirtrh)) : '')); ?>
                         <?php echo $form->error($model, 'dobirtrh'); ?>
                     </div>
                 </div>

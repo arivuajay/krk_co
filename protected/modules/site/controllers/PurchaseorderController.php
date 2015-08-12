@@ -28,7 +28,7 @@ class PurchaseorderController extends Controller {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -67,17 +67,26 @@ class PurchaseorderController extends Controller {
      */
     public function actionCreate() {
         $model = new PurchaseOrder;
-        $detail_model = new PurchaseOrderDetails;
+        $detail_model = new PurchaseOrderDetails('add_product');
+
+        $session = Yii::app()->session;
+        $po_products = $session['po_added_products'];
 
         // Uncomment the following line if AJAX validation is needed
-        $this->performAjaxValidation(array($model, $detail_model));
+        $this->performAjaxValidation($model);
 
         if (isset($_POST['PurchaseOrder'])) {
             $model->attributes = $_POST['PurchaseOrder'];
-            echo "<pre>";
-            print_r($_POST);
-            exit;
-            if ($model->save()) {
+            if ($model->validate()) {
+                $model->save(false);
+                foreach ($po_products as $product) {
+                    $detail_model = new PurchaseOrderDetails('save');
+                    $detail_model->attributes = $product;
+                    $detail_model->po_id = $model->po_id;
+                    $detail_model->save(false);
+                }
+
+                unset($_SESSION['po_added_products']);
                 Myclass::addAuditTrail("Created PurchaseOrder successfully.", "user");
                 Yii::app()->user->setFlash('success', 'PurchaseOrder Created Successfully!!!');
                 $this->redirect(array('index'));
@@ -85,6 +94,55 @@ class PurchaseorderController extends Controller {
         }
 
         $this->render('create', compact('model', 'detail_model'));
+    }
+
+    public function actionAddProduct() {
+        $detail_model = new PurchaseOrderDetails('add_product');
+
+        // Uncomment the following line if AJAX validation is needed
+        $this->performAjaxValidation($detail_model);
+        if (isset($_POST['PurchaseOrderDetails'])) {
+            $detail_model->attributes = $_POST['PurchaseOrderDetails'];
+            $session = Yii::app()->session;
+            if (!isset($session['po_added_products']) || count($session['po_added_products']) == 0) {
+                $session['po_added_products'] = array(rand() => $detail_model->attributes);
+            } else {
+                $myarr = $session['po_added_products'];
+                $myarr[rand()] = $detail_model->attributes;
+                $session['po_added_products'] = $myarr;
+            }
+        }
+        Yii::app()->end();
+    }
+
+    public function actionEditPoPrduct($id) {
+        $session = Yii::app()->session;
+        $detail_model = new PurchaseOrderDetails('add_product');
+        $detail_model->attributes = $session['po_added_products'][$id];
+        $cs = Yii::app()->clientScript;
+        $cs->reset();
+        $cs->scriptMap = array(
+            'jquery.js' => false,
+            'jquery.min.js' => false,
+        );
+
+        $this->renderPartial('_product_form', compact('detail_model'), false, true);
+
+        Yii::app()->end();
+    }
+
+    public function actionDeletePoPrduct($id) {
+        $key = (int) $id;
+        unset($_SESSION['po_added_products'][$key]);
+        $this->forward('poAddedProducts');
+        Yii::app()->end();
+    }
+
+    public function actionPoAddedProducts() {
+        $session = Yii::app()->session;
+        $po_products = $session['po_added_products'];
+        $this->renderPartial('_po_added_products', compact('po_products'), false, true);
+        Yii::app()->end();
     }
 
     /**

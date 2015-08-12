@@ -11,8 +11,9 @@ class MastersController extends Controller {
         $size_model = new ProductSize();
         $grade_model = new ProductGrade();
         $vendor_model = new Vendor();
+        $liner_model = new Liner();
 
-        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model', 'vendor_model'));
+        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model', 'vendor_model','liner_model'));
     }
 
     public function actionGetProductbyFamily($id, $pro_id = '') {
@@ -37,6 +38,34 @@ class MastersController extends Controller {
         $data = CHtml::listData($products, 'variety_id', 'variety_name');
 
         echo "<option value=''>Select Variety</option>";
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($pro_id) && $pro_id == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+    public function actionGetGradeByProduct($id, $pro_id = '') {
+        $products = ProductGrade::model()->active()->findAll("product_id = '$id'");
+
+        $data = CHtml::listData($products, 'grade_id', 'grade_short_name');
+
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($pro_id) && $pro_id == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+    public function actionGetSizeByProduct($id, $pro_id = '') {
+        $products = ProductSize::model()->active()->findAll("product_id = '$id'");
+
+        $data = CHtml::listData($products, 'size_id', 'size_name');
+
         foreach ($data as $value => $name) {
             $htmlOpt = array();
             $htmlOpt['value'] = $value;
@@ -613,5 +642,82 @@ class MastersController extends Controller {
         echo $record->vendor_code;
         Yii::app()->end();
     }
+
+
+    public function actionLiner_save($id = null) {
+        $new = false;
+        if (is_null($id)) {
+            $liner_model = new Liner;
+            $new = true;
+        } else {
+            $liner_model = $this->loadLinerModel($id);
+        }
+
+        // Uncomment the following line if AJAX validation is needed
+        $this->performLinerAjaxValidation($liner_model);
+
+        if (isset($_POST['Liner'])) {
+            $liner_model->attributes = $_POST['Liner'];
+            if ($liner_model->save()) {
+                $note = ($new) ? "Created Liner successfully." : "Updated Liner successfully.";
+                Myclass::addAuditTrail($note, "user");
+                Yii::app()->user->setFlash('success', $note);
+                $this->redirect(array('index'));
+            }
+        }
+
+        echo $this->renderPartial('_liner_form', compact('liner_model'), true, true);
+        Yii::app()->end();
+    }
+
+    public function actionLiner_delete($id) {
+        try {
+            $model = $this->loadLinerModel($id);
+            $model->delete();
+            Myclass::addAuditTrail("Deleted Liner successfully.", "user");
+        } catch (CDbException $e) {
+            throw new CHttpException(404, $e->getMessage());
+        }
+
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (!isset($_GET['ajax'])) {
+            Yii::app()->user->setFlash('success', 'Liner Deleted Successfully!!!');
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        }
+    }
+
+    public function loadLinerModel($id) {
+        $model = Liner::model()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    /**
+     * Performs the AJAX validation.
+     * @param Company $model the model to be validated
+     */
+    protected function performLinerAjaxValidation($model) {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'liner-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+    }
+
+    public function actionGetlinercode() {
+        $max_id = 0;
+        $criteria = new CDbCriteria;
+        $criteria->select = 'MAX(liner_id) as MAX_ID';
+        $record = Liner::model()->find($criteria);
+
+        if ($record) {
+            $max_id = $record->MAX_ID;
+        }
+        $record->liner_id = $max_id + 1;
+
+        echo $record->liner_code;
+        Yii::app()->end();
+    }
+
 
 }

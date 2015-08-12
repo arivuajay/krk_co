@@ -5,10 +5,10 @@
  *
  * The followings are the available columns in table '{{purchase_order}}':
  * @property integer $po_id
- * @property string $po_number
  * @property string $po_date
  * @property integer $po_company_id
  * @property integer $po_vendor_id
+ * @property integer $po_liner_id
  * @property string $status
  * @property string $created_at
  * @property string $created_by
@@ -18,11 +18,17 @@
  * The followings are the available model relations:
  * @property Vendor $poVendor
  * @property Company $poCompany
+ * @property Liner $poLiner
  * @property PurchaseOrderDetails[] $purchaseOrderDetails
  */
 class PurchaseOrder extends CActiveRecord {
 
     const CODE_LENGTH = 6;
+
+    public function getPurchase_order_code($id = null) {
+        if ($this->po_id)
+            return "PO" . str_pad($this->po_id, 13, 0, STR_PAD_LEFT);
+    }
 
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
@@ -30,7 +36,7 @@ class PurchaseOrder extends CActiveRecord {
             'active' => array('condition' => "$alias.status = '1'"),
         );
     }
-    
+
     /**
      * @return string the associated database table name
      */
@@ -45,15 +51,13 @@ class PurchaseOrder extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('po_date', 'required'),
-            array('po_company_id, po_vendor_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
-            array('po_number', 'length', 'max' => 50),
+            array('po_date,po_company_id,po_vendor_id', 'required'),
+            array('po_company_id, po_vendor_id,po_liner_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
             array('status', 'length', 'max' => 1),
-            array('po_number', 'unique'),
             array('created_at, created_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('po_id, po_number, po_date, po_company_id, po_vendor_id, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('po_id,  po_date, po_company_id, po_vendor_id, po_liner_id,status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -66,6 +70,7 @@ class PurchaseOrder extends CActiveRecord {
         return array(
             'poVendor' => array(self::BELONGS_TO, 'Vendor', 'po_vendor_id'),
             'poCompany' => array(self::BELONGS_TO, 'Company', 'po_company_id'),
+            'poLiner' => array(self::BELONGS_TO, 'Liner', 'po_liner_id'),
             'purchaseOrderDetails' => array(self::HAS_MANY, 'PurchaseOrderDetails', 'po_id'),
         );
     }
@@ -76,10 +81,11 @@ class PurchaseOrder extends CActiveRecord {
     public function attributeLabels() {
         return array(
             'po_id' => 'Po',
-            'po_number' => 'PO Number',
+            'purchase_order_code' => 'PO Number',
             'po_date' => 'PO Date',
             'po_company_id' => 'Company',
             'po_vendor_id' => 'Vendor',
+            'po_liner_id' => 'Prefered Liner',
             'status' => 'Status',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
@@ -106,10 +112,10 @@ class PurchaseOrder extends CActiveRecord {
         $criteria = new CDbCriteria;
 
         $criteria->compare('po_id', $this->po_id);
-        $criteria->compare('po_number', $this->po_number, true);
         $criteria->compare('po_date', $this->po_date, true);
         $criteria->compare('po_company_id', $this->po_company_id);
         $criteria->compare('po_vendor_id', $this->po_vendor_id);
+        $criteria->compare('po_liner_id', $this->po_liner_id);
         $criteria->compare('status', $this->status, true);
         $criteria->compare('created_at', $this->created_at, true);
         $criteria->compare('created_by', $this->created_by, true);
@@ -142,7 +148,22 @@ class PurchaseOrder extends CActiveRecord {
         ));
     }
 
-    protected function beforeSave() {
-        return parent::beforeSave();
+    protected function beforeValidate() {
+        if ($this->isNewRecord) {
+            $this->created_at = new CDbExpression('NOW()');
+            $this->created_by = Yii::app()->user->id;
+        } else {
+            $this->modified_at = new CDbExpression('NOW()');
+            $this->modified_by = Yii::app()->user->id;
+        }
+        $this->po_date = date('Y-m-d', strtotime($this->po_date));
+
+        return parent::beforeValidate();
+    }
+
+    protected function afterFind() {
+        $this->po_date = date(PHP_USER_DATE_FORMAT, strtotime($this->po_date));
+
+        return parent::afterFind();
     }
 }

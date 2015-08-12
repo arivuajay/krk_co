@@ -13,108 +13,110 @@
  * The followings are the available model relations:
  * @property Liner[] $liners
  */
-class Country extends CActiveRecord
-{
-	/**
-	 * @return string the associated database table name
-	 */
-	public function tableName()
-	{
-		return '{{country}}';
-	}
+class Country extends CActiveRecord {
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('country_name, created_at', 'required'),
-			array('country_name', 'length', 'max'=>255),
-			array('status', 'length', 'max'=>1),
-			array('modified_at', 'safe'),
-			// The following rule is used by search().
-			// @todo Please remove those attributes that should not be searched.
-			array('country_id, country_name, status, created_at, modified_at', 'safe', 'on'=>'search'),
-		);
-	}
+    public function scopes() {
+        $alias = $this->getTableAlias(false, false);
+        return array(
+            'active' => array('condition' => "$alias.status = '1'"),
+        );
+    }
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-			'liners' => array(self::HAS_MANY, 'Liner', 'country_id'),
-		);
-	}
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName() {
+        return '{{country}}';
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels()
-	{
-		return array(
-			'country_id' => 'Country',
-			'country_name' => 'Country Name',
-			'status' => 'Status',
-			'created_at' => 'Created At',
-			'modified_at' => 'Modified At',
-		);
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules() {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('country_name, created_at', 'required'),
+            array('country_name', 'length', 'max' => 255),
+            array('status', 'length', 'max' => 1),
+            array('modified_at', 'safe'),
+            // The following rule is used by search().
+            // @todo Please remove those attributes that should not be searched.
+            array('country_id, country_name, status, created_at, modified_at', 'safe', 'on' => 'search'),
+        );
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 *
-	 * Typical usecase:
-	 * - Initialize the model fields with values from filter form.
-	 * - Execute this method to get CActiveDataProvider instance which will filter
-	 * models according to data in model fields.
-	 * - Pass data provider to CGridView, CListView or any similar widget.
-	 *
-	 * @return CActiveDataProvider the data provider that can return the models
-	 * based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// @todo Please modify the following code to remove attributes that should not be searched.
+    /**
+     * @return array relational rules.
+     */
+    public function relations() {
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array(
+            'liners' => array(self::HAS_MANY, 'Liner', 'country_id'),
+        );
+    }
 
-		$criteria=new CDbCriteria;
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels() {
+        return array(
+            'country_id' => 'Country',
+            'country_name' => 'Country Name',
+            'status' => 'Status',
+            'created_at' => 'Created At',
+            'modified_at' => 'Modified At',
+        );
+    }
 
-		$criteria->compare('country_id',$this->country_id);
-		$criteria->compare('country_name',$this->country_name,true);
-		$criteria->compare('status',$this->status,true);
-		$criteria->compare('created_at',$this->created_at,true);
-		$criteria->compare('modified_at',$this->modified_at,true);
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     *
+     * Typical usecase:
+     * - Initialize the model fields with values from filter form.
+     * - Execute this method to get CActiveDataProvider instance which will filter
+     * models according to data in model fields.
+     * - Pass data provider to CGridView, CListView or any similar widget.
+     *
+     * @return CActiveDataProvider the data provider that can return the models
+     * based on the search/filter conditions.
+     */
+    public function search() {
+        // @todo Please modify the following code to remove attributes that should not be searched.
 
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-                        'pagination' => array(
-                            'pageSize' => PAGE_SIZE,
-                        )
-		));
-	}
+        $criteria = new CDbCriteria;
 
-	/**
-	 * Returns the static model of the specified AR class.
-	 * Please note that you should have this exact method in all your CActiveRecord descendants!
-	 * @param string $className active record class name.
-	 * @return Country the static model class
-	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
-        
-        public function dataProvider() {
-            return new CActiveDataProvider($this, array(
-                'pagination' => array(
-                    'pageSize' => PAGE_SIZE,
-                )
-            ));
-        }
+        $criteria->compare('country_id', $this->country_id);
+        $criteria->compare('country_name', $this->country_name, true);
+        $criteria->compare('status', $this->status, true);
+        $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('modified_at', $this->modified_at, true);
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+            'pagination' => array(
+                'pageSize' => PAGE_SIZE,
+            )
+        ));
+    }
+
+    /**
+     * Returns the static model of the specified AR class.
+     * Please note that you should have this exact method in all your CActiveRecord descendants!
+     * @param string $className active record class name.
+     * @return Country the static model class
+     */
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
+
+    public function dataProvider() {
+        return new CActiveDataProvider($this, array(
+            'pagination' => array(
+                'pageSize' => PAGE_SIZE,
+            )
+        ));
+    }
+
 }
