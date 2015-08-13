@@ -23,17 +23,9 @@ class PurchaseorderController extends Controller {
      */
     public function accessRules() {
         return array(
-            array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array(''),
-                'users' => array('*'),
-            ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct'),
                 'users' => array('@'),
-            ),
-            array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array(''),
-                'users' => array('admin'),
             ),
             array('deny', // deny all users
                 'users' => array('*'),
@@ -47,18 +39,7 @@ class PurchaseorderController extends Controller {
      */
     public function actionView($id) {
         $model = $this->loadModel($id);
-
-        $export = isset($_REQUEST['export']) && $_REQUEST['export'] == 'PDF';
-        $compact = compact('model', 'export');
-        if ($export) {
-            $mPDF1 = Yii::app()->ePdf->mpdf();
-            $stylesheet = $this->pdfStyles();
-            $mPDF1->WriteHTML($stylesheet, 1);
-            $mPDF1->WriteHTML($this->renderPartial('view', $compact, true));
-            $mPDF1->Output("PurchaseOrder_view_{$id}.pdf", EYiiPdf::OUTPUT_TO_DOWNLOAD);
-        } else {
-            $this->render('view', $compact);
-        }
+        $this->render('view', compact('model'));
     }
 
     /**
@@ -195,18 +176,8 @@ class PurchaseorderController extends Controller {
      * Lists all models.
      */
     public function actionIndex() {
-        $search = false;
-
         $model = new PurchaseOrder();
-        $searchModel = new PurchaseOrder('search');
-        $searchModel->unsetAttributes();  // clear any default values
-        if (isset($_GET['PurchaseOrder'])) {
-            $search = true;
-            $searchModel->attributes = $_GET['PurchaseOrder'];
-            $searchModel->search();
-        }
-
-        $this->render('index', compact('searchModel', 'search', 'model'));
+        $this->render('index', compact('model'));
     }
 
     /**

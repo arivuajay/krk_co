@@ -23,8 +23,6 @@
  */
 class PurchaseOrder extends CActiveRecord {
 
-    const CODE_LENGTH = 6;
-
     public function getPurchase_order_code($id = null) {
         if ($this->po_id)
             return "PO" . str_pad($this->po_id, 13, 0, STR_PAD_LEFT);
@@ -166,4 +164,5 @@ class PurchaseOrder extends CActiveRecord {
 
         return parent::afterFind();
     }
+
 }

@@ -24,7 +24,7 @@ $auth_menu = array(
         'billoflad' => 'Bill of Lading',
         'perfinvoice' => 'Performa Invoice',
         'pytoorigin' => 'Pyto & Origin',
-        'invpackage' => 'Invoice & Packing List',
+        'invoice' => 'Invoice & Packing List',
         'permit' => 'Permit',
         'purchaseexpense' => 'Purchase Expense',
     ),
