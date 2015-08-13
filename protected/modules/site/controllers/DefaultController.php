@@ -24,12 +24,11 @@ class DefaultController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('login', 'request-password-reset', 'screens', 'index'),
-                'expression' => 'UserIdentity::checkAccess()',
+                'actions' => array('login', 'screens', 'index'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('logout', 'index', 'profile', 'error'),
+                'actions' => array('logout', 'index', 'profile', 'error', 'requestpasswordreset'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
