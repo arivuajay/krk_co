@@ -24,11 +24,12 @@ class DefaultController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('login', 'error', 'request-password-reset', 'screens','index'),
+                'actions' => array('login', 'request-password-reset', 'screens', 'index'),
+                'expression' => 'UserIdentity::checkAccess()',
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('logout', 'index', 'profile'),
+                'actions' => array('logout', 'index', 'profile', 'error'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -130,7 +131,8 @@ class DefaultController extends Controller {
                 Yii::app()->end();
             } else {
                 $name = Yii::app()->errorHandler->error['code'] . ' Error';
-                $this->render('error', compact('error', 'name'));
+                $message = Yii::app()->errorHandler->error['message'];
+                $this->render('error', compact('error', 'name', 'message'));
             }
         }
     }

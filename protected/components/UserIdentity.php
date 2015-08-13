@@ -65,7 +65,20 @@ class UserIdentity extends CUserIdentity {
         return;
     }
 
-    public static function checkAccess($name) {
-        return ($name == 'admin');
+    public static function checkAccess($id = NULL, $controller = NULL, $action = NULL) {
+        $return = true;
+        if ($id == NULL)
+            $id = Yii::app()->user->id;
+        if ($controller == NULL)
+            $controller = Yii::app()->controller->id;
+        if ($action == NULL)
+            $action = Yii::app()->controller->action->id;
+
+        $user = User::model()->find('user_id = :U', array(':U' => $id));
+        if (!empty($user)) {
+            $authorize = $user->authorize;
+            $return = isset($authorize->$controller) ? $authorize->$controller == 1 : false;
+        }
+        return $return;
     }
 }

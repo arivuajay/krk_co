@@ -2,6 +2,44 @@
 
 class MastersController extends Controller {
 
+    public function filters() {
+        return array(
+            'accessControl', // perform access control for CRUD operations
+                //'postOnly + delete', // we only allow deletion via POST request
+        );
+    }
+
+    public function accessRules() {
+        return array(
+            array('allow', // allow authenticated user to perform 'create' and 'update' actions
+                'actions' => array('index', 
+                    'company_save',
+                    'permit_save',
+                    'family_save',
+                    'product_save',
+                    'variety_save',
+                    'size_save',
+                    'grade_save',
+                    'vendor_save',
+                    'liner_save',
+                    'company_delete',
+                    'permit_delete',
+                    'family_delete',
+                    'product_delete',
+                    'variety_delete',
+                    'size_delete',
+                    'grade_delete',
+                    'vendor_delete',
+                    'liner_delete'
+                    ),
+                'users' => array('@'),
+            ),
+            array('deny', // deny all users
+                'users' => array('*'),
+            ),
+        );
+    }
+
     public function actionIndex($tab = null) {
         $comp_model = new Company();
         $perm_model = new Permit();
@@ -13,7 +51,7 @@ class MastersController extends Controller {
         $vendor_model = new Vendor();
         $liner_model = new Liner();
 
-        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model', 'vendor_model','liner_model'));
+        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model', 'vendor_model', 'liner_model'));
     }
 
     public function actionGetProductbyFamily($id, $pro_id = '') {
@@ -47,6 +85,7 @@ class MastersController extends Controller {
             echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
         }
     }
+
     public function actionGetGradeByProduct($id, $pro_id = '') {
         $products = ProductGrade::model()->active()->findAll("product_id = '$id'");
 
@@ -61,6 +100,7 @@ class MastersController extends Controller {
             echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
         }
     }
+
     public function actionGetSizeByProduct($id, $pro_id = '') {
         $products = ProductSize::model()->active()->findAll("product_id = '$id'");
 
@@ -643,7 +683,6 @@ class MastersController extends Controller {
         Yii::app()->end();
     }
 
-
     public function actionLiner_save($id = null) {
         $new = false;
         if (is_null($id)) {
@@ -718,6 +757,5 @@ class MastersController extends Controller {
         echo $record->liner_code;
         Yii::app()->end();
     }
-
 
 }

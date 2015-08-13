@@ -11,9 +11,12 @@ class SiteModule extends CWebModule {
         Yii::app()->user->loginUrl = array('/site/default/login');
 
         if (parent::beforeControllerAction($controller, $action)) {
+            if(UserIdentity::checkAccess())
+                return true;
+            else
+                throw new CHttpException(403, 'You are not authorized to perform this action.');
             // this method is called before any module controller action is performed
             // you may place customized code here
-            return true;
         } else
             return false;
     }

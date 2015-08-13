@@ -92,7 +92,7 @@ $form = $this->beginWidget('CActiveForm', array(
             <div class="box-body">
                 <div class="form-group">
                     <div class="col-sm-8">
-                        <?php $this->renderPartial('_tree');?>
+                        <?php $this->renderPartial('_tree', compact('model'));?>
                     </div>
                 </div>
             </div>
