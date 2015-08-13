@@ -33,6 +33,5 @@ return array(
     'SITENAME' => 'KRK',
     'INFOEMAIL' => 'info@krk.com',
     'SITESUPPORTEMAIL' => 'info@krk.com',
-
 );
 

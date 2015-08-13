@@ -24,11 +24,11 @@ class DefaultController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('login', 'screens', 'index'),
+                'actions' => array('login', 'screens', 'index', 'error', 'requestpasswordreset'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('logout', 'index', 'profile', 'error', 'requestpasswordreset'),
+                'actions' => array('logout', 'index', 'profile'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -68,13 +68,15 @@ class DefaultController extends Controller {
     }
 
     public function actionRequestPasswordReset() {
-        $model = new PasswordResetRequestForm();
-        if (isset($_POST['PasswordResetRequestForm'])) {
-            $model->attributes = $_POST['PasswordResetRequestForm'];
+        $this->layout = '//layouts/login';
+        $model = new Passwordresetform();
+        $this->performAjaxValidation($model);
+        if (isset($_POST['Passwordresetform'])) {
+            $model->attributes = $_POST['Passwordresetform'];
             if ($model->validate()):
                 if ($model->sendEmail()) {
                     Yii::app()->user->setFlash('success', 'Check your email for further instructions.');
-                    $this->goHome();
+                    $this->redirect(array('/site/default/login'));
                 } else {
                     Yii::app()->user->setFlash('error', 'Sorry, we are unable to reset password for email provided.');
                 }
@@ -142,4 +144,10 @@ class DefaultController extends Controller {
         }
     }
 
+    protected function performAjaxValidation($model) {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'request-pass') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+    }
 }
