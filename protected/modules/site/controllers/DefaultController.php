@@ -24,7 +24,7 @@ class DefaultController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('login', 'screens', 'index', 'error', 'requestpasswordreset'),
+                'actions' => array('login', 'screens', 'error', 'requestpasswordreset', 'resetpassword'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -89,17 +89,19 @@ class DefaultController extends Controller {
     }
 
     public function actionResetPassword($token) {
+        $this->layout = '//layouts/login';
         try {
             $model = new ResetPasswordForm($token);
         } catch (InvalidParamException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
+        $this->performAjaxValidation($model);
 
         if (isset($_POST['ResetPasswordForm'])) {
             $model->attributes = $_POST['ResetPasswordForm'];
             if ($model->validate() && $model->resetPassword()):
                 Yii::app()->user->setFlash('success', 'New password was saved.');
-                $this->goHome();
+                $this->redirect(array('/site/default/login'));
             endif;
         }
 
@@ -126,6 +128,10 @@ class DefaultController extends Controller {
     }
 
     public function actionError() {
+        if (Yii::app()->user->isGuest) {
+            $this->layout = '//layouts/login';
+        }
+
         if ($error = Yii::app()->errorHandler->error) {
             if (Yii::app()->request->isAjaxRequest) {
                 echo $error['message'];
@@ -150,4 +156,5 @@ class DefaultController extends Controller {
             Yii::app()->end();
         }
     }
+
 }

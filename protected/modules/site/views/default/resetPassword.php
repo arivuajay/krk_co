@@ -28,16 +28,20 @@ $this->breadcrumbs = array(
                 </div>
             <?php } ?>
         <?php endif ?>
-        <p>Please fill out the following fields to request reset password:</p>
+        <p>Please fill out the following fields to reset:</p>
         <div class="form-group">
-            <?php echo $form->labelEx($model, 'email_id') ?>
-            <?php echo $form->textField($model, 'email_id', array('autofocus', 'class' => 'form-control')); ?>
-            <?php echo $form->error($model, 'email_id') ?>
+            <?php echo $form->labelEx($model, 'password') ?>
+            <?php echo $form->passwordField($model, 'password', array('autofocus', 'class' => 'form-control')); ?>
+            <?php echo $form->error($model, 'password') ?>
+        </div>
+        <div class="form-group">
+            <?php echo $form->labelEx($model, 'confirm_password') ?>
+            <?php echo $form->passwordField($model, 'confirm_password', array('autofocus', 'class' => 'form-control')); ?>
+            <?php echo $form->error($model, 'confirm_password') ?>
         </div>
     </div>
     <div class="footer">
-        <?php echo CHtml::submitButton('Send', array('class' => 'btn bg-olive btn-block', 'name' => 'send')) ?>
-        <p><?php echo CHtml::link('Back to login', array('/site/default/login')) ?></p>
+        <?php echo CHtml::submitButton('Reset', array('class' => 'btn bg-olive btn-block', 'name' => 'reset')) ?>
     </div>
     <?php $this->endWidget(); ?>
 </div>
