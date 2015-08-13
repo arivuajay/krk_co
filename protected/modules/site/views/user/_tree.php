@@ -1,11 +1,11 @@
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('.tree li').each(function () {
+    $(document).ready(function() {
+        $('.tree li').each(function() {
             if ($(this).children('ul').length > 0) {
                 $(this).addClass('parent');
             }
         });
-        $('.tree li.parent > a').click(function ( ) {
+        $('.tree li.parent > a').click(function( ) {
             $(this).parent().toggleClass('active');
             $(this).parent().children('ul').slideToggle('fast');
         });
@@ -17,6 +17,28 @@ $auth_menu = array(
         'default' => 'Dashboard',
         'user' => 'Manage User',
         'masters' => 'Manage Masters',
+    ),
+    'Import Purchase' => array(
+        'processchart' => 'Process Chart',
+        'purchaseorder' => 'Purchase Order',
+        'billoflad' => 'Bill of Lading',
+        'perfinvoice' => 'Performa Invoice',
+        'pytoorigin' => 'Pyto & Origin',
+        'invpackage' => 'Invoice & Packing List',
+        'permit' => 'Permit',
+        'purchaseexpense' => 'Purchase Expense',
+    ),
+    'Purchase Reports' => array(
+        'balancesheet' => 'Balance Sheet',
+        'invreport' => 'Invoice Report',
+        'arrivalreport' => 'Arrival Report',
+        'expensereport' => 'Expense Report',
+        'containerreport' => 'Container Report',
+        'poreport' => 'PO Report',
+    ),
+    'Import Sales' => array(
+        'cusentry' => 'Customer Entry',
+        'saletable' => 'Sales On Table',
     ),
 );
 ?>
@@ -31,7 +53,8 @@ $auth_menu = array(
                             $authorize = $model->authorize;
                         ?>
                         <ul>
-                            <?php foreach ($c_menus as $controller => $c_menu) {
+                            <?php
+                            foreach ($c_menus as $controller => $c_menu) {
                                 $checked = isset($authorize->$controller) ? $authorize->$controller == 1 : false;
                                 ?>
                                 <li><?php echo CHtml::activeCheckBox($model, 'authorize', array('name' => "User[authorize][$controller]", 'checked' => $checked)); ?>&nbsp;&nbsp;&nbsp;<?php echo $c_menu ?></li>
