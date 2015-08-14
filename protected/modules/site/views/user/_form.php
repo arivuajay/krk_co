@@ -3,7 +3,7 @@ $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
-$cs->registerCssFile($themeUrl . '/css/datepicker/datepicker3.css');
+$cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
 $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
 $form = $this->beginWidget('CActiveForm', array(
     'id' => 'user-form',
@@ -62,7 +62,7 @@ $form = $this->beginWidget('CActiveForm', array(
                 <div class="form-group">
                     <?php echo $form->labelEx($model, 'dojoin', array('class' => 'col-sm-2 control-label')); ?>
                     <div class="col-sm-8">
-                        <?php echo $form->textField($model, 'dojoin', array('class' => 'form-control datepicker', 'value' => (isset($model->dojoin) && $model->dojoin != '0000-00-00') ? date(PHP_USER_DATE_FORMAT, strtotime($model->dojoin)) : '')); ?>
+                        <?php echo $form->textField($model, 'dojoin', array('class' => 'form-control datepicker', 'data-date-end-date'=>"0d", 'value' => (isset($model->dojoin) && $model->dojoin != '0000-00-00') ? date(PHP_USER_DATE_FORMAT, strtotime($model->dojoin)) : '')); ?>
                         <?php echo $form->error($model, 'dojoin'); ?>
                     </div>
                 </div>
@@ -70,7 +70,7 @@ $form = $this->beginWidget('CActiveForm', array(
                 <div class="form-group">
                     <?php echo $form->labelEx($model, 'dobirtrh', array('class' => 'col-sm-2 control-label')); ?>
                     <div class="col-sm-8">
-                        <?php echo $form->textField($model, 'dobirtrh', array('class' => 'form-control datepicker', 'value' => (isset($model->dobirtrh) && $model->dobirtrh != '0000-00-00') ? date(PHP_USER_DATE_FORMAT, strtotime($model->dobirtrh)) : '')); ?>
+                        <?php echo $form->textField($model, 'dobirtrh', array('class' => 'form-control datepicker', 'data-date-end-date'=>"0d", 'value' => (isset($model->dobirtrh) && $model->dobirtrh != '0000-00-00') ? date(PHP_USER_DATE_FORMAT, strtotime($model->dobirtrh)) : '')); ?>
                         <?php echo $form->error($model, 'dobirtrh'); ?>
                     </div>
                 </div>
@@ -112,7 +112,7 @@ $form = $this->beginWidget('CActiveForm', array(
 $user_js_format = JS_USER_DATE_FORMAT;
 $js = <<< EOD
     $(document).ready(function(){
-        $('.datepicker').datepicker({ format: '$user_js_format' });
+        $('.datepicker').datepicker({  minDate: "0",maxDate: "0", format: '$user_js_format' });
     });
 EOD;
 $cs->registerScript('_form', $js);

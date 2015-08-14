@@ -31,16 +31,16 @@ $gridColumns[] = array(
 );
 
 
-$this->widget('booster.widgets.TbGroupGridView', array(
+$this->widget('booster.widgets.TbExtendedGridView', array(
     'id' => 'master_family',
     'type' => 'striped bordered datatable',
     'dataProvider' => $product_model->dataProvider(),
     'responsiveTable' => true,
     'template' => '{items}{pager}',
     'columns' => $gridColumns,
-    'extraRowColumns' => array('proFamily.pro_family_name'),
-    'extraRowExpression' => '"<b style=\"font-size: 25px; color: #333;\">".$data->proFamily->pro_family_name."</b>"',
-    'extraRowHtmlOptions' => array('style' => 'padding:10px'),
-    )
+//    'extraRowColumns' => array('proFamily.pro_family_name'),
+//    'extraRowExpression' => '"<b style=\"font-size: 25px; color: #333;\">".$data->proFamily->pro_family_name."</b>"',
+//    'extraRowHtmlOptions' => array('style' => 'padding:10px'),
+        )
 );
 ?>

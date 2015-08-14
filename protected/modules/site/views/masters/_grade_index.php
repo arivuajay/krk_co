@@ -1,5 +1,7 @@
 <?php
 $gridColumns = array(
+    'product.proFamily.pro_family_name',
+    'product.pro_name',
     'grade_code',
     'grade_short_name',
     'grade_long_name',
@@ -23,28 +25,16 @@ $gridColumns = array(
 );
 
 
-$gridColumns[] = array(
-    'name' => 'product.pro_name',
-    'headerHtmlOptions' => array('style' => 'display:none'),
-    'htmlOptions' => array('style' => 'display:none')
-);
-$gridColumns[] = array(
-    'name' => 'product.proFamily.pro_family_name',
-    'headerHtmlOptions' => array('style' => 'display:none'),
-    'htmlOptions' => array('style' => 'display:none')
-);
-
-
-$this->widget('booster.widgets.TbGroupGridView', array(
+$this->widget('booster.widgets.TbExtendedGridView', array(
     'id' => 'master_family',
     'type' => 'striped bordered datatable',
     'dataProvider' => $grade_model->dataProvider(),
     'responsiveTable' => true,
     'template' => '{items}{pager}',
     'columns' => $gridColumns,
-    'extraRowColumns' => array('product.pro_name','product.proFamily.pro_family_name'),
-    'extraRowExpression' => '"<b style=\"font-size: 25px; color: #333;\">".$data->product->proFamily->pro_family_name."->".$data->product->pro_name."</b>"',
-    'extraRowHtmlOptions' => array('style' => 'padding:10px'),
+//    'extraRowColumns' => array('product.pro_name','product.proFamily.pro_family_name'),
+//    'extraRowExpression' => '"<b style=\"font-size: 25px; color: #333;\">".$data->product->proFamily->pro_family_name."->".$data->product->pro_name."</b>"',
+//    'extraRowHtmlOptions' => array('style' => 'padding:10px'),
     )
 );
 ?>

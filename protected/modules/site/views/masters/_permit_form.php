@@ -3,7 +3,7 @@ $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
-$cs->registerCssFile($themeUrl . '/css/datepicker/datepicker3.css');
+$cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
 $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
 
 if ($perm_model->isNewRecord) {
