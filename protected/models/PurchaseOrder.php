@@ -5,6 +5,7 @@
  *
  * The followings are the available columns in table '{{purchase_order}}':
  * @property integer $po_id
+ * @property string $purchase_order_code
  * @property string $po_date
  * @property integer $po_company_id
  * @property integer $po_vendor_id
@@ -22,11 +23,6 @@
  * @property PurchaseOrderDetails[] $purchaseOrderDetails
  */
 class PurchaseOrder extends CActiveRecord {
-
-    public function getPurchase_order_code($id = null) {
-        if ($this->po_id)
-            return "PO" . str_pad($this->po_id, 13, 0, STR_PAD_LEFT);
-    }
 
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
@@ -52,10 +48,10 @@ class PurchaseOrder extends CActiveRecord {
             array('po_date,po_company_id,po_vendor_id', 'required'),
             array('po_company_id, po_vendor_id,po_liner_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
             array('status', 'length', 'max' => 1),
-            array('created_at, created_by', 'safe'),
+            array('created_at, created_by,purchase_order_code', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('po_id,  po_date, po_company_id, po_vendor_id, po_liner_id,status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('po_id, purchase_order_code, po_date, po_company_id, po_vendor_id, po_liner_id,status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -110,6 +106,7 @@ class PurchaseOrder extends CActiveRecord {
         $criteria = new CDbCriteria;
 
         $criteria->compare('po_id', $this->po_id);
+        $criteria->compare('purchase_order_code', $this->purchase_order_code, true);
         $criteria->compare('po_date', $this->po_date, true);
         $criteria->compare('po_company_id', $this->po_company_id);
         $criteria->compare('po_vendor_id', $this->po_vendor_id);
@@ -157,6 +154,15 @@ class PurchaseOrder extends CActiveRecord {
         $this->po_date = date('Y-m-d', strtotime($this->po_date));
 
         return parent::beforeValidate();
+    }
+
+    protected function afterSave() {
+        parent::afterSave();
+        if ($this->isNewRecord) {
+            $this->purchase_order_code = "PO" . str_pad($this->po_id, 13, 0, STR_PAD_LEFT);
+            $this->isNewRecord = false;
+            $this->saveAttributes(array('purchase_order_code'));
+        }
     }
 
     protected function afterFind() {

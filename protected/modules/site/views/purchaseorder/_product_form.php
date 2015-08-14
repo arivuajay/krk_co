@@ -42,7 +42,7 @@ $cs_pos_end = CClientScript::POS_END;
                         echo $form->dropDownList($detail_model, 'po_det_prod_fmly_id', $families, array('class' => 'form-control', 'prompt' => 'Select Family',
                             'ajax' => array(
                                 'type' => 'GET',
-                                'url' => Yii::app()->createUrl('/site/masters/getProductbyFamily'),
+                                'url' => Yii::app()->createUrl('/site/default/getProductbyFamily'),
                                 'update' => '#PurchaseOrderDetails_po_det_product_id',
                                 'data' => array('id' => 'js:this.value'))));
                         ?>
@@ -57,7 +57,7 @@ $cs_pos_end = CClientScript::POS_END;
                         echo $form->dropDownList($detail_model, 'po_det_product_id', $products, array('class' => 'form-control', 'prompt' => 'Select Products',
                             'ajax' => array(
                                 'type' => 'GET',
-                                'url' => Yii::app()->createUrl('/site/masters/getVarietybyProductId'),
+                                'url' => Yii::app()->createUrl('/site/default/getVarietybyProductId'),
                                 'update' => '#PurchaseOrderDetails_po_det_variety_id',
                                 'data' => array('id' => 'js:this.value'))));
                         ?>
@@ -143,8 +143,8 @@ $cs_pos_end = CClientScript::POS_END;
 </div>
 
 <?php
-$grade_url = Yii::app()->createUrl('/site/masters/getGradeByProduct');
-$size_url = Yii::app()->createUrl('/site/masters/getSizeByProduct');
+$grade_url = Yii::app()->createUrl('/site/default/getGradeByProduct');
+$size_url = Yii::app()->createUrl('/site/default/getSizeByProduct');
 $po_add_product = Yii::app()->createUrl('/site/purchaseorder/addProduct');
 $po_products_url = Yii::app()->createUrl('/site/purchaseorder/poAddedProducts');
 

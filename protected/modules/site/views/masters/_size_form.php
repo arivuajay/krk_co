@@ -24,7 +24,7 @@ $family = CHtml::listData(ProductFamily::model()->active()->findAll(), 'pro_fami
     echo CHtml::dropDownList('size_family_id', $size_family, $family, array('class' => 'form-control', 'empty' => 'Select Family',
         'ajax' => array(
             'type' => 'GET',
-            'url' => Yii::app()->createUrl('/site/masters/getProductbyFamily'), //or $this->createUrl('loadcities') if '$this' extends CController
+            'url' => Yii::app()->createUrl('/site/default/getProductbyFamily'), //or $this->createUrl('loadcities') if '$this' extends CController
             'update' => '#ProductSize_product_id',
             'data' => array('id' => 'js:this.value', 'pro_id' => $size_model->product_id))));
     ?>
@@ -36,7 +36,7 @@ $family = CHtml::listData(ProductFamily::model()->active()->findAll(), 'pro_fami
 <div class="form-group">
     <?php echo $form->textField($size_model, 'size_code', array('class' => 'form-control', 'readonly' => 'readonly')); ?>
     <?php if ($size_model->isNewRecord) { ?>
-        <?php echo CHtml::ajaxButton('Get Size Code', array('/site/masters/getsizecode'), array('success' => 'js:function(data){ $("form#product-size-form input#ProductSize_size_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
+        <?php echo CHtml::ajaxButton('Get Size Code', array('/site/default/getsizecode'), array('success' => 'js:function(data){ $("form#product-size-form input#ProductSize_size_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
     <?php } ?>
     <?php echo $form->error($size_model, 'size_code'); ?>
 </div>

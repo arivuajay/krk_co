@@ -41,8 +41,8 @@ $cs_pos_end = CClientScript::POS_END;
                         echo $form->dropDownList($detail_model, 'inv_det_prod_fmly_id', $families, array('class' => 'form-control', 'prompt' => 'Select Family',
                             'ajax' => array(
                                 'type' => 'GET',
-                                'url' => Yii::app()->createUrl('/site/masters/getProductbyFamily'),
-                                'update' => '#PurchaseOrderDetails_inv_det_product_id',
+                                'url' => Yii::app()->createUrl('/site/default/getProductbyFamily'),
+                                'update' => '#InvoiceItems_inv_det_product_id',
                                 'data' => array('id' => 'js:this.value'))));
                         ?>
                         <?php echo $form->error($detail_model, 'inv_det_prod_fmly_id'); ?>
@@ -56,8 +56,8 @@ $cs_pos_end = CClientScript::POS_END;
                         echo $form->dropDownList($detail_model, 'inv_det_product_id', $products, array('class' => 'form-control', 'prompt' => 'Select Products',
                             'ajax' => array(
                                 'type' => 'GET',
-                                'url' => Yii::app()->createUrl('/site/masters/getVarietybyProductId'),
-                                'update' => '#PurchaseOrderDetails_inv_det_variety_id',
+                                'url' => Yii::app()->createUrl('/site/default/getVarietybyProductId'),
+                                'update' => '#InvoiceItems_inv_det_variety_id',
                                 'data' => array('id' => 'js:this.value'))));
                         ?>
                         <?php echo $form->error($detail_model, 'inv_det_product_id'); ?>
@@ -75,7 +75,7 @@ $cs_pos_end = CClientScript::POS_END;
                 <div class="form-group">
                     <?php echo $form->labelEx($detail_model, 'inv_det_grade', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
-                        <?php echo $form->dropDownList($detail_model, 'inv_det_grade', $grade, array('class' => 'form-control', 'multiple' => 'multiple', 'size' => 4)); ?>
+                        <?php echo $form->dropDownList($detail_model, 'inv_det_grade', $grade, array('class' => 'form-control', 'size' => 4)); ?>
                         <?php echo $form->error($detail_model, 'inv_det_grade'); ?>
                     </div>
                 </div>
@@ -83,33 +83,21 @@ $cs_pos_end = CClientScript::POS_END;
                 <div class="form-group">
                     <?php echo $form->labelEx($detail_model, 'inv_det_size', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
-                        <?php echo $form->dropDownList($detail_model, 'inv_det_size', $size, array('class' => 'form-control', 'multiple' => 'multiple', 'size' => 4)); ?>
+                        <?php echo $form->dropDownList($detail_model, 'inv_det_size', $size, array('class' => 'form-control', 'size' => 4)); ?>
                         <?php echo $form->error($detail_model, 'inv_det_size'); ?>
                     </div>
                 </div>
 
             </div>
             <div class="col-lg-6 col-xs-6">
-                <div class="form-group">
-                    <?php echo $form->labelEx($detail_model, 'inv_det_net_weight', array('class' => 'col-sm-3 control-label')); ?>
-                    <div class="col-sm-6">
-                        <?php echo $form->textField($detail_model, 'inv_det_net_weight', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10)); ?>
-                        <?php echo $form->error($detail_model, 'inv_det_net_weight'); ?>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <?php echo $form->labelEx($detail_model, 'inv_det_container_qty', array('class' => 'col-sm-3 control-label')); ?>
-                    <div class="col-sm-6">
-                        <?php echo $form->textField($detail_model, 'inv_det_container_qty', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10)); ?>
-                        <?php echo $form->error($detail_model, 'inv_det_container_qty'); ?>
-                    </div>
-                </div>
 
                 <div class="form-group">
                     <?php echo $form->labelEx($detail_model, 'inv_det_cotton_qty', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
-                        <?php echo $form->textField($detail_model, 'inv_det_cotton_qty', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10)); ?>
+                        <div class="input-group">
+                            <?php echo $form->textField($detail_model, 'inv_det_cotton_qty', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10)); ?>
+                            <div class="input-group-addon">.00</div>
+                        </div>
                         <?php echo $form->error($detail_model, 'inv_det_cotton_qty'); ?>
                     </div>
                 </div>
@@ -117,7 +105,7 @@ $cs_pos_end = CClientScript::POS_END;
                 <div class="form-group">
                     <?php echo $form->labelEx($detail_model, 'inv_det_currency', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
-                        <?php echo $form->dropDownList($detail_model, 'inv_det_currency', array('INR (INR)' => 'INR (INR)', 'USD ($)' => 'USD ($)'), array('class' => 'form-control','onchange'=>'js:$("#fmt_currency").html(this.value)')); ?>
+                        <?php echo $form->dropDownList($detail_model, 'inv_det_currency', array('INR (INR)' => 'INR (INR)', 'USD ($)' => 'USD ($)'), array('class' => 'form-control', 'onchange' => 'js:$("#fmt_currency").html(this.value)')); ?>
                         <?php echo $form->error($detail_model, 'inv_det_currency'); ?>
                     </div>
                 </div>
@@ -132,6 +120,50 @@ $cs_pos_end = CClientScript::POS_END;
                         <?php echo $form->error($detail_model, 'inv_det_price'); ?>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <?php echo $form->labelEx($detail_model, 'inv_det_net_weight', array('class' => 'col-sm-3 control-label')); ?>
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            <?php echo $form->textField($detail_model, 'inv_det_net_weight', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10)); ?>
+                            <div class="input-group-addon">Kg</div>
+                        </div>
+                        <?php echo $form->error($detail_model, 'inv_det_net_weight'); ?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo $form->labelEx($detail_model, 'inv_det_gross_weight', array('class' => 'col-sm-3 control-label')); ?>
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            <?php echo $form->textField($detail_model, 'inv_det_gross_weight', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10)); ?>
+                            <div class="input-group-addon">Kg</div>
+                        </div>
+                        <?php echo $form->error($detail_model, 'inv_det_gross_weight'); ?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo $form->labelEx($detail_model, 'inv_det_ctnr_no', array('class' => 'col-sm-3 control-label')); ?>
+                    <div class="col-sm-6">
+                        <?php echo $form->textField($detail_model, 'inv_det_ctnr_no', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10)); ?>
+                        <?php echo $form->error($detail_model, 'inv_det_ctnr_no'); ?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <?php echo $form->labelEx($detail_model, 'is_delivered', array('class' => 'col-sm-3 control-label')); ?>
+                    <div class="col-sm-6">
+                        <?php echo $form->radioButtonList($detail_model, 'is_delivered', array('Y' => 'Yes', 'N' => 'no'), array('class' => 'form-control','labelOptions'=>array('style'=>'margin-right: 10px;'), 'separator'=>'')); ?>
+                        <?php echo $form->error($detail_model, 'is_delivered'); ?>
+                    </div>
+                </div>
+
+
+
+
+
+
                 <div class="form-group">
                     <?php echo CHtml::submitButton('ADD PRODUCT', array('class' => $detail_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
                 </div>
@@ -142,10 +174,10 @@ $cs_pos_end = CClientScript::POS_END;
 </div>
 
 <?php
-$grade_url = Yii::app()->createUrl('/site/masters/getGradeByProduct');
-$size_url = Yii::app()->createUrl('/site/masters/getSizeByProduct');
+$grade_url = Yii::app()->createUrl('/site/default/getGradeByProduct');
+$size_url = Yii::app()->createUrl('/site/default/getSizeByProduct');
 $inv_add_product = Yii::app()->createUrl('/site/invoice/addProduct');
-$inv_products_url = Yii::app()->createUrl('/site/invoice/poAddedProducts');
+$inv_products_url = Yii::app()->createUrl('/site/invoice/invAddedProducts');
 
 //For create only
 if (empty($detail_model->inv_det_prod_fmly_id)) {
@@ -158,17 +190,17 @@ EOD;
 
 $js .= <<< EOD
     $(document).ready(function(){
-        $('body').on('change','#PurchaseOrderDetails_inv_det_product_id',function(){
+        $('body').on('change','#InvoiceItems_inv_det_product_id',function(){
             $.ajax({
                 'type':'GET','url':'$grade_url','data':{'id':this.value},'cache':false,
                 'success':function(html){
-                    $("#PurchaseOrderDetails_inv_det_grade").html(html);
+                    $("#InvoiceItems_inv_det_grade").html(html);
                 }
             });
             $.ajax({
                 'type':'GET','url':'$size_url','data':{'id':this.value},'cache':false,
                 'success':function(html){
-                    $("#PurchaseOrderDetails_inv_det_size").html(html);
+                    $("#InvoiceItems_inv_det_size").html(html);
                 }
             });
             return false;

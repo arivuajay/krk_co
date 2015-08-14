@@ -22,7 +22,7 @@ $variety_family = '';
     <?php echo CHtml::dropDownList('variety_family_id',$variety_family, $family, array('class' => 'form-control','empty'=>'Select Family',
         'ajax' => array(
             'type'=>'GET',
-            'url'=>Yii::app()->createUrl('/site/masters/getProductbyFamily'), //or $this->createUrl('loadcities') if '$this' extends CController
+            'url'=>Yii::app()->createUrl('/site/default/getProductbyFamily'), //or $this->createUrl('loadcities') if '$this' extends CController
             'update'=>'#ProductVariety_product_id',
             'data'=>array('id'=>'js:this.value'))));
     ?>
@@ -34,7 +34,7 @@ $variety_family = '';
 <div class="form-group">
     <?php echo $form->textField($variety_model, 'variety_code', array('class' => 'form-control', 'readonly' => 'readonly')); ?>
     <?php if ($variety_model->isNewRecord) { ?>
-        <?php echo CHtml::ajaxButton('Get Variety Code', array('/site/masters/getvarietycode'), array('success' => 'js:function(data){ $("form#product-variety-form input#ProductVariety_variety_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
+        <?php echo CHtml::ajaxButton('Get Variety Code', array('/site/default/getvarietycode'), array('success' => 'js:function(data){ $("form#product-variety-form input#ProductVariety_variety_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
     <?php } ?>
     <?php echo $form->error($variety_model, 'variety_code'); ?>
 </div>

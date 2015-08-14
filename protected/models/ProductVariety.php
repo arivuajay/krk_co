@@ -6,6 +6,7 @@
  * The followings are the available columns in table '{{product_variety}}':
  * @property integer $variety_id
  * @property integer $product_id
+ * @property string $variety_code
  * @property string $variety_name
  * @property string $status
  * @property integer $created_by
@@ -17,17 +18,9 @@
  * @property Product $product
  */
 class ProductVariety extends CActiveRecord {
-
-    public $MAX_ID;
-
     /**
      * @return string the associated database table name
      */
-    public function getVariety_code($id = null) {
-        if ($this->variety_id)
-            return "V" . str_pad($this->variety_id, 3, 0, STR_PAD_LEFT);
-    }
-
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
@@ -53,10 +46,10 @@ class ProductVariety extends CActiveRecord {
             array('product_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('variety_name', 'length', 'max' => 255),
             array('status', 'length', 'max' => 1),
-            array('modified_at', 'safe'),
+            array('modified_at,variety_code', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('variety_id, product_id, variety_name, status, created_by, created_at, modified_by, modified_at', 'safe', 'on' => 'search'),
+            array('variety_id,variety_code, product_id, variety_name, status, created_by, created_at, modified_by, modified_at', 'safe', 'on' => 'search'),
         );
     }
 
@@ -78,6 +71,7 @@ class ProductVariety extends CActiveRecord {
         return array(
             'variety_id' => 'Variety',
             'product_id' => 'Product',
+            'variety_code' => 'Variety Code',
             'variety_name' => 'Variety Name',
             'status' => 'Status',
             'created_by' => 'Created By',
@@ -106,6 +100,7 @@ class ProductVariety extends CActiveRecord {
 
         $criteria->compare('variety_id', $this->variety_id);
         $criteria->compare('product_id', $this->product_id);
+        $criteria->compare('variety_code', $this->variety_code, true);
         $criteria->compare('variety_name', $this->variety_name, true);
         $criteria->compare('status', $this->status, true);
         $criteria->compare('created_by', $this->created_by);
@@ -151,4 +146,16 @@ class ProductVariety extends CActiveRecord {
         return parent::beforeValidate();
     }
 
+    public function checkVariety_code($id) {
+        return "V" . str_pad($id, 3, 0, STR_PAD_LEFT);
+    }
+
+    protected function afterSave() {
+        parent::afterSave();
+        if ($this->isNewRecord) {
+            $this->variety_code = $this->checkVariety_code($this->variety_id);
+            $this->isNewRecord = false;
+            $this->saveAttributes(array('variety_code'));
+        }
+    }
 }

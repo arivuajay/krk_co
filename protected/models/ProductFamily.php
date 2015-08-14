@@ -14,16 +14,9 @@
  */
 class ProductFamily extends CActiveRecord {
 
-    public $MAX_ID;
-
     /**
      * @return string the associated database table name
      */
-    public function getPro_family_code($id = null) {
-        if ($this->pro_family_id)
-            return "PF" . str_pad($this->pro_family_id, 4, 0, STR_PAD_LEFT);
-    }
-
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
@@ -46,10 +39,10 @@ class ProductFamily extends CActiveRecord {
             array('created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('pro_family_name', 'length', 'max' => 255),
             array('status', 'length', 'max' => 1),
-            array('modified_at', 'safe'),
+            array('modified_at,pro_family_code', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('pro_family_id, pro_family_name, status, created_by, created_at, modified_by, modified_at', 'safe', 'on' => 'search'),
+            array('pro_family_id,pro_family_code, pro_family_name, status, created_by, created_at, modified_by, modified_at', 'safe', 'on' => 'search'),
         );
     }
 
@@ -69,6 +62,7 @@ class ProductFamily extends CActiveRecord {
     public function attributeLabels() {
         return array(
             'pro_family_id' => 'Pro Family',
+            'pro_family_code' => 'Pro Family Code',
             'pro_family_name' => 'Pro Family Name',
             'status' => 'Status',
             'created_by' => 'Created By',
@@ -96,6 +90,7 @@ class ProductFamily extends CActiveRecord {
         $criteria = new CDbCriteria;
 
         $criteria->compare('pro_family_id', $this->pro_family_id);
+        $criteria->compare('pro_family_code', $this->pro_family_code, true);
         $criteria->compare('pro_family_name', $this->pro_family_name, true);
         $criteria->compare('status', $this->status, true);
         $criteria->compare('created_by', $this->created_by);
@@ -150,4 +145,18 @@ class ProductFamily extends CActiveRecord {
             return $lists[$key];
         return $lists;
     }
+
+    public function checkFamily_code($id) {
+        return "PF" . str_pad($id, 4, 0, STR_PAD_LEFT);
+    }
+
+    protected function afterSave() {
+        parent::afterSave();
+        if ($this->isNewRecord) {
+            $this->pro_family_code = $this->checkFamily_code($this->pro_family_id);
+            $this->isNewRecord = false;
+            $this->saveAttributes(array('pro_family_code'));
+        }
+    }
+
 }

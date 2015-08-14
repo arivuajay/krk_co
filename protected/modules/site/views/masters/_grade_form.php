@@ -23,7 +23,7 @@ $family = CHtml::listData(ProductFamily::model()->active()->findAll(),'pro_famil
     <?php echo CHtml::dropDownList('grade_family_id',$grade_family, $family, array('class' => 'form-control','prompt'=>'Select Family',
         'ajax' => array(
             'type'=>'GET',
-            'url'=>Yii::app()->createUrl('/site/masters/getProductbyFamily'),
+            'url'=>Yii::app()->createUrl('/site/default/getProductbyFamily'),
             'update'=>'#ProductGrade_product_id',
             'data'=>array('id'=>'js:this.value','pro_id'=>$grade_model->product_id))));
     ?>
@@ -35,7 +35,7 @@ $family = CHtml::listData(ProductFamily::model()->active()->findAll(),'pro_famil
 <div class="form-group">
     <?php echo $form->textField($grade_model, 'grade_code', array('class' => 'form-control', 'readonly' => 'readonly')); ?>
     <?php if ($grade_model->isNewRecord) { ?>
-        <?php echo CHtml::ajaxButton('Get Grade Code', array('/site/masters/getgradecode'), array('success' => 'js:function(data){ $("form#product-grade-form input#ProductGrade_grade_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
+        <?php echo CHtml::ajaxButton('Get Grade Code', array('/site/default/getgradecode'), array('success' => 'js:function(data){ $("form#product-grade-form input#ProductGrade_grade_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
     <?php } ?>
     <?php echo $form->error($grade_model, 'grade_code'); ?>
 </div>

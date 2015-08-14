@@ -17,7 +17,7 @@ $form = $this->beginWidget('CActiveForm', array(
 <div class="form-group">
     <?php echo $form->textField($pro_family_model, 'pro_family_code', array('class' => 'form-control', 'readonly' => 'readonly')); ?>
     <?php if ($pro_family_model->isNewRecord) { ?>
-        <?php echo CHtml::ajaxButton('Get Product Family Code', array('/site/masters/getfamilycode'), array('success' => 'js:function(data){ $("form#family-form input#ProductFamily_pro_family_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
+        <?php echo CHtml::ajaxButton('Get Product Family Code', array('/site/default/getfamilycode'), array('success' => 'js:function(data){ $("form#family-form input#ProductFamily_pro_family_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
     <?php } ?>
     <?php echo $form->error($pro_family_model, 'pro_family_code'); ?>
 </div>

@@ -6,6 +6,7 @@
  * The followings are the available columns in table '{{product}}':
  * @property integer $product_id
  * @property integer $pro_family_id
+ * @property string $product_code
  * @property string $pro_name
  * @property string $status
  * @property integer $created_by
@@ -18,16 +19,9 @@
  */
 class Product extends CActiveRecord {
 
-    public $MAX_ID;
-
     /**
      * @return string the associated database table name
      */
-    public function getProduct_code($id = null) {
-        if ($this->product_id)
-            return "P" . str_pad($this->product_id, 3, 0, STR_PAD_LEFT);
-    }
-
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
@@ -53,10 +47,10 @@ class Product extends CActiveRecord {
             array('pro_family_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('pro_name', 'length', 'max' => 255),
             array('status', 'length', 'max' => 1),
-            array('modified_at', 'safe'),
+            array('modified_at,product_code', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('product_id, pro_family_id, pro_name, status, created_by, created_at, modified_by, modified_at', 'safe', 'on' => 'search'),
+            array('product_id, product_code, pro_family_id, pro_name, status, created_by, created_at, modified_by, modified_at', 'safe', 'on' => 'search'),
         );
     }
 
@@ -77,6 +71,7 @@ class Product extends CActiveRecord {
     public function attributeLabels() {
         return array(
             'product_id' => 'Product',
+            'product_code' => 'Product Code',
             'pro_family_id' => 'Pro Family',
             'pro_name' => 'Pro Name',
             'status' => 'Status',
@@ -105,6 +100,7 @@ class Product extends CActiveRecord {
         $criteria = new CDbCriteria;
 
         $criteria->compare('product_id', $this->product_id);
+        $criteria->compare('product_code', $this->product_code, true);
         $criteria->compare('pro_family_id', $this->pro_family_id);
         $criteria->compare('pro_name', $this->pro_name, true);
         $criteria->compare('status', $this->status, true);
@@ -160,4 +156,18 @@ class Product extends CActiveRecord {
             return $lists[$key];
         return $lists;
     }
+
+    public function checkProduct_code($id) {
+        return "P" . str_pad($id, 3, 0, STR_PAD_LEFT);
+    }
+
+    protected function afterSave() {
+        parent::afterSave();
+        if ($this->isNewRecord) {
+            $this->product_code = $this->checkProduct_code($this->product_id);
+            $this->isNewRecord = false;
+            $this->saveAttributes(array('product_code'));
+        }
+    }
+
 }

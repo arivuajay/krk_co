@@ -12,7 +12,7 @@ class MastersController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 
+                'actions' => array('index',
                     'company_save',
                     'permit_save',
                     'family_save',
@@ -52,68 +52,6 @@ class MastersController extends Controller {
         $liner_model = new Liner();
 
         $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model', 'vendor_model', 'liner_model'));
-    }
-
-    public function actionGetProductbyFamily($id, $pro_id = '') {
-        $products = Product::model()->active()->findAll("pro_family_id = '$id'");
-
-        $data = CHtml::listData($products, 'product_id', 'pro_name');
-
-        echo "<option value=''>Select Products</option>";
-        foreach ($data as $value => $name) {
-            $htmlOpt = array();
-            $htmlOpt['value'] = $value;
-            if (!empty($pro_id) && $pro_id == $value)
-                $htmlOpt['selected'] = 'selected';
-
-            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
-        }
-    }
-
-    public function actionGetVarietybyProductId($id, $pro_id = '') {
-        $products = ProductVariety::model()->active()->findAll("product_id = '$id'");
-
-        $data = CHtml::listData($products, 'variety_id', 'variety_name');
-
-        echo "<option value=''>Select Variety</option>";
-        foreach ($data as $value => $name) {
-            $htmlOpt = array();
-            $htmlOpt['value'] = $value;
-            if (!empty($pro_id) && $pro_id == $value)
-                $htmlOpt['selected'] = 'selected';
-
-            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
-        }
-    }
-
-    public function actionGetGradeByProduct($id, $pro_id = '') {
-        $products = ProductGrade::model()->active()->findAll("product_id = '$id'");
-
-        $data = CHtml::listData($products, 'grade_id', 'grade_short_name');
-
-        foreach ($data as $value => $name) {
-            $htmlOpt = array();
-            $htmlOpt['value'] = $value;
-            if (!empty($pro_id) && $pro_id == $value)
-                $htmlOpt['selected'] = 'selected';
-
-            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
-        }
-    }
-
-    public function actionGetSizeByProduct($id, $pro_id = '') {
-        $products = ProductSize::model()->active()->findAll("product_id = '$id'");
-
-        $data = CHtml::listData($products, 'size_id', 'size_name');
-
-        foreach ($data as $value => $name) {
-            $htmlOpt = array();
-            $htmlOpt['value'] = $value;
-            if (!empty($pro_id) && $pro_id == $value)
-                $htmlOpt['selected'] = 'selected';
-
-            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
-        }
     }
 
     public function actionCompany_save($id = null) {
@@ -295,20 +233,7 @@ class MastersController extends Controller {
         }
     }
 
-    public function actionGetfamilycode() {
-        $max_id = 0;
-        $criteria = new CDbCriteria;
-        $criteria->select = 'MAX(pro_family_id) as MAX_ID';
-        $record = ProductFamily::model()->find($criteria);
 
-        if ($record) {
-            $max_id = $record->MAX_ID;
-        }
-        $record->pro_family_id = $max_id + 1;
-
-        echo $record->pro_family_code;
-        Yii::app()->end();
-    }
 
     public function actionProduct_save($id = null) {
         $new = false;
@@ -370,20 +295,7 @@ class MastersController extends Controller {
         }
     }
 
-    public function actionGetproductcode() {
-        $max_id = 0;
-        $criteria = new CDbCriteria;
-        $criteria->select = 'MAX(product_id) as MAX_ID';
-        $record = Product::model()->find($criteria);
 
-        if ($record) {
-            $max_id = $record->MAX_ID;
-        }
-        $record->product_id = $max_id + 1;
-
-        echo $record->product_code;
-        Yii::app()->end();
-    }
 
     public function actionVariety_save($id = null) {
         $new = false;
@@ -443,21 +355,6 @@ class MastersController extends Controller {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
-    }
-
-    public function actionGetvarietycode() {
-        $max_id = 0;
-        $criteria = new CDbCriteria;
-        $criteria->select = 'MAX(variety_id) as MAX_ID';
-        $record = ProductVariety::model()->find($criteria);
-
-        if ($record) {
-            $max_id = $record->MAX_ID;
-        }
-        $record->variety_id = $max_id + 1;
-
-        echo $record->variety_code;
-        Yii::app()->end();
     }
 
     public function actionSize_save($id = null) {
@@ -520,20 +417,7 @@ class MastersController extends Controller {
         }
     }
 
-    public function actionGetsizecode() {
-        $max_id = 0;
-        $criteria = new CDbCriteria;
-        $criteria->select = 'MAX(size_id) as MAX_ID';
-        $record = ProductSize::model()->find($criteria);
 
-        if ($record) {
-            $max_id = $record->MAX_ID;
-        }
-        $record->size_id = $max_id + 1;
-
-        echo $record->size_code;
-        Yii::app()->end();
-    }
 
     public function actionGrade_save($id = null) {
         $new = false;
@@ -594,20 +478,7 @@ class MastersController extends Controller {
         }
     }
 
-    public function actionGetgradecode() {
-        $max_id = 0;
-        $criteria = new CDbCriteria;
-        $criteria->select = 'MAX(grade_id) as MAX_ID';
-        $record = ProductGrade::model()->find($criteria);
 
-        if ($record) {
-            $max_id = $record->MAX_ID;
-        }
-        $record->grade_id = $max_id + 1;
-
-        echo $record->grade_code;
-        Yii::app()->end();
-    }
 
 //    ========================================================================
 
@@ -668,20 +539,7 @@ class MastersController extends Controller {
         }
     }
 
-    public function actionGetvendorcode() {
-        $max_id = 0;
-        $criteria = new CDbCriteria;
-        $criteria->select = 'MAX(vendor_id) as MAX_ID';
-        $record = Vendor::model()->find($criteria);
 
-        if ($record) {
-            $max_id = $record->MAX_ID;
-        }
-        $record->vendor_id = $max_id + 1;
-
-        echo $record->vendor_code;
-        Yii::app()->end();
-    }
 
     public function actionLiner_save($id = null) {
         $new = false;
@@ -743,19 +601,6 @@ class MastersController extends Controller {
         }
     }
 
-    public function actionGetlinercode() {
-        $max_id = 0;
-        $criteria = new CDbCriteria;
-        $criteria->select = 'MAX(liner_id) as MAX_ID';
-        $record = Liner::model()->find($criteria);
 
-        if ($record) {
-            $max_id = $record->MAX_ID;
-        }
-        $record->liner_id = $max_id + 1;
-
-        echo $record->liner_code;
-        Yii::app()->end();
-    }
 
 }

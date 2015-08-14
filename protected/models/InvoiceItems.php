@@ -9,8 +9,8 @@
  * @property integer $inv_det_prod_fmly_id
  * @property integer $inv_det_product_id
  * @property integer $inv_det_variety_id
- * @property string $inv_det_grade
- * @property string $inv_det_size
+ * @property integer $inv_det_grade
+ * @property integer $inv_det_size
  * @property string $inv_det_cotton_qty
  * @property string $inv_det_currency
  * @property string $inv_det_price
@@ -26,6 +26,8 @@
  *
  * The followings are the available model relations:
  * @property Invoice $inv
+ * @property ProductSize $invDetSize
+ * @property ProductGrade $invDetGrade
  * @property Product $invDetProduct
  * @property ProductVariety $invDetVariety
  * @property ProductFamily $invDetProdFmly
@@ -48,7 +50,7 @@ class InvoiceItems extends CActiveRecord {
         return array(
             array('inv_id, inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id, inv_det_grade, inv_det_size', 'required', 'on' => 'add_product,save'),
             array('inv_id', 'required', 'on' => 'save'),
-            array('inv_id, inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
+            array('inv_id, inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id,inv_det_grade, inv_det_size, modified_at, modified_by', 'numerical', 'integerOnly' => true),
             array('inv_det_grade, inv_det_size', 'length', 'max' => 500),
             array('inv_det_cotton_qty, inv_det_price, inv_det_net_weight, inv_det_gross_weight', 'length', 'max' => 10),
             array('inv_det_currency, inv_det_ctnr_no', 'length', 'max' => 100),
@@ -71,6 +73,8 @@ class InvoiceItems extends CActiveRecord {
             'invDetProduct' => array(self::BELONGS_TO, 'Product', 'inv_det_product_id'),
             'invDetVariety' => array(self::BELONGS_TO, 'ProductVariety', 'inv_det_variety_id'),
             'invDetProdFmly' => array(self::BELONGS_TO, 'ProductFamily', 'inv_det_prod_fmly_id'),
+            'invDetSize' => array(self::BELONGS_TO, 'ProductSize', 'inv_det_size'),
+            'invDetGrade' => array(self::BELONGS_TO, 'ProductGrade', 'inv_det_grade'),
         );
     }
 
@@ -81,17 +85,17 @@ class InvoiceItems extends CActiveRecord {
         return array(
             'inv_det_id' => 'Inv Det',
             'inv_id' => 'Inv',
-            'inv_det_prod_fmly_id' => 'Inv Det Prod Fmly',
-            'inv_det_product_id' => 'Inv Det Product',
-            'inv_det_variety_id' => 'Inv Det Variety',
-            'inv_det_grade' => 'Inv Det Grade',
-            'inv_det_size' => 'Inv Det Size',
-            'inv_det_cotton_qty' => 'Inv Det Cotton Qty',
-            'inv_det_currency' => 'Inv Det Currency',
-            'inv_det_price' => 'Inv Det Price',
-            'inv_det_net_weight' => 'Inv Det Net Weight',
-            'inv_det_gross_weight' => 'Inv Det Gross Weight',
-            'inv_det_ctnr_no' => 'Inv Det Ctnr No',
+            'inv_det_prod_fmly_id' => 'Product Family',
+            'inv_det_product_id' => 'Product',
+            'inv_det_variety_id' => 'Variety',
+            'inv_det_grade' => 'Grade',
+            'inv_det_size' => 'Size',
+            'inv_det_cotton_qty' => 'Invoiced Qty in CTN',
+            'inv_det_currency' => 'Currency Type',
+            'inv_det_price' => 'Invoiced Price/CTN',
+            'inv_det_net_weight' => 'Net Weight(kg)',
+            'inv_det_gross_weight' => 'Gross Weight(kg)',
+            'inv_det_ctnr_no' => 'Container No',
             'is_delivered' => 'Is Delivered',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
@@ -163,32 +167,4 @@ class InvoiceItems extends CActiveRecord {
             )
         ));
     }
-
-    protected function beforeValidate() {
-        if ($this->inv_det_grade)
-            $this->inv_det_grade = CJSON::encode($this->inv_det_grade);
-        if ($this->inv_det_size)
-            $this->inv_det_size = CJSON::encode($this->inv_det_size);
-
-        return parent::beforeValidate();
-    }
-
-    protected function beforeSave() {
-        if ($this->inv_det_grade && is_array($this->inv_det_grade))
-            $this->inv_det_grade = CJSON::encode($this->inv_det_grade);
-        if ($this->inv_det_size && is_array($this->inv_det_size))
-            $this->inv_det_size = CJSON::encode($this->inv_det_size);
-
-        return parent::beforeSave();
-    }
-
-    protected function afterFind() {
-        if ($this->inv_det_grade)
-            $this->inv_det_grade = CJSON::decode($this->inv_det_grade);
-        if ($this->inv_det_size)
-            $this->inv_det_size = CJSON::decode($this->inv_det_size);
-
-        return parent::afterFind();
-    }
-
 }

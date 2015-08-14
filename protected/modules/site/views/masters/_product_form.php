@@ -23,7 +23,7 @@ $family = CHtml::listData(ProductFamily::model()->active()->findAll(),'pro_famil
 <div class="form-group">
     <?php echo $form->textField($product_model, 'product_code', array('class' => 'form-control', 'readonly' => 'readonly')); ?>
     <?php if ($product_model->isNewRecord) { ?>
-        <?php echo CHtml::ajaxButton('Get Product Family Code', array('/site/masters/getproductcode'), array('success' => 'js:function(data){ $("form#family-form input#Product_product_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
+        <?php echo CHtml::ajaxButton('Get Product Family Code', array('/site/default/getproductcode'), array('success' => 'js:function(data){ $("form#family-form input#Product_product_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
     <?php } ?>
     <?php echo $form->error($product_model, 'product_code'); ?>
 </div>

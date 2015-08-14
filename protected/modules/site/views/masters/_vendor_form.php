@@ -33,7 +33,7 @@ $vendor_types = VendorType::VendorTypeList();
             </div>
             <div class="col-sm-6">
                 <?php if ($vendor_model->isNewRecord) { ?>
-                    <?php echo CHtml::ajaxButton('Get Vendor Code', array('/site/masters/getvendorcode'), array('success' => 'js:function(data){ $("form#vendor-form input#Vendor_vendor_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
+                    <?php echo CHtml::ajaxButton('Get Vendor Code', array('/site/default/getvendorcode'), array('success' => 'js:function(data){ $("form#vendor-form input#Vendor_vendor_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
                 <?php } ?>
             </div>
             <?php echo $form->error($vendor_model, 'product_code'); ?>

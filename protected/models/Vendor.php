@@ -6,6 +6,7 @@
  * The followings are the available columns in table '{{vendor}}':
  * @property integer $vendor_id
  * @property integer $vendor_type_id
+ * @property string $vendor_code
  * @property string $vendor_name
  * @property string $vendor_address
  * @property string $vendor_city
@@ -28,18 +29,11 @@
  */
 class Vendor extends CActiveRecord {
 
-    public $MAX_ID;
-
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
             'active' => array('condition' => "$alias.status = '1'"),
         );
-    }
-
-    public function getVendor_code($id = null) {
-        if ($this->vendor_id)
-            return "VC" . str_pad($this->vendor_id, 7, 0, STR_PAD_LEFT);
     }
 
     public function getNameWithType() {
@@ -66,10 +60,10 @@ class Vendor extends CActiveRecord {
             array('vendor_city, vendor_country, vendor_contact_person, vendor_email, vendor_website, vendor_trade_mark', 'length', 'max' => 255),
             array('vendor_mobile_no, vendor_office_no', 'length', 'max' => 100),
             array('status', 'length', 'max' => 1),
-            array('vendor_remarks, modified_at', 'safe'),
+            array('vendor_remarks, modified_at,vendor_code', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('vendor_id, vendor_type_id, vendor_name, vendor_address, vendor_city, vendor_country, vendor_contact_person, vendor_mobile_no, vendor_office_no, vendor_email, vendor_website, vendor_trade_mark, vendor_remarks, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('vendor_id, vendor_code, vendor_type_id, vendor_name, vendor_address, vendor_city, vendor_country, vendor_contact_person, vendor_mobile_no, vendor_office_no, vendor_email, vendor_website, vendor_trade_mark, vendor_remarks, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -91,6 +85,7 @@ class Vendor extends CActiveRecord {
         return array(
             'vendor_id' => 'Vendor',
             'vendor_type_id' => 'Vendor Type',
+            'vendor_code' => 'Vendor Code',
             'vendor_name' => 'Vendor Name',
             'vendor_address' => 'Address',
             'vendor_city' => 'City',
@@ -130,6 +125,7 @@ class Vendor extends CActiveRecord {
 
         $criteria->compare('vendor_id', $this->vendor_id);
         $criteria->compare('vendor_type_id', $this->vendor_type_id);
+        $criteria->compare('vendor_code', $this->vendor_code, true);
         $criteria->compare('vendor_name', $this->vendor_name, true);
         $criteria->compare('vendor_address', $this->vendor_address, true);
         $criteria->compare('vendor_city', $this->vendor_city, true);
@@ -193,6 +189,19 @@ class Vendor extends CActiveRecord {
         if ($key != NULL)
             return $lists[$key];
         return $lists;
+    }
+
+    public function checkVendor_code($id) {
+        return "VC" . str_pad($id, 7, 0, STR_PAD_LEFT);
+    }
+
+    protected function afterSave() {
+        parent::afterSave();
+        if ($this->isNewRecord) {
+            $this->vendor_code = $this->checkVendor_code($this->vendor_id);
+            $this->isNewRecord = false;
+            $this->saveAttributes(array('vendor_code'));
+        }
     }
 
 }

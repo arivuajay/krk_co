@@ -24,7 +24,7 @@ class InvoiceController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -47,7 +47,7 @@ class InvoiceController extends Controller {
         $detail_model = new InvoiceItems('add_product');
 
         $session = Yii::app()->session;
-        $po_products = $session['inv_added_products'];
+        $inv_products = $session['inv_added_products'];
 
         // Uncomment the following line if AJAX validation is needed
         $this->performAjaxValidation($model);
@@ -55,15 +55,17 @@ class InvoiceController extends Controller {
         if (isset($_POST['Invoice'])) {
             $model->attributes = $_POST['Invoice'];
             if ($model->validate()) {
+                $model->setUploadDirectory(UPLOAD_DIR);
+                $model->uploadFile();
                 $model->save(false);
-                foreach ($po_products as $product) {
+                foreach ($inv_products as $product) {
                     $detail_model = new InvoiceItems('save');
                     $detail_model->attributes = $product;
-                    $detail_model->inv_id = $model->inv_id;
+                    $detail_model->inv_id = $model->invoice_id;
                     $detail_model->save(false);
                 }
 
-                unset($_SESSION['inv_added_products']);
+//                unset($_SESSION['inv_added_products']);
                 Myclass::addAuditTrail("Created Invoice successfully.", "user");
                 Yii::app()->user->setFlash('success', 'Invoice Created Successfully!!!');
                 $this->redirect(array('index'));
@@ -92,7 +94,7 @@ class InvoiceController extends Controller {
         Yii::app()->end();
     }
 
-    public function actionEditPoPrduct($id) {
+    public function actionEditInvPrduct($id) {
         $session = Yii::app()->session;
         $detail_model = new InvoiceItems('add_product');
         $detail_model->attributes = $session['inv_added_products'][$id];
@@ -108,17 +110,17 @@ class InvoiceController extends Controller {
         Yii::app()->end();
     }
 
-    public function actionDeletePoPrduct($id) {
+    public function actionDeleteInvPrduct($id) {
         $key = (int) $id;
         unset($_SESSION['inv_added_products'][$key]);
-        $this->forward('poAddedProducts');
+        $this->forward('invAddedProducts');
         Yii::app()->end();
     }
 
-    public function actionPoAddedProducts() {
+    public function actionInvAddedProducts() {
         $session = Yii::app()->session;
-        $po_products = $session['inv_added_products'];
-        $this->renderPartial('_inv_added_products', compact('po_products'), false, true);
+        $inv_products = $session['inv_added_products'];
+        $this->renderPartial('_inv_added_products', compact('inv_products'), false, true);
         Yii::app()->end();
     }
 
@@ -224,4 +226,5 @@ class InvoiceController extends Controller {
             Yii::app()->end();
         }
     }
+
 }

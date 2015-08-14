@@ -2,9 +2,9 @@
 /* @var $this InvoiceController */
 /* @var $dataProvider CActiveDataProvider */
 
-$this->title='Invoices';
-$this->breadcrumbs=array(
-	'Invoices',
+$this->title = 'Invoices';
+$this->breadcrumbs = array(
+    'Invoices',
 );
 $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
@@ -27,29 +27,29 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
 
 <div class="col-lg-12 col-md-12">
     <div class="row">
-<?php
+        <?php
         $gridColumns = array(
-		'vendor_id',
-		'company_id',
-		'po_id',
-		'permit_no',
-		'bol_no',
-		'inv_no',
-		/*
-		'vessel_name',
-		'inv_date',
-		'inv_file',
-		'pkg_list_file',
-		*/
-		array(
+            'po.purchase_order_code',
+            'inv_no',
+            'inv_date',
+            'vendor.vendor_name',
+            'bol_no',
+            'company.company_name',
+            /*
+              'vessel_name',
+              'inv_date',
+              'inv_file',
+              'pkg_list_file',
+             */
+            array(
                 'header' => 'Actions',
                 'class' => 'booster.widgets.TbButtonColumn',
                 'htmlOptions' => array('style' => 'width: 180px;;text-align:center', 'vAlign' => 'middle', 'class' => 'action_column'),
-                'template' => '{view}{update}{delete}',
+                'template' => '{view}{delete}',
             )
-            );
+        );
 
-            $this->widget('booster.widgets.TbExtendedGridView', array(
+        $this->widget('booster.widgets.TbExtendedGridView', array(
             'type' => 'striped bordered datatable',
             'dataProvider' => $model->dataProvider(),
             'responsiveTable' => true,

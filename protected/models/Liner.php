@@ -5,6 +5,7 @@
  *
  * The followings are the available columns in table '{{liner}}':
  * @property integer $liner_id
+ * @property string $liner_code
  * @property string $liner_name
  * @property integer $country_id
  * @property integer $no_of_free_days
@@ -19,16 +20,9 @@
  */
 class Liner extends CActiveRecord {
 
-    public $MAX_ID;
-
     /**
      * @return string the associated database table name
      */
-    public function getLiner_code($id = null) {
-        if ($this->liner_id)
-            return "LC" . str_pad($this->liner_id, 4, 0, STR_PAD_LEFT);
-    }
-
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
@@ -54,10 +48,10 @@ class Liner extends CActiveRecord {
             array('country_id, no_of_free_days, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('liner_name', 'length', 'max' => 255),
             array('status', 'length', 'max' => 1),
-            array('modified_at', 'safe'),
+            array('modified_at,liner_code', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('liner_id, liner_name, country_id, no_of_free_days, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('liner_id,liner_code, liner_name, country_id, no_of_free_days, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -78,6 +72,7 @@ class Liner extends CActiveRecord {
     public function attributeLabels() {
         return array(
             'liner_id' => 'Liner',
+            'liner_code' => 'Liner Code',
             'liner_name' => 'Liner Name',
             'country_id' => 'Country',
             'no_of_free_days' => 'No Of Free Days',
@@ -107,6 +102,7 @@ class Liner extends CActiveRecord {
         $criteria = new CDbCriteria;
 
         $criteria->compare('liner_id', $this->liner_id);
+        $criteria->compare('liner_code', $this->liner_code, true);
         $criteria->compare('liner_name', $this->liner_name, true);
         $criteria->compare('country_id', $this->country_id);
         $criteria->compare('no_of_free_days', $this->no_of_free_days);
@@ -152,6 +148,19 @@ class Liner extends CActiveRecord {
         }
 
         return parent::beforeValidate();
+    }
+
+    public function checkLiner_code($id) {
+        return "LC" . str_pad($id, 4, 0, STR_PAD_LEFT);
+    }
+
+    protected function afterSave() {
+        parent::afterSave();
+        if ($this->isNewRecord) {
+            $this->liner_code = $this->checkLiner_code($this->liner_id);
+            $this->isNewRecord = false;
+            $this->saveAttributes(array('liner_code'));
+        }
     }
 
 }

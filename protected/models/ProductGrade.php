@@ -6,6 +6,7 @@
  * The followings are the available columns in table '{{product_grade}}':
  * @property integer $grade_id
  * @property integer $product_id
+ * @property string $grade_code
  * @property string $grade_short_name
  * @property string $grade_long_name
  * @property string $status
@@ -24,11 +25,6 @@ class ProductGrade extends CActiveRecord {
     /**
      * @return string the associated database table name
      */
-    public function getGrade_code($id = null) {
-        if ($this->grade_id)
-            return "G" . str_pad($this->grade_id, 3, 0, STR_PAD_LEFT);
-    }
-
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
@@ -54,10 +50,10 @@ class ProductGrade extends CActiveRecord {
             array('product_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('grade_short_name, grade_long_name', 'length', 'max' => 255),
             array('status', 'length', 'max' => 1),
-            array('modified_at', 'safe'),
+            array('modified_at,grade_code', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('grade_id, product_id, grade_short_name, grade_long_name, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('grade_id, grade_code, product_id, grade_short_name, grade_long_name, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -108,6 +104,7 @@ class ProductGrade extends CActiveRecord {
 
         $criteria->compare('grade_id', $this->grade_id);
         $criteria->compare('product_id', $this->product_id);
+        $criteria->compare('grade_code', $this->grade_code, true);
         $criteria->compare('grade_short_name', $this->grade_short_name, true);
         $criteria->compare('grade_long_name', $this->grade_long_name, true);
         $criteria->compare('status', $this->status, true);
@@ -152,6 +149,19 @@ class ProductGrade extends CActiveRecord {
         }
 
         return parent::beforeValidate();
+    }
+
+    public function checkGrade_code($id) {
+        return "G" . str_pad($id, 3, 0, STR_PAD_LEFT);
+    }
+
+    protected function afterSave() {
+        parent::afterSave();
+        if ($this->isNewRecord) {
+            $this->grade_code = $this->checkGrade_code($this->grade_id);
+            $this->isNewRecord = false;
+            $this->saveAttributes(array('grade_code'));
+        }
     }
 
 }

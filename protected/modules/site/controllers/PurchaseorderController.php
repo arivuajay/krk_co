@@ -133,6 +133,7 @@ class PurchaseorderController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
+        $detail_model = new PurchaseOrderDetails('add_product');
 
         // Uncomment the following line if AJAX validation is needed
         $this->performAjaxValidation($model);
@@ -146,9 +147,7 @@ class PurchaseorderController extends Controller {
             }
         }
 
-        $this->render('update', array(
-            'model' => $model,
-        ));
+        $this->render('update', compact('model', 'detail_model'));
     }
 
     /**

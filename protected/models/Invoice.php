@@ -22,14 +22,28 @@
  * @property integer $modified_by
  *
  * The followings are the available model relations:
+ * @property Company $company
+ * @property PurchaseOrder $po
+ * @property Vendor $vendor
  * @property InvoiceItems[] $invoiceItems
  */
 class Invoice extends CActiveRecord {
+
+    const FILE_SIZE = 10;
 
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
             'active' => array('condition' => "$alias.status = '1'"),
+        );
+    }
+
+    public function behaviors() {
+        return array(
+            'NUploadFile' => array(
+                'class' => 'ext.nuploadfile.NUploadFile',
+                'fileField' => array('inv_file', 'pkg_list_file'),
+            )
         );
     }
 
@@ -50,7 +64,7 @@ class Invoice extends CActiveRecord {
             array('vendor_id, company_id, po_id, permit_no, bol_no, inv_no, created_at, created_by', 'required'),
             array('vendor_id, company_id, po_id, status, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('permit_no, bol_no, inv_no, vessel_name', 'length', 'max' => 100),
-            array('inv_file, pkg_list_file', 'length', 'max' => 255),
+            array('inv_file, pkg_list_file', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
             array('inv_date, modified_at', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -65,6 +79,9 @@ class Invoice extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            'company' => array(self::BELONGS_TO, 'Company', 'company_id'),
+            'po' => array(self::BELONGS_TO, 'PurchaseOrder', 'po_id'),
+            'vendor' => array(self::BELONGS_TO, 'Vendor', 'vendor_id'),
             'invoiceItems' => array(self::HAS_MANY, 'InvoiceItems', 'inv_id'),
         );
     }
@@ -77,14 +94,14 @@ class Invoice extends CActiveRecord {
             'invoice_id' => 'Invoice',
             'vendor_id' => 'Vendor',
             'company_id' => 'Company',
-            'po_id' => 'Po',
+            'po_id' => 'PO Number',
             'permit_no' => 'Permit No',
-            'bol_no' => 'Bol No',
-            'inv_no' => 'Inv No',
+            'bol_no' => 'Bill of Lading No',
+            'inv_no' => 'Invoice No',
             'vessel_name' => 'Vessel Name',
-            'inv_date' => 'Inv Date',
-            'inv_file' => 'Inv File',
-            'pkg_list_file' => 'Pkg List File',
+            'inv_date' => 'Invoice Date',
+            'inv_file' => 'Upload Invoice',
+            'pkg_list_file' => 'Upload Packing List',
             'status' => 'Status',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
@@ -167,7 +184,7 @@ class Invoice extends CActiveRecord {
     }
 
     protected function afterFind() {
-        $this->po_date = date(PHP_USER_DATE_FORMAT, strtotime($this->inv_date));
+        $this->inv_date = date(PHP_USER_DATE_FORMAT, strtotime($this->inv_date));
 
         return parent::afterFind();
     }

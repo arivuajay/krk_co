@@ -18,7 +18,7 @@ $countries = CHtml::listData(Country::model()->active()->findAll(),'country_id',
 <div class="form-group">
     <?php echo $form->textField($liner_model, 'liner_code', array('class' => 'form-control', 'readonly' => 'readonly')); ?>
     <?php if ($liner_model->isNewRecord) { ?>
-        <?php echo CHtml::ajaxButton('Get Liner Code', array('/site/masters/getlinercode'), array('success' => 'js:function(data){ $("form#liner-form input#Liner_liner_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
+        <?php echo CHtml::ajaxButton('Get Liner Code', array('/site/default/getlinercode'), array('success' => 'js:function(data){ $("form#liner-form input#Liner_liner_code").val(data); }'), array('class' => 'btn btn-warning')); ?>
     <?php } ?>
     <?php echo $form->error($liner_model, 'liner_code'); ?>
 </div>

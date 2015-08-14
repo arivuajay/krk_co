@@ -13,12 +13,13 @@ class NUploadFile extends CActiveRecordBehavior {
     protected $_fileField;
     protected $_tmpFile;
     /*
-     * set true if you want to delete the file on delete record and when user upload new file 
+     * set true if you want to delete the file on delete record and when user upload new file
      */
     protected $_removeFile = true;
 
     public function afterFind($event) {
-        $this->_tmpFile = $this->owner->{$this->fileField};
+        if (!is_array($this->fileField))
+            $this->_tmpFile = $this->owner->{$this->fileField};
     }
 
     public function afterDelete($event) {
@@ -26,24 +27,44 @@ class NUploadFile extends CActiveRecordBehavior {
     }
 
     public function uploadFile() {
-        if (!$this->owner->isNewRecord)
-            $tmpFile = $this->_tmpFile;
         $path = $this->uploadDirectory;
         if (!is_dir($path))
             mkdir($path);
-        $fileField = $this->owner->{$this->fileField};
-        $fileField = CUploadedFile::getInstance($this->owner, $this->fileField);
-        if ($fileField instanceof CUploadedFile) {
-            //generate unique name for uploaded file
-            $newName = trim(md5(time())) . '.' . CFileHelper::getExtension($fileField->name);
-            $fileField->saveAs($path . $newName);
-            $this->owner->{$this->fileField} = $this->_getDirName() . $newName;
-            if (!$this->owner->isNewRecord)
-                $this->removeFile($tmpFile);
+        if (is_array($this->fileField)) {
+            foreach ($this->fileField as $the_fileField):
+                $fileField = $this->owner->{$the_fileField};
+                $fileField = CUploadedFile::getInstance($this->owner, $the_fileField);
+                if ($fileField instanceof CUploadedFile) {
+                    //generate unique name for uploaded file
+                    $newName = trim(md5(time() . rand(1, 20))) . '.' . CFileHelper::getExtension($fileField->name);
+                    $fileField->saveAs($path . $newName);
+                    $this->owner->{$the_fileField} = $this->_getDirName() . $newName;
+                    if (!$this->owner->isNewRecord)
+                        $this->removeFile($tmpFile);
 //				$this->removeFile($path.$tmpFile);
+                }else {
+                    $this->owner->{$the_fileField} = $tmpFile;
+                }
+            endforeach;
             return true;
+        } else {
+            if (!$this->owner->isNewRecord)
+                $tmpFile = $this->_tmpFile;
+
+            $fileField = $this->owner->{$this->fileField};
+            $fileField = CUploadedFile::getInstance($this->owner, $this->fileField);
+            if ($fileField instanceof CUploadedFile) {
+                //generate unique name for uploaded file
+                $newName = trim(md5(time())) . '.' . CFileHelper::getExtension($fileField->name);
+                $fileField->saveAs($path . $newName);
+                $this->owner->{$this->fileField} = $this->_getDirName() . $newName;
+                if (!$this->owner->isNewRecord)
+                    $this->removeFile($tmpFile);
+//				$this->removeFile($path.$tmpFile);
+                return true;
+            }
+            $this->owner->{$this->fileField} = $tmpFile;
         }
-        $this->owner->{$this->fileField} = $tmpFile;
     }
 
     public function removeFile($fileName) {
@@ -97,13 +118,13 @@ class NUploadFile extends CActiveRecordBehavior {
 
     public function getFilePath($relative = false) {
         $filePath = $this->owner->{$this->fileField};
-        if ($this->_uploadDirectory == null){
+        if ($this->_uploadDirectory == null) {
             $this->_uploadDirectory = UPLOAD_DIR;
 //			return Yii::app()->runtimePath.$filePath;
             if (!$relative):
                 return Yii::app()->createAbsoluteUrl(str_replace(DS, '/', $this->_uploadDirectory . $filePath));
             else:
-                return str_replace('//', '/', DS.$this->_uploadDirectory . $filePath);
+                return str_replace('//', '/', DS . $this->_uploadDirectory . $filePath);
             endif;
         }
     }

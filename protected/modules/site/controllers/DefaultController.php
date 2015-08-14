@@ -24,7 +24,21 @@ class DefaultController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('login', 'screens', 'error', 'requestpasswordreset', 'resetpassword'),
+                'actions' => array('login', 'screens', 'index', 'error', 'requestpasswordreset', 'resetpassword',
+                    'getGradeByProduct',
+                    'getProductbyFamily',
+                    'getSizeByProduct',
+                    'getVarietybyProductId',
+                    'getfamilycode',
+                    'getgradecode',
+                    'getlinercode',
+                    'getproductcode',
+                    'getsizecode',
+                    'getvarietycode',
+                    'getvendorcode',
+                    'getvarietycode',
+                    'getPOSByClient'
+                ),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -131,7 +145,6 @@ class DefaultController extends Controller {
         if (Yii::app()->user->isGuest) {
             $this->layout = '//layouts/login';
         }
-
         if ($error = Yii::app()->errorHandler->error) {
             if (Yii::app()->request->isAjaxRequest) {
                 echo $error['message'];
@@ -155,6 +168,182 @@ class DefaultController extends Controller {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
+    }
+
+    public function actionGetProductbyFamily($id, $pro_id = '') {
+        $products = Product::model()->active()->findAll("pro_family_id = '$id'");
+
+        $data = CHtml::listData($products, 'product_id', 'pro_name');
+
+        echo "<option value=''>Select Products</option>";
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($pro_id) && $pro_id == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+
+    public function actionGetVarietybyProductId($id, $pro_id = '') {
+        $products = ProductVariety::model()->active()->findAll("product_id = '$id'");
+
+        $data = CHtml::listData($products, 'variety_id', 'variety_name');
+
+        echo "<option value=''>Select Variety</option>";
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($pro_id) && $pro_id == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+
+    public function actionGetGradeByProduct($id, $pro_id = '') {
+        $products = ProductGrade::model()->active()->findAll("product_id = '$id'");
+
+        $data = CHtml::listData($products, 'grade_id', 'grade_short_name');
+
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($pro_id) && $pro_id == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+
+    public function actionGetSizeByProduct($id, $pro_id = '') {
+        $products = ProductSize::model()->active()->findAll("product_id = '$id'");
+
+        $data = CHtml::listData($products, 'size_id', 'size_name');
+
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($pro_id) && $pro_id == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+
+    public function actionGetvarietycode() {
+        $curdb = explode('=', Yii::app()->db->connectionString);
+        $table_name = ProductVariety::model()->tableSchema->name;
+        $sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '{$curdb[2]}' AND TABLE_NAME = '{$table_name}'";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $rowCount = $command->execute();
+        if ($rowCount) {
+            $result = $command->queryRow();
+            echo ProductVariety::model()->checkVariety_code($result['AUTO_INCREMENT']);
+        }
+        Yii::app()->end();
+    }
+
+    public function actionGetfamilycode() {
+        $curdb = explode('=', Yii::app()->db->connectionString);
+        $table_name = ProductFamily::model()->tableSchema->name;
+        $sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '{$curdb[2]}' AND TABLE_NAME = '{$table_name}'";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $rowCount = $command->execute();
+        if ($rowCount) {
+            $result = $command->queryRow();
+            echo ProductFamily::model()->checkFamily_code($result['AUTO_INCREMENT']);
+        }
+        Yii::app()->end();
+    }
+
+    public function actionGetgradecode() {
+        $curdb = explode('=', Yii::app()->db->connectionString);
+        $table_name = ProductGrade::model()->tableSchema->name;
+        $sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '{$curdb[2]}' AND TABLE_NAME = '{$table_name}'";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $rowCount = $command->execute();
+        if ($rowCount) {
+            $result = $command->queryRow();
+            echo ProductGrade::model()->checkGrade_code($result['AUTO_INCREMENT']);
+        }
+        Yii::app()->end();
+    }
+
+    public function actionGetlinercode() {
+        $curdb = explode('=', Yii::app()->db->connectionString);
+        $table_name = Liner::model()->tableSchema->name;
+        $sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '{$curdb[2]}' AND TABLE_NAME = '{$table_name}'";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $rowCount = $command->execute();
+        if ($rowCount) {
+            $result = $command->queryRow();
+            echo Liner::model()->checkLiner_code($result['AUTO_INCREMENT']);
+        }
+        Yii::app()->end();
+    }
+
+    public function actionGetproductcode() {
+        $curdb = explode('=', Yii::app()->db->connectionString);
+        $table_name = Product::model()->tableSchema->name;
+        $sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '{$curdb[2]}' AND TABLE_NAME = '{$table_name}'";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $rowCount = $command->execute();
+        if ($rowCount) {
+            $result = $command->queryRow();
+            echo Product::model()->checkProduct_code($result['AUTO_INCREMENT']);
+        }
+        Yii::app()->end();
+    }
+
+    public function actionGetsizecode() {
+        $curdb = explode('=', Yii::app()->db->connectionString);
+        $table_name = ProductSize::model()->tableSchema->name;
+        $sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '{$curdb[2]}' AND TABLE_NAME = '{$table_name}'";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $rowCount = $command->execute();
+        if ($rowCount) {
+            $result = $command->queryRow();
+            echo ProductSize::model()->checkSize_code($result['AUTO_INCREMENT']);
+        }
+        Yii::app()->end();
+    }
+
+    public function actionGetvendorcode() {
+        $curdb = explode('=', Yii::app()->db->connectionString);
+        $table_name = Vendor::model()->tableSchema->name;
+        $sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '{$curdb[2]}' AND TABLE_NAME = '{$table_name}'";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $rowCount = $command->execute();
+        if ($rowCount) {
+            $result = $command->queryRow();
+            echo Vendor::model()->checkVendor_code($result['AUTO_INCREMENT']);
+        }
+        Yii::app()->end();
+    }
+
+    public function actionGetPOSByClient($term, $vendor = '', $company = '') {
+        $criteria = new CDbCriteria();
+        $criteria->select = array('po_id', 'purchase_order_code', 'po_date');
+
+        $criteria->compare('purchase_order_code', $term, true);
+        if ($vendor)
+            $criteria->compare('po_vendor_id', $vendor);
+        if ($company)
+            $criteria->compare('po_company_id', $company);
+
+        $results = PurchaseOrder::model()->findAll($criteria);
+
+        echo CJSON::encode($results);
+        Yii::app()->end();
     }
 
 }
