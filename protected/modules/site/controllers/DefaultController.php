@@ -29,6 +29,8 @@ class DefaultController extends Controller {
                     'getProductbyFamily',
                     'getSizeByProduct',
                     'getVarietybyProductId',
+                    'getInvoiceByPo',
+                    'getInvoiceDetail',
                     'getfamilycode',
                     'getgradecode',
                     'getlinercode',
@@ -230,6 +232,40 @@ class DefaultController extends Controller {
 
             echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
         }
+    }
+
+    public function actionGetInvoiceByPo($id, $sel = '') {
+        $invoices = Invoice::model()->active()->findAll("po_id = '$id'");
+
+        $data = CHtml::listData($invoices, 'invoice_id', 'inv_no');
+
+        echo "<option value=''>Select Invoice</option>";
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($sel) && $sel == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+
+    public function actionGetInvoiceDetail($id) {
+        $invoices = Invoice::model()->active()->findByPk($id);
+        $result = $options = array();
+
+        if ($invoices) {
+            $options[] = CHtml::tag('option', array('value' => ''), 'Select Container', true);
+            foreach ($invoices->invoiceItems as $item):
+                $options[] = CHtml::tag('option', array('value' => $item->inv_det_ctnr_no,'data-ctn' => $item->inv_det_cotton_qty), CHtml::encode($item->inv_det_ctnr_no), true);
+            endforeach;
+
+            $result['bol_no'] = $invoices->bol_no;
+            $result['containers'] = implode("", $options);
+        }
+
+        echo CJSON::encode($result);
+        Yii::app()->end();
     }
 
     public function actionGetvarietycode() {

@@ -4,7 +4,7 @@
  *
  * @author Christoffer Niska <ChristofferNiska@gmail.com>
  * @copyright Copyright &copy; Christoffer Niska 2011-
- * @license [New BSD License](http://www.opensource.org/licenses/bsd-license.php) 
+ * @license [New BSD License](http://www.opensource.org/licenses/bsd-license.php)
  */
 
 Yii::import('zii.widgets.grid.CGridView');
@@ -23,6 +23,7 @@ class TbGridView extends CGridView
 	const TYPE_STRIPED = 'striped';
 	const TYPE_BORDERED = 'bordered';
 	const TYPE_CONDENSED = 'condensed';
+	const TYPE_DATATABLE = 'datatable';
 	const TYPE_HOVER = 'hover';
 
 	/**
@@ -64,7 +65,7 @@ class TbGridView extends CGridView
 	 * Initializes the widget.
 	 */
 	public function init() {
-		
+
 		parent::init();
 
 		$classes = array('table');
@@ -74,7 +75,7 @@ class TbGridView extends CGridView
 			}
 
 			if (!empty($this->type)) {
-				$validTypes = array(self::TYPE_STRIPED, self::TYPE_BORDERED, self::TYPE_CONDENSED, self::TYPE_HOVER);
+				$validTypes = array(self::TYPE_STRIPED, self::TYPE_BORDERED, self::TYPE_CONDENSED, self::TYPE_HOVER,  self::TYPE_DATATABLE);
 
 				foreach ($this->type as $type) {
 					if (in_array($type, $validTypes)) {

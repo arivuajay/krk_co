@@ -79,6 +79,7 @@ class Invoice extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            'billLadings' => array(self::HAS_MANY, 'BillLading', 'bl_invoice_id'),
             'company' => array(self::BELONGS_TO, 'Company', 'company_id'),
             'po' => array(self::BELONGS_TO, 'PurchaseOrder', 'po_id'),
             'vendor' => array(self::BELONGS_TO, 'Vendor', 'vendor_id'),

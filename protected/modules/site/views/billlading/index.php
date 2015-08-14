@@ -29,30 +29,17 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
     <div class="row">
 <?php
         $gridColumns = array(
-		'bl_company_id',
-		'bl_vendor_id',
-		'bl_po_id',
-		'bl_invoice_id',
 		'bl_number',
-		'bl_issue_date',
-		/*
-		'bl_issue_place',
-		'bl_load_port',
-		'bl_discharge_port',
-		'bl_vessal_name',
-		'bl_shipped_date',
-		'bl_container_number',
-		'bl_liner_id',
-		'bl_container_count',
-		'bl_free_days',
-		'bl_frieght_paid',
-		'bl_documents',
-		*/
+		'blPo.purchase_order_code',
+		'blInvoice.inv_no',
+		'blCompany.company_name',
+		'blVendor.vendor_name',
+		'blLiner.liner_name',
 		array(
                 'header' => 'Actions',
                 'class' => 'booster.widgets.TbButtonColumn',
                 'htmlOptions' => array('style' => 'width: 180px;;text-align:center', 'vAlign' => 'middle', 'class' => 'action_column'),
-                'template' => '{view}{update}{delete}',
+                'template' => '{view}{delete}',
             )
             );
 

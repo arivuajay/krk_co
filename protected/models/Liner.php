@@ -150,6 +150,16 @@ class Liner extends CActiveRecord {
         return parent::beforeValidate();
     }
 
+    public static function LinerList($is_active = TRUE, $key = NULL) {
+        if ($is_active && $key == NULL)
+            $lists = CHtml::listData(self::model()->active()->findAll(), 'liner_id', 'liner_name');
+        else
+            $lists = CHtml::listData(self::model()->findAll(), 'liner_id', 'liner_name');
+        if ($key != NULL)
+            return $lists[$key];
+        return $lists;
+    }
+
     public function checkLiner_code($id) {
         return "LC" . str_pad($id, 4, 0, STR_PAD_LEFT);
     }

@@ -46,6 +46,15 @@ class BillLading extends CActiveRecord {
         return '{{bill_lading}}';
     }
 
+    public function behaviors() {
+        return array(
+            'NUploadFile' => array(
+                'class' => 'ext.nuploadfile.NUploadFile',
+                'fileField' => 'bl_documents',
+            )
+        );
+    }
+
     /**
      * @return array validation rules for model attributes.
      */
@@ -54,7 +63,7 @@ class BillLading extends CActiveRecord {
         // will receive user inputs.
         return array(
             array('bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_number', 'required'),
-            array('bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_liner_id, bl_container_count, bl_free_days, modified_at, modified_by', 'numerical', 'integerOnly' => true),
+            array('bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_liner_id, bl_free_days, modified_at, modified_by', 'numerical', 'integerOnly' => true),
             array('bl_number, bl_issue_place, bl_load_port, bl_discharge_port, bl_vessal_name, bl_container_number', 'length', 'max' => 100),
             array('bl_frieght_paid, status', 'length', 'max' => 1),
             array('bl_documents', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
@@ -176,6 +185,27 @@ class BillLading extends CActiveRecord {
                 'pageSize' => PAGE_SIZE,
             )
         ));
+    }
+
+    protected function beforeValidate() {
+        if ($this->isNewRecord) {
+            $this->created_at = new CDbExpression('NOW()');
+            $this->created_by = Yii::app()->user->id;
+        } else {
+            $this->modified_at = new CDbExpression('NOW()');
+            $this->modified_by = Yii::app()->user->id;
+        }
+        $this->bl_issue_date = date('Y-m-d', strtotime($this->bl_issue_date));
+        $this->bl_shipped_date = date('Y-m-d', strtotime($this->bl_shipped_date));
+
+        return parent::beforeValidate();
+    }
+
+    protected function afterFind() {
+        $this->bl_issue_date = date(PHP_USER_DATE_FORMAT, strtotime($this->bl_issue_date));
+        $this->bl_shipped_date = date(PHP_USER_DATE_FORMAT, strtotime($this->bl_shipped_date));
+
+        return parent::afterFind();
     }
 
 }
