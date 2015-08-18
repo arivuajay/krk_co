@@ -55,7 +55,7 @@ class InvoiceItems extends CActiveRecord {
             array('inv_det_cotton_qty, inv_det_price, inv_det_net_weight, inv_det_gross_weight', 'length', 'max' => 10),
             array('inv_det_currency, inv_det_ctnr_no', 'length', 'max' => 100),
             array('is_delivered, status', 'length', 'max' => 1),
-            array('created_at, created_by', 'safe'),
+            array('inv_det_currency,created_at, created_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('inv_det_id, inv_id, inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id, inv_det_grade, inv_det_size, inv_det_cotton_qty, inv_det_currency, inv_det_price, inv_det_net_weight, inv_det_gross_weight, inv_det_ctnr_no, is_delivered, created_at, created_by, modified_at, modified_by, status', 'safe', 'on' => 'search'),

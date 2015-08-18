@@ -112,7 +112,7 @@ $vendors = Vendor::VendorList();
                         ));
 
 
-                        echo $form->textField($model, 'pyto_po_id', array('class' => 'form-control'));
+                        echo $form->hiddenField($model, 'pyto_po_id', array('class' => 'form-control'));
                         ?>
                         <?php echo $form->error($model, 'pyto_po_id'); ?>
                     </div>

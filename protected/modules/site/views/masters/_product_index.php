@@ -1,7 +1,7 @@
 <?php
 
 $gridColumns = array(
-//    'proFamily.pro_family_name',
+    'proFamily.pro_family_name',
     'product_code',
     'pro_name',
     array(
@@ -21,13 +21,6 @@ $gridColumns = array(
             ),
         )
     )
-);
-
-
-$gridColumns[] = array(
-    'name' => 'proFamily.pro_family_name',
-    'headerHtmlOptions' => array('style' => 'display:none'),
-    'htmlOptions' => array('style' => 'display:none')
 );
 
 

@@ -88,7 +88,7 @@ $companies = CHtml::listData(Company::model()->active()->findAll(), 'company_id'
 $this->endWidget();
 $user_js_format = JS_USER_DATE_FORMAT;
 $js = <<< EOD
-    $(document).ready(function(){
+    $(function(){
         $('.datepicker').datepicker({ format: '$user_js_format' });
     });
 EOD;

@@ -138,7 +138,7 @@ $liners = Liner::LinerList();
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'bl_number', array('class' => 'col-sm-3 control-label')); ?>
                             <div class="col-sm-6">
-                                <?php echo $form->textField($model, 'bl_number', array('class' => 'form-control', 'readonly'=>'readonly')); ?>
+                                <?php echo $form->textField($model, 'bl_number', array('class' => 'form-control', 'readonly' => 'readonly')); ?>
                                 <?php echo $form->error($model, 'bl_number'); ?>
                             </div>
                         </div>
@@ -195,7 +195,7 @@ $liners = Liner::LinerList();
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'bl_container_number', array('class' => 'col-sm-3 control-label')); ?>
                             <div class="col-sm-6">
-                                <?php echo $form->dropDownList($model, 'bl_container_number', array(), array('class' => 'form-control', 'prompt' =>'Select Container')); ?>
+                                <?php echo $form->dropDownList($model, 'bl_container_number', array(), array('class' => 'form-control', 'prompt' => 'Select Container')); ?>
                                 <?php echo $form->error($model, 'bl_container_number'); ?>
                             </div>
                         </div>
@@ -203,7 +203,7 @@ $liners = Liner::LinerList();
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'bl_liner_id', array('class' => 'col-sm-3 control-label')); ?>
                             <div class="col-sm-6">
-                                <?php echo $form->dropDownList($model, 'bl_liner_id', $liners ,array('class' => 'form-control','prompt' => 'Select Liner')); ?>
+                                <?php echo $form->dropDownList($model, 'bl_liner_id', $liners, array('class' => 'form-control', 'prompt' => 'Select Liner')); ?>
                                 <?php echo $form->error($model, 'bl_liner_id'); ?>
                             </div>
                         </div>
@@ -225,7 +225,7 @@ $liners = Liner::LinerList();
                 <div class="form-group">
                     <?php echo $form->labelEx($model, 'bl_container_count', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
-                        <?php echo $form->textField($model, 'bl_container_count', array('class' => 'form-control','readonly'=>'readonly')); ?>
+                        <?php echo $form->textField($model, 'bl_container_count', array('class' => 'form-control', 'readonly' => 'readonly')); ?>
                         <?php echo $form->error($model, 'bl_container_count'); ?>
                     </div>
                 </div>
@@ -241,7 +241,7 @@ $liners = Liner::LinerList();
                 <div class="form-group">
                     <?php echo $form->labelEx($model, 'bl_frieght_paid', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
-                        <?php echo $form->radioButtonList($model, 'bl_frieght_paid', array('Y' => 'Yes', 'N' => 'No'), array('class' => 'form-control','labelOptions'=>array('style'=>'margin-right: 20px;'), 'separator'=>'')); ?>
+                        <?php echo $form->radioButtonList($model, 'bl_frieght_paid', array('Y' => 'Yes', 'N' => 'No'), array('class' => 'form-control', 'labelOptions' => array('style' => 'margin-right: 20px;'), 'separator' => '')); ?>
                         <?php echo $form->error($model, 'bl_frieght_paid'); ?>
                     </div>
                 </div>
@@ -264,18 +264,18 @@ $liners = Liner::LinerList();
                         <?php echo $form->error($model, 'bl_documents'); ?>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <div class="col-sm-6">
+                    <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-lg-12 col-xs-12">
-        <div class="form-group">
-                <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
-        </div>
-    </div>
-</div>
+
 
 <?php $this->endWidget(); ?>
 

@@ -48,10 +48,10 @@ class PurchaseOrderDetails extends CActiveRecord {
             array('po_id', 'required', 'on' => 'save'),
 //            array('po_id, po_det_prod_fmly_id, po_det_product_id, po_det_variety_id, po_det_grade, po_det_size', 'required'),
             array('po_id, po_det_prod_fmly_id, po_det_product_id, po_det_variety_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
-            array('po_det_grade, po_det_size', 'length', 'max' => 500),
+            array('po_det_grade, po_det_size,po_det_currency', 'length', 'max' => 500),
             array('po_det_net_weight, po_det_container_qty, po_det_cotton_qty, po_det_price', 'numerical', 'integerOnly' => false),
             array('status', 'length', 'max' => 1),
-            array('created_at, created_by', 'safe'),
+            array('po_det_currency,created_at, created_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('po_det_id, po_id, po_det_prod_fmly_id, po_det_product_id, po_det_variety_id, po_det_grade, po_det_size, po_det_net_weight, po_det_container_qty, po_det_cotton_qty, po_det_currency, po_det_price, created_at, created_by, modified_at, modified_by, status', 'safe', 'on' => 'search'),

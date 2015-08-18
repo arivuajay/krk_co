@@ -29,7 +29,7 @@ $cs_pos_end = CClientScript::POS_END;
             if ($detail_model->po_det_product_id) {
                 $variety = CHtml::listData(ProductVariety::model()->active()->findAll(array('order' => 'variety_name', 'condition' => "product_id = '{$detail_model->po_det_product_id}'")), 'variety_id', 'variety_name');
 
-                $grade = CHtml::listData(ProductGrade::model()->active()->findAll(array('order' => 'grade_short_name', 'condition' => "product_id = '{$detail_model->po_det_product_id}'")), 'grade_id', 'grade_short_name');
+                $grade = CHtml::listData(ProductGrade::model()->active()->findAll(array('order' => 'grade_long_name', 'condition' => "product_id = '{$detail_model->po_det_product_id}'")), 'grade_id', 'grade_long_name');
 
                 $size = CHtml::listData(ProductSize::model()->active()->findAll(array('order' => 'size_name', 'condition' => "product_id = '{$detail_model->po_det_product_id}'")), 'size_id', 'size_name');
             }

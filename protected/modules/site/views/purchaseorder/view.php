@@ -88,7 +88,7 @@ $this->breadcrumbs = array(
                                                     <td><?php echo $products->poDetProdFmly->pro_family_name; ?></td>
                                                     <td><?php echo $products->poDetProduct->pro_name; ?></td>
                                                     <td><?php echo $products->poDetVariety->variety_name; ?></td>
-                                                    <td><?php echo implode(CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $products->po_det_grade)), 'grade_id', 'grade_short_name')); ?></td>
+                                                    <td><?php echo implode(CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $products->po_det_grade)), 'grade_id', 'grade_long_name')); ?></td>
                                                     <td><?php echo implode(CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $products->po_det_size)), 'size_id', 'size_name')); ?></td>
                                                     <td><?php echo $products->po_det_cotton_qty; ?></td>
                                                     <td><?php echo $products->po_det_price; ?></td>

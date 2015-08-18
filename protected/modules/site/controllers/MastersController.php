@@ -31,7 +31,7 @@ class MastersController extends Controller {
                     'grade_delete',
                     'vendor_delete',
                     'liner_delete'
-                    ),
+                ),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -139,6 +139,12 @@ class MastersController extends Controller {
             }
         }
 
+        $cs = Yii::app()->clientScript;
+        $cs->reset();
+        $cs->scriptMap = array(
+            'bootstrap-datepicker.js' => false,
+        );
+
         echo $this->renderPartial('_permit_form', compact('perm_model'), true, true);
         Yii::app()->end();
     }
@@ -233,8 +239,6 @@ class MastersController extends Controller {
         }
     }
 
-
-
     public function actionProduct_save($id = null) {
         $new = false;
         if (is_null($id)) {
@@ -294,8 +298,6 @@ class MastersController extends Controller {
             Yii::app()->end();
         }
     }
-
-
 
     public function actionVariety_save($id = null) {
         $new = false;
@@ -417,8 +419,6 @@ class MastersController extends Controller {
         }
     }
 
-
-
     public function actionGrade_save($id = null) {
         $new = false;
         if (is_null($id)) {
@@ -477,8 +477,6 @@ class MastersController extends Controller {
             Yii::app()->end();
         }
     }
-
-
 
 //    ========================================================================
 
@@ -539,8 +537,6 @@ class MastersController extends Controller {
         }
     }
 
-
-
     public function actionLiner_save($id = null) {
         $new = false;
         if (is_null($id)) {
@@ -600,7 +596,5 @@ class MastersController extends Controller {
             Yii::app()->end();
         }
     }
-
-
 
 }

@@ -207,7 +207,7 @@ class DefaultController extends Controller {
     public function actionGetGradeByProduct($id, $pro_id = '') {
         $products = ProductGrade::model()->active()->findAll("product_id = '$id'");
 
-        $data = CHtml::listData($products, 'grade_id', 'grade_short_name');
+        $data = CHtml::listData($products, 'grade_id', 'grade_long_name');
 
         foreach ($data as $value => $name) {
             $htmlOpt = array();

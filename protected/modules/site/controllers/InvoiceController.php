@@ -65,7 +65,7 @@ class InvoiceController extends Controller {
                     $detail_model->save(false);
                 }
 
-//                unset($_SESSION['inv_added_products']);
+                unset($_SESSION['inv_added_products']);
                 Myclass::addAuditTrail("Created Invoice successfully.", "user");
                 Yii::app()->user->setFlash('success', 'Invoice Created Successfully!!!');
                 $this->redirect(array('index'));
