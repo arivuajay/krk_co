@@ -100,9 +100,41 @@ class PurchaseOrder extends CActiveRecord {
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search() {
-        // @todo Please modify the following code to remove attributes that should not be searched.
+//    public function search() {
+//        // @todo Please modify the following code to remove attributes that should not be searched.
+//
+//        $criteria = new CDbCriteria;
+//
+//        $criteria->compare('po_id', $this->po_id);
+//        $criteria->compare('purchase_order_code', $this->purchase_order_code, true);
+//        $criteria->compare('po_date', $this->po_date, true);
+//        $criteria->compare('po_company_id', $this->po_company_id);
+//        $criteria->compare('po_vendor_id', $this->po_vendor_id);
+//        $criteria->compare('po_liner_id', $this->po_liner_id);
+//        $criteria->compare('status', $this->status, true);
+//        $criteria->compare('created_at', $this->created_at, true);
+//        $criteria->compare('created_by', $this->created_by, true);
+//        $criteria->compare('modified_at', $this->modified_at);
+//        $criteria->compare('modified_by', $this->modified_by);
+//
+//        return new CActiveDataProvider($this, array(
+//            'pagination' => array(
+//                'pageSize' => PAGE_SIZE,
+//            )
+//        ));
+//    }
 
+    /**
+     * Returns the static model of the specified AR class.
+     * Please note that you should have this exact method in all your CActiveRecord descendants!
+     * @param string $className active record class name.
+     * @return PurchaseOrder the static model class
+     */
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
+
+    public function dataProvider() {
         $criteria = new CDbCriteria;
 
         $criteria->compare('po_id', $this->po_id);
@@ -116,27 +148,9 @@ class PurchaseOrder extends CActiveRecord {
         $criteria->compare('created_by', $this->created_by, true);
         $criteria->compare('modified_at', $this->modified_at);
         $criteria->compare('modified_by', $this->modified_by);
-
+        
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
-            'pagination' => array(
-                'pageSize' => PAGE_SIZE,
-            )
-        ));
-    }
-
-    /**
-     * Returns the static model of the specified AR class.
-     * Please note that you should have this exact method in all your CActiveRecord descendants!
-     * @param string $className active record class name.
-     * @return PurchaseOrder the static model class
-     */
-    public static function model($className = __CLASS__) {
-        return parent::model($className);
-    }
-
-    public function dataProvider() {
-        return new CActiveDataProvider($this, array(
             'pagination' => array(
                 'pageSize' => PAGE_SIZE,
             )

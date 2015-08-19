@@ -15,9 +15,11 @@
         $cs->registerCssFile($themeUrl . '/css/bootstrap-theme.css');
         $cs->registerCssFile($themeUrl . '/css/custom.css');
         $cs->registerCssFile($themeUrl . '/css/treeview/css/style.css');
+        $cs->registerCssFile($themeUrl . '/css/loading/style.css');
         ?>
     </head>
     <body class="skin-green">
+        <div class="load-pace hide">Loading&#8230;</div>
         <?php $this->renderPartial('//layouts/_headerBar'); ?>
         <div class="wrapper row-offcanvas row-offcanvas-left">
             <?php $this->renderPartial('//layouts/_sidebarNav'); ?>

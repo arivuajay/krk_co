@@ -134,6 +134,25 @@ $vendor_types = VendorType::VendorTypeList();
     </div>
 </div>
 
+<div class="form-group">
+        <?php echo $form->labelEx($vendor_model, 'vendor_terms', array('class' => 'col-sm-5 control-label')); ?>
+    <div class="col-sm-7">
+        <?php echo $form->textArea($vendor_model, 'vendor_terms', array('class' => 'form-control', 'rows' => 3, 'cols' => 50)); ?>
+        <?php 
+//        $this->widget('application.extensions.cleditor.ECLEditor', array(
+//                            'model' => $vendor_model,
+//                            'attribute' => 'vendor_terms', //Model attribute name. Nome do atributo do modelo.
+//                            'options' => array(
+//                                'width' => 600,
+//                                'height' => 300,
+//                                'useCSS' => true,
+//                            ),
+//                            'value' => $vendor_model->vendor_terms, //If you want pass a value for the widget. I think you will. Se você precisar passar um valor para o gadget. Eu acho irá.
+//                        ));?>
+<?php echo $form->error($vendor_model, 'vendor_terms'); ?>
+    </div>
+</div>
+
 <button type="submit" class="btn btn-success"><?php echo $btn_name; ?></button>
 <?php if (!$vendor_model->isNewRecord) { ?>
 <a class="btn btn-default" href="<?php Yii::app()->createUrl('/site/masters/index') ?>">CANCEL</a>

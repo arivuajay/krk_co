@@ -23,7 +23,6 @@
                 </span>
             </div>
         </form>
-
         <?php
         $this->widget('application.components.MyMenu', array(
             'activateParents' => true,
@@ -45,11 +44,11 @@
                     'itemOptions' => array('class' => 'treeview active'),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
-                        array('label' => '<i class="fa fa-weixin"></i> <span>Process Chart</span>', 'url' => '#'),
                         array('label' => '<i class="fa fa-music"></i> <span>Purchase Order</span>', 'url' => array('/site/purchaseorder/index')),
+                        array('label' => '<i class="fa fa-user"></i> <span>Invoice & Packing List</span>', 'url' => array('/site/invoice/index')),
                         array('label' => '<i class="fa fa-user"></i> <span>Bill of Lading</span>', 'url' => array('/site/billlading/index')),
                         array('label' => '<i class="fa fa-user"></i> <span>Pyto & Origin</span>', 'url' => array('/site/pytoorigin/index')),
-                        array('label' => '<i class="fa fa-user"></i> <span>Invoice & Packing List</span>', 'url' => array('/site/invoice/index')),
+                        array('label' => '<i class="fa fa-weixin"></i> <span>Process Chart</span>', 'url' => '#'),
                         array('label' => '<i class="fa fa-user"></i> <span>Permit</span>', 'url' => '#'),
                         array('label' => '<i class="fa fa-user"></i> <span>Purchase Reports</span>', 'url' => '#'),
                     ),

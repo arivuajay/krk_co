@@ -338,6 +338,27 @@ class TbExtendedGridView extends TbGridView {
 		$this->renderChart();
 		parent::renderTableHeader();
 	}
+        
+	public function renderTableBody() {
+		
+		$data=$this->dataProvider->getData();
+		$n=count($data);
+		echo "<tbody>\n";
+
+		if($n>0)
+		{
+			for($row=0;$row<$n;++$row)
+				$this->renderTableRow($row);
+		}
+//		else
+//		{
+//			echo '<tr><td colspan="'.count($this->columns).'" class="empty">';
+//			$this->renderEmptyText();
+//			echo "</td></tr>\n";
+//		}
+		echo "</tbody>\n";
+//		parent::renderTableBody();
+	}
 
 	/**
 	 *### .renderTableFooter()

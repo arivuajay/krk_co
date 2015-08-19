@@ -29,6 +29,8 @@
  */
 class Vendor extends CActiveRecord {
 
+//    public $vendortype;
+    
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
@@ -54,13 +56,13 @@ class Vendor extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('vendor_type_id, vendor_name, vendor_address, vendor_country, vendor_contact_person, vendor_email, created_at', 'required'),
+            array('vendor_type_id, vendor_name, vendor_address, vendor_country, vendor_contact_person, vendor_email, created_at, vendor_terms', 'required'),
             array('vendor_type_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('vendor_name', 'length', 'max' => 50),
             array('vendor_city, vendor_country, vendor_contact_person, vendor_email, vendor_website, vendor_trade_mark', 'length', 'max' => 255),
             array('vendor_mobile_no, vendor_office_no', 'length', 'max' => 100),
             array('status', 'length', 'max' => 1),
-            array('vendor_remarks, modified_at,vendor_code', 'safe'),
+            array('vendor_remarks, modified_at,vendor_code, vendor_terms', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('vendor_id, vendor_code, vendor_type_id, vendor_name, vendor_address, vendor_city, vendor_country, vendor_contact_person, vendor_mobile_no, vendor_office_no, vendor_email, vendor_website, vendor_trade_mark, vendor_remarks, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
@@ -103,6 +105,8 @@ class Vendor extends CActiveRecord {
             'modified_at' => 'Modified At',
             'modified_by' => 'Modified By',
             'vendor_code' => 'Vendor Code',
+            'vendortype' => 'Vendor Type',
+            'vendor_terms' => 'Terms & Conditions',
         );
     }
 
@@ -204,4 +208,7 @@ class Vendor extends CActiveRecord {
         }
     }
 
+    public function getVendortype(){
+        return $this->vendorType->vendor_type;
+    }
 }

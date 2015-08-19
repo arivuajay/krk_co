@@ -2,6 +2,15 @@
 
 class MastersController extends Controller {
 
+    public function behaviors() {
+        return array(
+            'exportableGrid' => array(
+                'class' => 'application.components.ExportableGridBehavior',
+                'filename' => "Master_" . time() . ".csv",
+//                'csvDelimiter' => ',', //i.e. Excel friendly csv delimiter
+        ));
+    }
+    
     public function filters() {
         return array(
             'accessControl', // perform access control for CRUD operations
@@ -30,7 +39,9 @@ class MastersController extends Controller {
                     'size_delete',
                     'grade_delete',
                     'vendor_delete',
-                    'liner_delete'
+                    'liner_delete',
+                    'vendor_view',
+                    'terms',
                 ),
                 'users' => array('@'),
             ),
@@ -51,7 +62,14 @@ class MastersController extends Controller {
         $vendor_model = new Vendor();
         $liner_model = new Liner();
 
+        if ($this->isExportRequest()) {
+            $vendor_model->unsetAttributes();
+            $this->exportCSV(array('Vendors:'), null, false);
+            $this->exportCSV($vendor_model->search(), array('vendor_code', 'vendortype', 'vendor_name', 'vendor_address', 'vendor_city', 'vendor_country', 'vendor_contact_person', 'vendor_mobile_no', 'vendor_office_no', 'vendor_email', 'vendor_website', 'vendor_trade_mark', 'vendor_remarks'));
+        }
+        
         $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model', 'vendor_model', 'liner_model'));
+        
     }
 
     public function actionCompany_save($id = null) {
@@ -478,6 +496,22 @@ class MastersController extends Controller {
         }
     }
 
+    public function actionVendor_view($id) {
+        $model = Vendor::model()->findByPk($id);
+
+        $export = isset($_REQUEST['export']) && $_REQUEST['export'] == 'PDF';
+        $compact = compact('model', 'export');
+        if ($export) {
+            $mPDF1 = Yii::app()->ePdf->mpdf();
+            $stylesheet = $this->pdfStyles();
+            $mPDF1->WriteHTML($stylesheet, 1);
+            $mPDF1->WriteHTML($this->renderPartial('view', $compact, true));
+            $mPDF1->Output("Liner_view_{$id}.pdf", EYiiPdf::OUTPUT_TO_DOWNLOAD);
+        } else {
+            $this->render('vendor_view', $compact);
+        }
+    }
+
 //    ========================================================================
 
     public function actionVendor_save($id = null) {
@@ -597,4 +631,12 @@ class MastersController extends Controller {
         }
     }
 
+    public function actionTerms() {
+        if(isset($_GET['id']) && $_GET['id'] != ''){
+            $vendor = Vendor::model()->findByPk($_GET['id']);
+            $this->renderPartial('_terms', compact('vendor'));
+        }else{
+            Yii::app()->end();
+        }
+    }
 }

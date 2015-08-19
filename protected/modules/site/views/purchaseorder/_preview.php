@@ -1,12 +1,6 @@
 <?php
 /* @var $this PurchaseorderController */
 /* @var $model PurchaseOrder */
-
-$this->title = 'View #' . $model->po_id;
-$this->breadcrumbs = array(
-    'Purchase Orders' => array('index'),
-    'View ' . 'PurchaseOrder',
-);
 ?>
 <table class="table table-bordered">
     <tbody><tr align="center">
@@ -15,19 +9,19 @@ $this->breadcrumbs = array(
             <td valign="middle">                                        <div>
                     <table cellspacing="0" style="height:50px;width:125px;border-collapse:collapse;">
                         <tbody><tr>
-                                <td valign="middle" align="center" style="font-size:X-Large;font-weight:bold;white-space:nowrap; vertical-align: middle" colspan="2">
-                                    <?php echo $model->poCompany->company_name; ?>
+                                <td valign="middle" align="center" style="font-size:X-Large;font-weight:bold;white-space:nowrap; vertical-align: middle" colspan="2" id="txt_comp_name">
+                                    <?php echo @$company->company_name; ?>
                                 </td>
                             </tr><tr>
-                                <td valign="middle" align="center" style="font-size:Medium; vertical-align: middle" colspan="2">
-                                    <?php echo $model->poCompany->company_address; ?>
+                                <td valign="middle" align="center" style="font-size:Medium; vertical-align: middle" colspan="2" id="txt_comp_addr">
+                                    <?php echo @$company->company_address; ?>
                                 </td>
                             </tr>
                         </tbody></table>
                 </div>
             </td>
             <td valign="middle" align="center" style="vertical-align: middle">
-                <label id="lbldate"><?php echo $model->po_date; ?></label>
+                <label id="lbldate"><?php echo $lbldate; ?></label>
             </td>
         </tr>
         <tr align="center">
@@ -45,15 +39,15 @@ $this->breadcrumbs = array(
                                                 <div>
                                                     <table cellspacing="0" class="table table-bordered table-condensed">
                                                         <tbody><tr>
-                                                                <td style="font-size:Large;font-weight:bold;" colspan="2"><?php echo $model->poVendor->vendor_name; ?></td>
+                                                                <td style="font-size:Large;font-weight:bold;" colspan="2"><?php echo @$vendor->vendor_name; ?></td>
                                                             </tr><tr>
                                                                 <td style="font-size:Medium;" colspan="2">
-                                                                    <?php echo $model->poVendor->vendor_address; ?>
+                                                                    <?php echo @$vendor->vendor_address; ?>
                                                                 </td>
                                                             </tr><tr>
-                                                                <td style="font-size:Medium;" colspan="2"> <?php echo $model->poVendor->vendor_city; ?></td>
+                                                                <td style="font-size:Medium;" colspan="2"> <?php echo @$vendor->vendor_city; ?></td>
                                                             </tr><tr>
-                                                                <td style="font-size:Medium;" colspan="2"> <?php echo $model->poVendor->vendor_country; ?></td>
+                                                                <td style="font-size:Medium;" colspan="2"> <?php echo @$vendor->vendor_country; ?></td>
                                                             </tr>
                                                         </tbody></table>
                                                 </div>
@@ -67,6 +61,9 @@ $this->breadcrumbs = array(
                             <td>
                                 <h2>Product Details</h2>
                                 <div>
+                                    <?php
+                                    $po_products = Yii::app()->session['po_added_products'];
+                                    ?>
                                     <table cellspacing="0" class="table table-bordered table-condensed">
                                         <thead>
                                             <tr>
@@ -83,20 +80,23 @@ $this->breadcrumbs = array(
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($model->purchaseOrderDetails as $products): ?>
-                                                <tr>
-                                                    <td><?php echo $products->poDetProdFmly->pro_family_name; ?></td>
-                                                    <td><?php echo $products->poDetProduct->pro_name; ?></td>
-                                                    <td><?php echo $products->poDetVariety->variety_name; ?></td>
-                                                    <td><?php echo implode(CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $products->po_det_grade)), 'grade_id', 'grade_long_name')); ?></td>
-                                                    <td><?php echo implode(CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $products->po_det_size)), 'size_id', 'size_name')); ?></td>
-                                                    <td><?php echo $products->po_det_cotton_qty; ?></td>
-                                                    <td><?php echo $products->po_det_price; ?></td>
-                                                    <td><?php echo $products->po_det_container_qty; ?></td>
-                                                    <td><?php echo $products->po_det_net_weight; ?></td>
-                                                    <td><?php echo $products->po_det_cotton_qty * $products->po_det_price; ?></td>
-                                                </tr>
-                                            <?php endforeach; ?>
+                                            <?php if ($po_products): foreach ($po_products as $key => $product): ?>
+                                                    <tr>
+                                                        <td><?php echo ProductFamily::model()->findByPk($product['po_det_prod_fmly_id'])->pro_family_name; ?></td>
+                                                        <td><?php echo Product::model()->findByPk($product['po_det_product_id'])->pro_name; ?></td>
+                                                        <td><?php echo ProductVariety::model()->findByPk($product['po_det_variety_id'])->variety_name; ?></td>
+                                                        <td><?php echo implode(CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $product['po_det_size'])), 'size_id', 'size_name')); ?></td>
+                                                        <td><?php echo implode(CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $product['po_det_grade'])), 'grade_id', 'grade_long_name')); ?></td>
+                                                        <td><?php echo $product['po_det_net_weight']; ?></td>
+                                                        <!--<td><?php echo $product['po_det_currency']; ?></td>-->
+                                                        <td><?php echo $product['po_det_cotton_qty']; ?></td>
+                                                        <td><?php echo $product['po_det_container_qty']; ?></td>
+                                                        <td><?php echo $product['po_det_price']; ?></td>
+                                                        <td><?php echo $product['po_det_cotton_qty'] * $product['po_det_price']; ?></td>
+                                                    </tr>
+                                                <?php endforeach;
+                                            endif;
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -109,9 +109,9 @@ $this->breadcrumbs = array(
                                                 <th scope="col">Liner Code</th><th scope="col">Liner Name</th><th scope="col">Free Days</th>
                                             </tr>
                                             <tr>
-                                                <td><?php echo $model->poLiner->liner_code; ?></td>
-                                                <td><?php echo $model->poLiner->liner_name; ?></td>
-                                                <td><?php echo $model->poLiner->no_of_free_days; ?></td>
+                                                <td><?php echo @$liner->liner_code; ?></td>
+                                                <td><?php echo @$liner->liner_name; ?></td>
+                                                <td><?php echo @$liner->no_of_free_days; ?></td>
                                             </tr>
                                         </tbody></table>
                                 </div>
@@ -120,34 +120,16 @@ $this->breadcrumbs = array(
                         <tr height="30%">
                             <td>
                                 <h2>Terms &amp; Conditions</h2>
-                                <?php $this->renderPartial('/masters/_terms', array('vendor' => $model->poVendor)) ?>
+<?php $this->renderPartial('/masters/_terms', array('vendor' => @$vendor))  ?>
                             </td>
                         </tr>
                     </tbody></table>
             </td>
         </tr>
-    </tbody></table>
+    </tbody>
+</table>
 
-<div class="user-view">
-    <?php if ($export) { ?>
-        <h3 class="text-center">PurchaseOrder <?php echo $this->title ?></h3>
-        <?php
-    }
-    ?>
-    <?php
-    $this->widget('zii.widgets.CDetailView', array(
-        'data' => $model,
-        'htmlOptions' => array('class' => 'table table-striped table-bordered'),
-        'attributes' => array(
-            'po_id',
-            'po_number',
-            'po_date',
-            'po_company_id',
-            'po_vendor_id',
-        ),
-    ));
-    ?>
-</div>
+
 
 
 

@@ -116,16 +116,33 @@ class NUploadFile extends CActiveRecordBehavior {
         return $this->_removeFile;
     }
 
-    public function getFilePath($relative = false) {
-        $filePath = $this->owner->{$this->fileField};
-        if ($this->_uploadDirectory == null) {
-            $this->_uploadDirectory = UPLOAD_DIR;
+    public function getFilePath($relative = false, $filefield = NULL) {
+        if (!is_array($this->fileField)) {
+            $filePath = $this->owner->{$this->fileField};
+            if ($this->_uploadDirectory == null) {
+                $this->_uploadDirectory = UPLOAD_DIR;
 //			return Yii::app()->runtimePath.$filePath;
-            if (!$relative):
-                return Yii::app()->createAbsoluteUrl(str_replace(DS, '/', $this->_uploadDirectory . $filePath));
-            else:
-                return str_replace('//', '/', DS . $this->_uploadDirectory . $filePath);
-            endif;
+                if (!$relative):
+                    return Yii::app()->createAbsoluteUrl(str_replace(DS, '/', $this->_uploadDirectory . $filePath));
+                else:
+                    return str_replace('//', '/', DS . $this->_uploadDirectory . $filePath);
+                endif;
+            }
+        }else {
+            $paths = array();
+            foreach ($this->fileField as $field) {
+                $filePath = $this->owner->{$field};
+                if ($this->_uploadDirectory == null) {
+                    $this->_uploadDirectory = UPLOAD_DIR;
+                }
+                if (!$relative):
+                    $paths[$field] = Yii::app()->createAbsoluteUrl(str_replace(DS, '/', $this->_uploadDirectory . $filePath));
+                else:
+                    $paths[$field] = str_replace('//', '/', DS . $this->_uploadDirectory . $filePath);
+                endif;
+            }
+            if($filefield != NULL)
+                return $paths[$filefield];
         }
     }
 

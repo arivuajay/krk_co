@@ -24,7 +24,7 @@ class PurchaseorderController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct', 'preview'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -176,6 +176,11 @@ class PurchaseorderController extends Controller {
      */
     public function actionIndex() {
         $model = new PurchaseOrder();
+        if (isset($_REQUEST['PurchaseOrder']) && !empty($_REQUEST['PurchaseOrder'])) {
+            $model->unsetAttributes();
+            $model->attributes = $_GET['PurchaseOrder'];
+        }
+        
         $this->render('index', compact('model'));
     }
 
@@ -216,6 +221,23 @@ class PurchaseorderController extends Controller {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
+    }
+    
+    public function actionPreview() {
+        $company = $vendor = $liner = array();
+        if($_GET['comp_id'] && !empty($_GET['comp_id'])){
+            $company = Company::model()->findByPk($_GET['comp_id']);
+        }
+        if($_GET['vendor_id'] && !empty($_GET['vendor_id'])){
+            $vendor = Vendor::model()->findByPk($_GET['vendor_id']);
+        }
+        if($_GET['liner_id'] && !empty($_GET['liner_id'])){
+            $liner = Liner::model()->findByPk($_GET['liner_id']);
+        }
+        if($_GET['lbldate'] && !empty($_GET['lbldate'])){
+            $lbldate = $_GET['lbldate'];
+        }
+        $this->renderPartial('_preview', compact('company', 'vendor', 'liner', 'lbldate'));
     }
 
 }

@@ -40,29 +40,73 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
             <div class="box-body">
                 <div class="row">
                     <div class="col-lg-6">
-                        <ul>
-                            <li>Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet</li>
-                            <li>Consectetur adipiscing elit Consectetur adipiscing elit Consectetur adipiscing elit</li>
-                            <li>Integer molestie lorem at massa Consectetur adipiscing elit Consectetur adipiscing elit</li>
-                            <li>Facilisis in pretium nisl aliquet Facilisis in pretium nisl alique</li>
-                            <li>Faucibus porta lacus fringilla vel</li>
-                            <li>Aenean sit amet erat nunc</li>
-                            <li>Eget porttitor lorem</li>
-                        </ul>
+                        <div id="terms">
+                        </div>
                         <button type="button" id="submit_po" class="btn btn-success">Submit</button>
                         <button type="button" id="reset_po" class="btn btn-warning">Reset</button>
-                        <button type="button" id="preview_po" class="btn btn-info">Preview</button>
+                        <?php
+                        $this->widget(
+                                'booster.widgets.TbButton', array(
+                            'label' => 'Preview',
+                            'context' => 'info',
+                            'htmlOptions' => array(
+                                'id' => 'preview_po',
+                                'data-toggle' => 'modal',
+                                'data-target' => '#previewModal',
+                                'onclick' => '{
+                                    $("#preview_box").html("<div>Loading...</div>");
+                                    comp_id = $("#PurchaseOrder_po_company_id").val();
+                                    vendor_id = $("#PurchaseOrder_po_vendor_id").val();
+                                    lbldate = $("#PurchaseOrder_po_date").val();
+                                    liner_id = $("#liner_code").val();
+
+                                    $.get("' . Yii::app()->createUrl("site/purchaseorder/preview") . '", { 
+                                    "comp_id": comp_id, "vendor_id": vendor_id, "lbldate" : lbldate, "liner_id" : liner_id}
+                                    ).done(function( data ){
+                                        $("#preview_box").html(data);
+                                   });
+                                }'
+                            ),
+                                )
+                        );
+                        ?>
                     </div>
                     <div class="col-lg-6">
                         <label class="col-sm-3">Prefered Liner: </label>
                         <div class="col-sm-6">
-                        <?php echo CHtml::dropDownList('liner_code', '', CHtml::listData(Liner::model()->active()->findAll(), 'liner_id', 'liner_name'),array('prompt'=>'Select Liner','class'=>'form-control','onchange'=>'js:$("#PurchaseOrder_po_liner_id").val(this.value);')); ?>
+                            <?php echo CHtml::dropDownList('liner_code', '', CHtml::listData(Liner::model()->active()->findAll(), 'liner_id', 'liner_name'), array('prompt' => 'Select Liner', 'class' => 'form-control', 'onchange' => 'js:$("#PurchaseOrder_po_liner_id").val(this.value);')); ?>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <?php
+    $this->beginWidget(
+            'booster.widgets.TbModal', array('id' => 'previewModal')
+    );
+    ?>
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">&times;</a>
+        <h4>Preview</h4>
+    </div>
+    <div class="modal-body" id="preview_box">
+    </div>
+
+    <div class="modal-footer">
+        <?php
+        $this->widget(
+                'booster.widgets.TbButton', array(
+            'label' => 'Close',
+            'url' => '#',
+            'htmlOptions' => array('data-dismiss' => 'modal', 'id' => 'preview-dismiss'),
+                )
+        );
+        ?>
+    </div>
+
+    <?php $this->endWidget(); ?>
 
 
     <?php
@@ -82,5 +126,10 @@ EOD;
     $cs->registerScript('_po_form', $js);
     ?>
 
+    <style>
+        body .modal-content {
+            width: 900px;
+        }
+    </style>
 
 
