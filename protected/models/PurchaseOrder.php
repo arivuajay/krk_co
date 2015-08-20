@@ -15,6 +15,8 @@
  * @property string $created_by
  * @property integer $modified_at
  * @property integer $modified_by
+ * @property string $from_date
+ * @property string $to_date
  *
  * The followings are the available model relations:
  * @property Vendor $poVendor
@@ -23,6 +25,9 @@
  * @property PurchaseOrderDetails[] $purchaseOrderDetails
  */
 class PurchaseOrder extends CActiveRecord {
+    
+    public $from_date;
+    public $to_date;
 
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
@@ -48,7 +53,7 @@ class PurchaseOrder extends CActiveRecord {
             array('po_date,po_company_id,po_vendor_id', 'required'),
             array('po_company_id, po_vendor_id,po_liner_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
             array('status', 'length', 'max' => 1),
-            array('created_at, created_by,purchase_order_code', 'safe'),
+            array('created_at, created_by,purchase_order_code, from_date, to_date', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('po_id, purchase_order_code, po_date, po_company_id, po_vendor_id, po_liner_id,status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
@@ -85,6 +90,8 @@ class PurchaseOrder extends CActiveRecord {
             'created_by' => 'Created By',
             'modified_at' => 'Modified At',
             'modified_by' => 'Modified By',
+            'from_date' => 'From date',
+            'to_date' => 'To date',
         );
     }
 
@@ -148,6 +155,10 @@ class PurchaseOrder extends CActiveRecord {
         $criteria->compare('created_by', $this->created_by, true);
         $criteria->compare('modified_at', $this->modified_at);
         $criteria->compare('modified_by', $this->modified_by);
+        
+        if($this->from_date != '' && $this->to_date != ''){
+            $criteria->addBetweenCondition('po_date', date('Y-m-d', strtotime($this->from_date)), date('Y-m-d', strtotime($this->to_date)));
+        }
         
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,

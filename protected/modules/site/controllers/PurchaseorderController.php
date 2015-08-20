@@ -24,7 +24,7 @@ class PurchaseorderController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct', 'preview'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct', 'preview', 'report'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -182,6 +182,16 @@ class PurchaseorderController extends Controller {
         }
         
         $this->render('index', compact('model'));
+    }
+
+    public function actionReport() {
+        $model = new PurchaseOrder();
+        if (isset($_REQUEST['PurchaseOrder']) && !empty($_REQUEST['PurchaseOrder'])) {
+            $model->unsetAttributes();
+            $model->attributes = $_GET['PurchaseOrder'];
+        }
+        
+        $this->render('report', compact('model'));
     }
 
     /**

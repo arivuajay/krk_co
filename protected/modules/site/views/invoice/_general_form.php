@@ -31,6 +31,7 @@ $vendors = Vendor::VendorList();
                     <?php
                     $this->widget('application.components.myAutoComplete', array(
                         'source' => 'js: function(request, response) {
+                                    $("#po_list").addClass("load-input");
                                     $.ajax({
                                         url: "' . $this->createUrl('/site/default/getPOSByClient') . '",
                                         dataType: "json",
@@ -40,6 +41,7 @@ $vendors = Vendor::VendorList();
                                             company: $("#Invoice_company_id").val()
                                         },
                                         success: function (data) {
+                                            $("#po_list").removeClass("load-input");
                                                 response(data);
                                         }
                                     })

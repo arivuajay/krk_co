@@ -125,11 +125,3 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
 EOD;
     $cs->registerScript('_po_form', $js);
     ?>
-
-    <style>
-        body .modal-content {
-            width: 900px;
-        }
-    </style>
-
-

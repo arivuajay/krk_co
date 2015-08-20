@@ -131,6 +131,8 @@ class DefaultController extends Controller {
         $model = User::model()->findByPk($id);
         $model->setScenario('update');
 
+        $this->performAjaxValidation($model);
+        
         if (isset($_POST['User'])) {
             $model->attributes = $_POST['User'];
             if ($model->validate()):
@@ -166,7 +168,7 @@ class DefaultController extends Controller {
     }
 
     protected function performAjaxValidation($model) {
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'request-pass') {
+        if (isset($_POST['ajax']) && ($_POST['ajax'] === 'request-pass' || $_POST['ajax'] === 'profile-form')) {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
