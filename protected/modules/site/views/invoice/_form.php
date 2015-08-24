@@ -38,7 +38,8 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                 <div class="row">
                     <div class="col-lg-6">
                         <button type="button" id="submit_po" class="btn btn-success">Submit</button>
-                        <button type="button" id="reset_po" class="btn btn-warning">Reset</button>
+                        <?php echo CHtml::link('Reset', array('/site/invoice/create', 'open' => 'fresh'), array("id" => "reset_po", "class" => "btn btn-warning")) ?>
+
                         <button type="button" id="preview_po" class="btn btn-info">Preview</button>
                     </div>
                 </div>
@@ -47,9 +48,9 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
     </div>
 
 
-<?php
-$user_js_format = JS_USER_DATE_FORMAT;
-$js = <<< EOD
+    <?php
+    $user_js_format = JS_USER_DATE_FORMAT;
+    $js = <<< EOD
 $(document).ready(function(){
     $('.datepicker').datepicker({ format: '$user_js_format' });
     var invForm = $('#invoice-form');
@@ -61,5 +62,5 @@ $(document).ready(function(){
     });
 });
 EOD;
-$cs->registerScript('_inv_form', $js);
-?>
+    $cs->registerScript('_inv_form', $js);
+    ?>

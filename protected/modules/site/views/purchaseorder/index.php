@@ -2,9 +2,9 @@
 /* @var $this PurchaseorderController */
 /* @var $dataProvider CActiveDataProvider */
 
-$this->title='Purchase Orders';
-$this->breadcrumbs=array(
-	'Purchase Orders',
+$this->title = 'Purchase Orders';
+$this->breadcrumbs = array(
+    'Purchase Orders',
 );
 $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
@@ -15,9 +15,9 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
 ?>
 <div class="col-lg-12 col-md-12" id="advance-search-block">
     <div class="row mb10" id="advance-search-label">
-        <?php echo CHtml::link('<i class="fa fa-angle-right"></i> Show Advance Search', 'javascript:void(0);', array('class' => 'pull-right')); ?>
+        <?php echo CHtml::link('<i class="fa fa-angle-right"></i> Hide Advance Search', 'javascript:void(0);', array('class' => 'pull-right')); ?>
     </div>
-    <div class="row" id="advance-search-form">
+    <div class="row" id="advance-search-form" style="display: block;">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">
@@ -66,33 +66,40 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
 
 <div class="col-lg-12 col-md-12">
     <div class="row">
-        <div class="col-lg-4 col-md-4 row">
-            <div class="form-group">
-                <label class="control-label">Search: </label>
-                <input type="text" class="form-control inline" name="base_table_search" id="base_table_search" />
-            </div>
-        </div>
-        <?php echo CHtml::link('<i class="fa fa-plus"></i>&nbsp;&nbsp;Create PurchaseOrder', array('/site/purchaseorder/create'), array('class' => 'btn btn-success pull-right')); ?>
+        <!--        <div class="col-lg-4 col-md-4 row">
+                    <div class="form-group">
+                        <label class="control-label">Search: </label>
+                        <input type="text" class="form-control inline" name="base_table_search" id="base_table_search" />
+                    </div>
+                </div>-->
+        <?php echo CHtml::link('<i class="fa fa-plus"></i>&nbsp;&nbsp;Create PurchaseOrder', array('/site/purchaseorder/create'), array('class' => 'btn btn-success pull-right mb10')); ?>
     </div>
 </div>
 
 <div class="col-lg-12 col-md-12">
     <div class="row">
-<?php
+        <?php
         $gridColumns = array(
-		'purchase_order_code',
-		'po_date',
-		'poCompany.company_name',
-		'poVendor.vendor_name',
-		array(
+            'purchase_order_code',
+            'po_date',
+            'poCompany.company_name',
+            'poVendor.vendor_name',
+            array(
+                'header' => 'Vendor notify',
+                'value' => function($data) {
+                    return CHtml::link('Sent to vendor', array('/site/purchaseorder/sendvendor','id'=>$data->po_id), array("class" => "btn btn-xs btn-primary"));
+                },
+                'type' => 'raw'
+            ),
+            array(
                 'header' => 'Actions',
                 'class' => 'booster.widgets.TbButtonColumn',
                 'htmlOptions' => array('style' => 'width: 180px;;text-align:center', 'vAlign' => 'middle', 'class' => 'action_column'),
-                'template' => '{view}{delete}',
+                'template' => '{view}{update}{delete}',
             )
-            );
+        );
 
-            $this->widget('booster.widgets.TbExtendedGridView', array(
+        $this->widget('booster.widgets.TbExtendedGridView', array(
             'type' => 'striped bordered datatable',
             'dataProvider' => $model->dataProvider(),
             'responsiveTable' => true,

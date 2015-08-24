@@ -8,6 +8,7 @@
  * @property integer $vendor_id
  * @property integer $company_id
  * @property integer $po_id
+ * @property integer $po_cur_status
  * @property string $permit_no
  * @property string $bol_no
  * @property string $inv_no
@@ -61,8 +62,8 @@ class Invoice extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('vendor_id, company_id, po_id, permit_no, bol_no, inv_no, created_at, created_by', 'required'),
-            array('vendor_id, company_id, po_id, status, created_by, modified_by', 'numerical', 'integerOnly' => true),
+            array('vendor_id, company_id, po_cur_status,po_id, permit_no, bol_no, inv_no, created_at, created_by', 'required'),
+            array('vendor_id, company_id, po_id, po_cur_status,status, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('permit_no, bol_no, inv_no, vessel_name', 'length', 'max' => 100),
             array('inv_file, pkg_list_file', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
             array('inv_date, modified_at', 'safe'),
@@ -96,6 +97,7 @@ class Invoice extends CActiveRecord {
             'vendor_id' => 'Vendor',
             'company_id' => 'Company',
             'po_id' => 'PO Number',
+            'po_cur_status' => 'PO Status',
             'permit_no' => 'Permit No',
             'bol_no' => 'Bill of Lading No',
             'inv_no' => 'Invoice No',
@@ -123,7 +125,7 @@ class Invoice extends CActiveRecord {
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search() {
+    public function dataProvider() {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
@@ -132,6 +134,7 @@ class Invoice extends CActiveRecord {
         $criteria->compare('vendor_id', $this->vendor_id);
         $criteria->compare('company_id', $this->company_id);
         $criteria->compare('po_id', $this->po_id);
+        $criteria->compare('po_cur_status', $this->po_cur_status);
         $criteria->compare('permit_no', $this->permit_no, true);
         $criteria->compare('bol_no', $this->bol_no, true);
         $criteria->compare('inv_no', $this->inv_no, true);
@@ -163,14 +166,6 @@ class Invoice extends CActiveRecord {
         return parent::model($className);
     }
 
-    public function dataProvider() {
-        return new CActiveDataProvider($this, array(
-            'pagination' => array(
-                'pageSize' => PAGE_SIZE,
-            )
-        ));
-    }
-
     protected function beforeValidate() {
         if ($this->isNewRecord) {
             $this->created_at = new CDbExpression('NOW()');
@@ -188,6 +183,12 @@ class Invoice extends CActiveRecord {
         $this->inv_date = date(PHP_USER_DATE_FORMAT, strtotime($this->inv_date));
 
         return parent::afterFind();
+    }
+
+    protected function afterSave() {
+        parent::afterSave();
+
+        PurchaseOrder::model()->updateByPk($this->po_id, array('status' => $this->po_cur_status));
     }
 
 }

@@ -89,9 +89,9 @@ class PytoOrigin extends CActiveRecord {
             'pyto_vendor_id' => 'Vendor',
             'pyto_po_id' => 'PO Number',
             'pyto_invoice_id' => 'Invoice No',
-            'pyto_cert_no' => 'Certificate No',
+            'pyto_cert_no' => 'Pyto Certificate No',
             'doinspection' => 'Date Of Inspection',
-            'origin_cert_no' => 'Certificate No',
+            'origin_cert_no' => 'Origin Certificate No',
             'pyto_file' => 'Upload Pyto',
             'origin_file' => 'Upload Origin',
             'status' => 'Status',
@@ -114,7 +114,7 @@ class PytoOrigin extends CActiveRecord {
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search() {
+    public function dataProvider() {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
@@ -151,14 +151,6 @@ class PytoOrigin extends CActiveRecord {
      */
     public static function model($className = __CLASS__) {
         return parent::model($className);
-    }
-
-    public function dataProvider() {
-        return new CActiveDataProvider($this, array(
-            'pagination' => array(
-                'pageSize' => PAGE_SIZE,
-            )
-        ));
     }
 
     protected function beforeValidate() {

@@ -9,6 +9,7 @@ $form = $this->beginWidget('CActiveForm', array(
         ));
 $companies = Company::CompanyList();
 $vendors = Vendor::VendorList();
+$poStatus = PurchaseOrder::StatusList();
 ?>
 <div class="box-header">
     <h3 class="box-title">General Info</h3>
@@ -27,7 +28,7 @@ $vendors = Vendor::VendorList();
             <div class="form-group">
                 <?php echo $form->labelEx($model, 'po_id', array('class' => 'col-sm-4 control-label')); ?>
                 <div class="col-sm-6">
-                    
+
                     <?php
                     $this->widget('application.components.myAutoComplete', array(
                         'source' => 'js: function(request, response) {
@@ -41,33 +42,43 @@ $vendors = Vendor::VendorList();
                                             company: $("#Invoice_company_id").val()
                                         },
                                         success: function (data) {
+                                            if(!data.length){
+                                                data.push({ id: 0, label: "No data found" });
+                                            }
                                             $("#po_list").removeClass("load-input");
-                                                response(data);
+                                            response(data);
                                         }
                                     })
                                  }',
                         'name' => 'po_list',
                         'options' => array(
                             'minLength' => '0',
-                            'autoFill'=>false,
-                            'focus'=> 'js:function( event, ui ) {
+                            'autoFill' => false,
+                            'focus' => 'js:function( event, ui ) {
                                 $( "#po_list" ).val( ui.item.purchase_order_code );
                                 return false;
                             }',
-                            'select'=>'js:function( event, ui ) {
-                                $("#'.CHtml::activeId($model,'po_id').'").val(ui.item.po_id);
+                            'select' => 'js:function( event, ui ) {
+                                $("#' . CHtml::activeId($model, 'po_id') . '").val(ui.item.po_id);
                                 $("#po_date").val(ui.item.po_date);
                                 return false;
-                            }'
+                            }',
                         ),
                         'htmlOptions' => array(
                             'class' => 'form-control'
                         ),
-                        'methodChain'=>'.data( "autocomplete" )._renderItem = function( ul, item ) {
+                        'methodChain' => '.data( "autocomplete" )._renderItem = function( ul, item ) {
+                            if(item.id == 0){
+                                return $( "<li></li>" )
+                                    .data( "item.autocomplete", item )
+                                    .append( "<a>" + item.label +  "</a>" )
+                                    .appendTo( ul );
+                            }else{
                             return $( "<li></li>" )
                                 .data( "item.autocomplete", item )
                                 .append( "<a>" + item.purchase_order_code +  "</a>" )
                                 .appendTo( ul );
+                            }
                         };'
                     ));
                     echo $form->hiddenField($model, 'po_id');
@@ -119,6 +130,14 @@ $vendors = Vendor::VendorList();
             </div>
 
             <div class="form-group">
+                <?php echo $form->labelEx($model, 'po_cur_status', array('class' => 'col-sm-4 control-label')); ?>
+                <div class="col-sm-6">
+                    <?php echo $form->dropDownList($model, 'po_cur_status', $poStatus, array('class' => 'form-control', 'prompt' => 'Select PO Status')); ?>
+                    <?php echo $form->error($model, 'po_cur_status'); ?>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <?php echo $form->labelEx($model, 'bol_no', array('class' => 'col-sm-4 control-label')); ?>
                 <div class="col-sm-6">
                     <?php echo $form->textField($model, 'bol_no', array('class' => 'form-control', 'size' => 60, 'maxlength' => 100)); ?>
@@ -138,7 +157,7 @@ $vendors = Vendor::VendorList();
     </div>
 </div>
 <div class="box-header">
-    <h3 class="box-title">Upload Relavent Documents</h3>
+    <h3 class="box-title">Upload Relevant Documents</h3>
 </div>
 <div class="box-body">
     <div class="form-group">

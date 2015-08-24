@@ -62,6 +62,7 @@ class UserIdentity extends CUserIdentity {
     protected function setUserData($user) {
         $this->_id = $user->user_id;
         $this->setState('name', $user->first_name);
+        $this->setState('guid', uniqid());
         return;
     }
 

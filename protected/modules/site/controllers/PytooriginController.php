@@ -138,18 +138,13 @@ class PytooriginController extends Controller {
      * Lists all models.
      */
     public function actionIndex() {
-        $search = false;
-
         $model = new PytoOrigin();
-        $searchModel = new PytoOrigin('search');
-        $searchModel->unsetAttributes();  // clear any default values
-        if (isset($_GET['PytoOrigin'])) {
-            $search = true;
-            $searchModel->attributes = $_GET['PytoOrigin'];
-            $searchModel->search();
+        if (isset($_REQUEST['PytoOrigin']) && !empty($_REQUEST['PytoOrigin'])) {
+            $model->unsetAttributes();
+            $model->attributes = $_GET['PytoOrigin'];
         }
 
-        $this->render('index', compact('searchModel', 'search', 'model'));
+        $this->render('index', compact('model'));
     }
 
     /**

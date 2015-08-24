@@ -2,6 +2,10 @@
 $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
+if ($model->isNewRecord)
+    $posession = Yii::app()->user->getState('guid');
+else
+    $posession = "po_{$model->po_id}";
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -13,9 +17,11 @@ $cs_pos_end = CClientScript::POS_END;
             <?php
             $form = $this->beginWidget('CActiveForm', array(
                 'id' => 'purchase-order-details-form', 'htmlOptions' => array('role' => 'form', 'class' => 'form-horizontal'),
-                'action' => Yii::app()->createUrl('/site/purchaseorder/addProduct'),
+                'action' => Yii::app()->createUrl('/site/purchaseorder/addProduct', array('posession' => $posession)),
                 'clientOptions' => array(
                     'validateOnSubmit' => true,
+                    'validateOnChange' => false,
+                    'beforeValidate' => 'js:b4AddProd',
                     'afterValidate' => 'js:AddPODetails'
                 ),
                 'enableAjaxValidation' => true,
@@ -118,7 +124,7 @@ $cs_pos_end = CClientScript::POS_END;
                 <div class="form-group">
                     <?php echo $form->labelEx($detail_model, 'po_det_currency', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
-                        <?php echo $form->dropDownList($detail_model, 'po_det_currency', array('INR (INR)' => 'INR (INR)', 'USD ($)' => 'USD ($)'), array('class' => 'form-control','onchange'=>'js:$("#fmt_currency").html(this.value)')); ?>
+                        <?php echo $form->dropDownList($detail_model, 'po_det_currency', array('INR (INR)' => 'INR (INR)', 'USD ($)' => 'USD ($)'), array('class' => 'form-control', 'onchange' => 'js:$("#fmt_currency").html(this.value)')); ?>
                         <?php echo $form->error($detail_model, 'po_det_currency'); ?>
                     </div>
                 </div>
@@ -134,7 +140,7 @@ $cs_pos_end = CClientScript::POS_END;
                     </div>
                 </div>
                 <div class="form-group">
-                    <?php echo CHtml::submitButton('ADD PRODUCT', array('class' => $detail_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
+                    <?php echo CHtml::submitButton('ADD PRODUCT', array('id' => 'add_prod', "data-loading-text" => "Validating...", 'class' => $detail_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
                 </div>
             </div>
             <?php $this->endWidget(); ?>
@@ -145,8 +151,8 @@ $cs_pos_end = CClientScript::POS_END;
 <?php
 $grade_url = Yii::app()->createUrl('/site/default/getGradeByProduct');
 $size_url = Yii::app()->createUrl('/site/default/getSizeByProduct');
-$po_add_product = Yii::app()->createUrl('/site/purchaseorder/addProduct');
-$po_products_url = Yii::app()->createUrl('/site/purchaseorder/poAddedProducts');
+$po_add_product = Yii::app()->createUrl('/site/purchaseorder/addProduct', array('posession' => $posession));
+$po_products_url = Yii::app()->createUrl('/site/purchaseorder/poAddedProducts', array('posession' => $posession));
 
 //For create only
 if (empty($detail_model->po_det_prod_fmly_id)) {
@@ -176,20 +182,28 @@ $js .= <<< EOD
         });
     });
 
+
+
     function PoProductList(){
      $.ajax({
             'url':'$po_products_url',
-            'beforeSend':function(){
-                $('#po_added_products .box').append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
-            },
+//            'beforeSend':function(){
+//                $('#po_added_products .box').append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
+//            },
             'success':function(html){
                 $("#po_added_products .box-body").html(html);
-                $('#po_added_products .overlay').remove();
+//                $('#po_added_products .overlay').remove();
             }
         });
     }
 
+    var _addProBtn;
+    function b4AddProd(form){
+        _addProBtn = $("#add_prod").button("loading");
+        return true;
+    }
     function AddPODetails(f, d, e){
+
         if (e == false) {
             var data=$("#purchase-order-details-form").serialize();
             $.ajax({
@@ -202,6 +216,7 @@ $js .= <<< EOD
                 dataType:'html'
             });
         }
+         _addProBtn.button('reset');
         return false;
     }
 EOD;

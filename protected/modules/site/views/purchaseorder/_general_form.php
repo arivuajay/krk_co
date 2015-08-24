@@ -4,6 +4,7 @@ $form = $this->beginWidget('CActiveForm', array(
     'htmlOptions' => array('role' => 'form', 'class' => 'form-horizontal'),
     'clientOptions' => array(
         'validateOnSubmit' => true,
+        'validateOnChange' => false,
     ),
     'enableAjaxValidation' => true,
         ));
@@ -41,17 +42,19 @@ $vendors = Vendor::VendorList();
     <div class="form-group">
         <?php echo $form->labelEx($model, 'po_vendor_id', array('class' => 'col-sm-2 control-label')); ?>
         <div class="col-sm-5">
-            <?php echo $form->dropDownList($model, 'po_vendor_id', $vendors, array('class' => 'form-control', 'prompt' => 'Select Vendor',
-                'onchange' => '$.get("' . Yii::app()->createUrl("site/masters/terms") . '", { 
+            <?php
+            echo $form->dropDownList($model, 'po_vendor_id', $vendors, array('class' => 'form-control', 'prompt' => 'Select Vendor',
+                'onchange' => '$.get("' . Yii::app()->createUrl("site/masters/terms") . '", {
                             id: this.value}
                             ).done(function( data ){
                                 $("#terms").html(data);
                            });'
-                )); ?>
-            <?php echo $form->error($model, 'po_vendor_id'); ?>
+            ));
+            ?>
+    <?php echo $form->error($model, 'po_vendor_id'); ?>
         </div>
     </div>
-    <?php echo $form->hiddenField($model, 'po_liner_id'); ?>
-    <?php echo $form->error($model, 'po_liner_id'); ?>
+<?php echo $form->hiddenField($model, 'po_liner_id'); ?>
+<?php echo $form->error($model, 'po_liner_id'); ?>
 </div>
 <?php $this->endWidget(); ?>

@@ -6,14 +6,14 @@ class Sendmail{
 
     function send($to,$subject,$body,$fromName='',$from=''){
             if(MAILSENDBY == 'phpmail'):
-                $this->sendPhpmail($to, $subject, $body, $attachment); 
+                $this->sendPhpmail($to, $subject, $body, $attachment);
             elseif(MAILSENDBY == 'smtp'):
 			Yii::import('application.extensions.phpmailer.JPhpMailer');
 			if($from == '')
                         {
                             $from = NOREPLYMAIL;
                         }
-                        
+
                         if($fromName == '')
                         {
                             $fromName= Yii::app()->name;
@@ -31,15 +31,15 @@ class Sendmail{
 			$mailer->FromName = $fromName;
 			$mailer->AddAddress($to);
                        // $mailer->
-			$mailer->Subject = $subject;			
+			$mailer->Subject = $subject;
                         $mailer->MsgHTML($body);
-                        
+
                         try {
                               $mailer->Send() ;
                         } catch (Exception $exc) {
                             echo $exc->getTraceAsString();
                         }
-        endif;                        
+        endif;
 	}
         public function getMessage($body='registration',&$translate)
         {
@@ -47,18 +47,18 @@ class Sendmail{
              $msg_header = file_get_contents(SITEURL.EMAILTEMPLATE.'header.html');
              $msg_footer = file_get_contents(SITEURL.EMAILTEMPLATE.'footer.html');
              $msg_body   = file_get_contents(SITEURL.EMAILTEMPLATE.$body.'.html');
-             
-	     $message_dub = $msg_header.$msg_body.$msg_footer; 
+
+	     $message_dub = $msg_header.$msg_body.$msg_footer;
            else: // for db concept
              $msg_body   = Mailtemplate::model()->find('id="'.$body.'"');
-             
+
              $message_dub = $msg_body->template_content;
-           endif;  
-             
+           endif;
+
               $message = $this->translate($message_dub, $translate);
               return $message;
         }
-        
+
         public function translate($msg_dub,$translate = array())
         {
             $def_trans = array(
@@ -68,17 +68,17 @@ class Sendmail{
                 "{SITEINFOEMAIL}"=>INFOEMAIL,
                 '{SITESUPPORTEMAIL}'=>SITESUPPORTEMAIL,
                 );
-                
-            
+
+
             $translation = array_merge($def_trans,$translate);
-        
+
             $message = strtr($msg_dub, $translation);
-            
+
             return $message;
         }
-        
-        function sendPhpmail($to,$subject,$body,$attachment=null) 
-        {	
+
+        function sendPhpmail($to,$subject,$body,$attachment=null)
+        {
             $headers  = 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 

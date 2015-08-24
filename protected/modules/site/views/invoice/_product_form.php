@@ -15,6 +15,7 @@ $cs_pos_end = CClientScript::POS_END;
                 'action' => Yii::app()->createUrl('/site/invoice/addProduct'),
                 'clientOptions' => array(
                     'validateOnSubmit' => true,
+                    'beforeValidate' => 'js:b4AddProd',
                     'afterValidate' => 'js:AddINVDetails'
                 ),
                 'enableAjaxValidation' => true,
@@ -165,7 +166,7 @@ $cs_pos_end = CClientScript::POS_END;
 
 
                 <div class="form-group">
-                    <?php echo CHtml::submitButton('ADD PRODUCT', array('class' => $detail_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
+                    <?php echo CHtml::submitButton('ADD PRODUCT', array('id' => 'add_prod',"data-loading-text"=>"Validating..." ,'class' => $detail_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
                 </div>
             </div>
             <?php $this->endWidget(); ?>
@@ -210,16 +211,20 @@ $js .= <<< EOD
     function PoProductList(){
      $.ajax({
             'url':'$inv_products_url',
-            'beforeSend':function(){
-                $('#inv_added_products .box').append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
-            },
+//            'beforeSend':function(){
+//                $('#inv_added_products .box').append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
+//            },
             'success':function(html){
                 $("#inv_added_products .box-body").html(html);
-                $('#inv_added_products .overlay').remove();
+//                $('#inv_added_products .overlay').remove();
             }
         });
     }
-
+    var _addProBtn;
+    function b4AddProd(form){
+        _addProBtn = $("#add_prod").button("loading");
+        return true;
+    }
     function AddINVDetails(f, d, e){
         if (e == false) {
             var data=$("#invoice-items-form").serialize();
@@ -233,6 +238,7 @@ $js .= <<< EOD
                 dataType:'html'
             });
         }
+        _addProBtn.button('reset');
         return false;
     }
 EOD;

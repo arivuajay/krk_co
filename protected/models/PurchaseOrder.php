@@ -19,13 +19,14 @@
  * @property string $to_date
  *
  * The followings are the available model relations:
+ * @property Invoice[] $invoices
  * @property Vendor $poVendor
  * @property Company $poCompany
  * @property Liner $poLiner
  * @property PurchaseOrderDetails[] $purchaseOrderDetails
  */
 class PurchaseOrder extends CActiveRecord {
-    
+
     public $from_date;
     public $to_date;
 
@@ -67,6 +68,7 @@ class PurchaseOrder extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            'invoices' => array(self::HAS_MANY, 'Invoice', 'po_id'),
             'poVendor' => array(self::BELONGS_TO, 'Vendor', 'po_vendor_id'),
             'poCompany' => array(self::BELONGS_TO, 'Company', 'po_company_id'),
             'poLiner' => array(self::BELONGS_TO, 'Liner', 'po_liner_id'),
@@ -155,11 +157,11 @@ class PurchaseOrder extends CActiveRecord {
         $criteria->compare('created_by', $this->created_by, true);
         $criteria->compare('modified_at', $this->modified_at);
         $criteria->compare('modified_by', $this->modified_by);
-        
-        if($this->from_date != '' && $this->to_date != ''){
+
+        if ($this->from_date != '' && $this->to_date != '') {
             $criteria->addBetweenCondition('po_date', date('Y-m-d', strtotime($this->from_date)), date('Y-m-d', strtotime($this->to_date)));
         }
-        
+
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
             'pagination' => array(
@@ -194,6 +196,14 @@ class PurchaseOrder extends CActiveRecord {
         $this->po_date = date(PHP_USER_DATE_FORMAT, strtotime($this->po_date));
 
         return parent::afterFind();
+    }
+
+    public static function StatusList($key = NULL) {
+        $status = array('1' => 'Open', '2' => 'Partially Invoiced', '3' => 'Fully Invoiced', '4' => 'Rejected', '5' => 'Cancelled', '6' => 'Closed');
+
+        if ($key != NULL)
+            return $status[$key];
+        return $status;
     }
 
 }

@@ -12,7 +12,7 @@ class PurchaseorderController extends Controller {
     public function filters() {
         return array(
             'accessControl', // perform access control for CRUD operations
-                //'postOnly + delete', // we only allow deletion via POST request
+//'postOnly + delete', // we only allow deletion via POST request
         );
     }
 
@@ -24,7 +24,7 @@ class PurchaseorderController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct', 'preview', 'report'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct', 'preview', 'report', 'sendvendor'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -47,19 +47,23 @@ class PurchaseorderController extends Controller {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
+        if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
+            unset($_SESSION['po_added_products']);
+            $this->redirect(array('/site/purchaseorder/create'));
+        }
+
         $model = new PurchaseOrder;
         $detail_model = new PurchaseOrderDetails('add_product');
 
-        $session = Yii::app()->session;
-        $po_products = $session['po_added_products'];
-
-        // Uncomment the following line if AJAX validation is needed
+// Uncomment the following line if AJAX validation is needed
         $this->performAjaxValidation($model);
 
         if (isset($_POST['PurchaseOrder'])) {
             $model->attributes = $_POST['PurchaseOrder'];
             if ($model->validate()) {
                 $model->save(false);
+                $posession = Yii::app()->user->getState('guid');
+                $po_products = $_SESSION['po_added_products'][$posession];
                 foreach ($po_products as $product) {
                     $detail_model = new PurchaseOrderDetails('save');
                     $detail_model->attributes = $product;
@@ -67,7 +71,7 @@ class PurchaseorderController extends Controller {
                     $detail_model->save(false);
                 }
 
-                unset($_SESSION['po_added_products']);
+                unset($_SESSION['po_added_products'][$posession]);
                 Myclass::addAuditTrail("Created PurchaseOrder successfully.", "user");
                 Yii::app()->user->setFlash('success', 'PurchaseOrder Created Successfully!!!');
                 $this->redirect(array('index'));
@@ -77,29 +81,22 @@ class PurchaseorderController extends Controller {
         $this->render('create', compact('model', 'detail_model'));
     }
 
-    public function actionAddProduct() {
+    public function actionAddProduct($posession) {
         $detail_model = new PurchaseOrderDetails('add_product');
 
-        // Uncomment the following line if AJAX validation is needed
+// Uncomment the following line if AJAX validation is needed
         $this->performAjaxValidation($detail_model);
         if (isset($_POST['PurchaseOrderDetails'])) {
             $detail_model->attributes = $_POST['PurchaseOrderDetails'];
-            $session = Yii::app()->session;
-            if (!isset($session['po_added_products']) || count($session['po_added_products']) == 0) {
-                $session['po_added_products'] = array(rand() => $detail_model->attributes);
-            } else {
-                $myarr = $session['po_added_products'];
-                $myarr[rand()] = $detail_model->attributes;
-                $session['po_added_products'] = $myarr;
-            }
+            $_SESSION['po_added_products'][$posession][rand()] = $detail_model->attributes;
         }
         Yii::app()->end();
     }
 
-    public function actionEditPoPrduct($id) {
+    public function actionEditPoPrduct($posession, $key) {
         $session = Yii::app()->session;
         $detail_model = new PurchaseOrderDetails('add_product');
-        $detail_model->attributes = $session['po_added_products'][$id];
+        $detail_model->attributes = $session['po_added_products'][$posession][$key];
         $cs = Yii::app()->clientScript;
         $cs->reset();
         $cs->scriptMap = array(
@@ -112,17 +109,16 @@ class PurchaseorderController extends Controller {
         Yii::app()->end();
     }
 
-    public function actionDeletePoPrduct($id) {
-        $key = (int) $id;
-        unset($_SESSION['po_added_products'][$key]);
+    public function actionDeletePoPrduct($posession, $key) {
+        $key = (int) $key;
+        unset($_SESSION['po_added_products'][$posession][$key]);
         $this->forward('poAddedProducts');
         Yii::app()->end();
     }
 
-    public function actionPoAddedProducts() {
-        $session = Yii::app()->session;
-        $po_products = $session['po_added_products'];
-        $this->renderPartial('_po_added_products', compact('po_products'), false, true);
+    public function actionPoAddedProducts($posession) {
+        $po_products = $_SESSION['po_added_products'][$posession];
+        $this->renderPartial('_po_added_products', compact('posession', 'po_products'), false, true);
         Yii::app()->end();
     }
 
@@ -134,17 +130,35 @@ class PurchaseorderController extends Controller {
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
         $detail_model = new PurchaseOrderDetails('add_product');
+        $posession = "po_{$model->po_id}";
+        if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
+            unset($_SESSION['po_added_products'][$posession]);
+            $this->redirect(array('/site/purchaseorder/update', 'id' => $model->po_id));
+        }
 
-        // Uncomment the following line if AJAX validation is needed
+// Uncomment the following line if AJAX validation is needed
         $this->performAjaxValidation($model);
 
         if (isset($_POST['PurchaseOrder'])) {
             $model->attributes = $_POST['PurchaseOrder'];
-            if ($model->save()) {
+            if ($model->validate()) {
+                $model->save(false);
+                PurchaseOrderDetails::model()->deleteAll("po_id = '{$model->po_id}'");
+                $po_products = $_SESSION['po_added_products'][$posession];
+                foreach ($po_products as $product) {
+                    $detail_model = new PurchaseOrderDetails('save');
+                    $detail_model->attributes = $product;
+                    $detail_model->po_id = $model->po_id;
+                    $detail_model->save(false);
+                }
+
+                unset($_SESSION['po_added_products'][$posession]);
                 Myclass::addAuditTrail("Updated PurchaseOrder successfully.", "user");
                 Yii::app()->user->setFlash('success', 'PurchaseOrder Updated Successfully!!!');
                 $this->redirect(array('index'));
             }
+        } elseif (empty($_SESSION['po_added_products'][$posession])) {
+            $_SESSION['po_added_products'][$posession] = PurchaseOrderDetails::model()->findAll("po_id = '{$model->po_id}'");
         }
 
         $this->render('update', compact('model', 'detail_model'));
@@ -164,7 +178,7 @@ class PurchaseorderController extends Controller {
             throw new CHttpException(404, $e->getMessage());
         }
 
-        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax'])) {
             Yii::app()->user->setFlash('success', 'PurchaseOrder Deleted Successfully!!!');
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
@@ -180,7 +194,7 @@ class PurchaseorderController extends Controller {
             $model->unsetAttributes();
             $model->attributes = $_GET['PurchaseOrder'];
         }
-        
+
         $this->render('index', compact('model'));
     }
 
@@ -190,7 +204,7 @@ class PurchaseorderController extends Controller {
             $model->unsetAttributes();
             $model->attributes = $_GET['PurchaseOrder'];
         }
-        
+
         $this->render('report', compact('model'));
     }
 
@@ -232,22 +246,51 @@ class PurchaseorderController extends Controller {
             Yii::app()->end();
         }
     }
-    
+
     public function actionPreview() {
         $company = $vendor = $liner = array();
-        if($_GET['comp_id'] && !empty($_GET['comp_id'])){
+        if ($_GET['comp_id'] && !empty($_GET['comp_id'])) {
             $company = Company::model()->findByPk($_GET['comp_id']);
         }
-        if($_GET['vendor_id'] && !empty($_GET['vendor_id'])){
+        if ($_GET['vendor_id'] && !empty($_GET['vendor_id'])) {
             $vendor = Vendor::model()->findByPk($_GET['vendor_id']);
         }
-        if($_GET['liner_id'] && !empty($_GET['liner_id'])){
+        if ($_GET['liner_id'] && !empty($_GET['liner_id'])) {
             $liner = Liner::model()->findByPk($_GET['liner_id']);
         }
-        if($_GET['lbldate'] && !empty($_GET['lbldate'])){
+        if ($_GET['lbldate'] && !empty($_GET['lbldate'])) {
             $lbldate = $_GET['lbldate'];
         }
         $this->renderPartial('_preview', compact('company', 'vendor', 'liner', 'lbldate'));
+    }
+
+    public function actionSendvendor($id) {
+        Yii::import('application.extensions.phpmailer.JPhpMailer');
+        $model = $this->loadModel($id);
+        $mPDF1 = Yii::app()->ePdf->mpdf();
+        $stylesheet = $this->pdfStyles();
+        $mPDF1->WriteHTML($stylesheet, 1);
+        $mPDF1->WriteHTML($this->renderPartial('view', compact('model'), true));
+        $content_PDF = $mPDF1->Output("Purchase_order_{$model->purchase_order_code}.pdf", EYiiPdf::OUTPUT_TO_STRING);
+
+        $body = "A PO Quote sent to you...";
+        $mailer = new JPhpMailer;
+        $mailer->IsSMTP();
+        $mailer->IsHTML(true);
+        $mailer->SMTPAuth = SMTPAUTH;
+        $mailer->SMTPSecure = SMTPSECURE;
+        $mailer->Host = SMTPHOST;
+        $mailer->Port = SMTPPORT;
+        $mailer->Username = SMTPUSERNAME;
+        $mailer->Password = SMTPPASS;
+        $mailer->From = NOREPLYMAIL;
+        $mailer->FromName = Yii::app()->name;
+        $mailer->AddAddress($model->poVendor->vendor_email);
+        $mailer->AddStringAttachment($content_PDF, "Purchase_order_{$model->purchase_order_code}.pdf");
+        $mailer->Subject = "Purchase order #{$model->purchase_order_code}";
+        $mailer->MsgHTML($body);
+
+        $mailer->Send();
     }
 
 }

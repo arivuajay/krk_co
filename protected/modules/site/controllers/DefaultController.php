@@ -39,7 +39,10 @@ class DefaultController extends Controller {
                     'getvarietycode',
                     'getvendorcode',
                     'getvarietycode',
-                    'getPOSByClient'
+                    'getPOSByClient',
+                    'getPOInfo',
+                    'getVendorInfo',
+                    'downloadFile',
                 ),
                 'users' => array('*'),
             ),
@@ -79,6 +82,7 @@ class DefaultController extends Controller {
 
     public function actionLogout() {
         Myclass::addAuditTrail(Yii::app()->user->name . " logged-out successfully.", "user");
+        unset($_SESSION['po_added_products']);
         Yii::app()->user->logout();
         $this->redirect(array('/site/default/login'));
     }
@@ -132,7 +136,7 @@ class DefaultController extends Controller {
         $model->setScenario('update');
 
         $this->performAjaxValidation($model);
-        
+
         if (isset($_POST['User'])) {
             $model->attributes = $_POST['User'];
             if ($model->validate()):
@@ -259,7 +263,7 @@ class DefaultController extends Controller {
         if ($invoices) {
             $options[] = CHtml::tag('option', array('value' => ''), 'Select Container', true);
             foreach ($invoices->invoiceItems as $item):
-                $options[] = CHtml::tag('option', array('value' => $item->inv_det_ctnr_no,'data-ctn' => $item->inv_det_cotton_qty), CHtml::encode($item->inv_det_ctnr_no), true);
+                $options[] = CHtml::tag('option', array('value' => $item->inv_det_ctnr_no, 'data-ctn' => $item->inv_det_cotton_qty), CHtml::encode($item->inv_det_ctnr_no), true);
             endforeach;
 
             $result['bol_no'] = $invoices->bol_no;
@@ -382,6 +386,23 @@ class DefaultController extends Controller {
 
         echo CJSON::encode($results);
         Yii::app()->end();
+    }
+
+    public function actionGetPOInfo($id) {
+        $result = PurchaseOrder::model()->findByPk($id);
+        $this->renderPartial('_po_info', compact('result'));
+        Yii::app()->end();
+    }
+
+    public function actionGetVendorInfo($id) {
+        $result = Vendor::model()->findByPk($id);
+        $this->renderPartial('_vendor_info', compact('result'));
+        Yii::app()->end();
+    }
+
+    public function actionDownloadFile($file) {
+        $file = base64_decode($file);
+        return Yii::app()->getRequest()->sendFile(basename($file), @file_get_contents(Yii::app()->getBasePath() . DS .'..' . $file));
     }
 
 }

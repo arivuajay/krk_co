@@ -43,6 +43,11 @@ class InvoiceController extends Controller {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
+        if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
+            unset($_SESSION['inv_added_products']);
+            $this->redirect(array('/site/invoice/create'));
+        }
+
         $model = new Invoice;
         $detail_model = new InvoiceItems('add_product');
 
@@ -174,18 +179,13 @@ class InvoiceController extends Controller {
      * Lists all models.
      */
     public function actionIndex() {
-        $search = false;
-
         $model = new Invoice();
-        $searchModel = new Invoice('search');
-        $searchModel->unsetAttributes();  // clear any default values
-        if (isset($_GET['Invoice'])) {
-            $search = true;
-            $searchModel->attributes = $_GET['Invoice'];
-            $searchModel->search();
+        if (isset($_REQUEST['Invoice']) && !empty($_REQUEST['Invoice'])) {
+            $model->unsetAttributes();
+            $model->attributes = $_GET['Invoice'];
         }
 
-        $this->render('index', compact('searchModel', 'search', 'model'));
+        $this->render('index', compact('model'));
     }
 
     /**

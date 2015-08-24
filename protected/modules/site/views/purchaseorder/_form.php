@@ -19,7 +19,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
 
 <div class="row">
     <div class="col-lg-12" id="product-form">
-        <?php $this->renderPartial('_product_form', compact('detail_model')); ?>
+        <?php $this->renderPartial('_product_form', compact('model', 'detail_model')); ?>
     </div>
     <div class="col-lg-12 col-xs-12" id="po_added_products">
         <div class="box box-primary">
@@ -40,13 +40,23 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
             <div class="box-body">
                 <div class="row">
                     <div class="col-lg-6">
+                        <ul>
+                            <li>Added products are auto save.Those are available until click on RESET button</li>
+                        </ul>
                         <div id="terms">
                         </div>
                         <button type="button" id="submit_po" class="btn btn-success">Submit</button>
-                        <button type="button" id="reset_po" class="btn btn-warning">Reset</button>
+                        <?php
+                        if ($model->isNewRecord)
+                            $reset_link = array('/site/purchaseorder/create', 'open' => 'fresh');
+                        else
+                            $reset_link = array('/site/purchaseorder/update', 'id' => $model->po_id, 'open' => 'fresh');
+
+                        echo CHtml::link('Reset', $reset_link, array("id" => "reset_po", "class" => "btn btn-warning"))
+                        ?>
                         <?php
                         $this->widget(
-                                'booster.widgets.TbButton', array(
+                            'booster.widgets.TbButton', array(
                             'label' => 'Preview',
                             'context' => 'info',
                             'htmlOptions' => array(
@@ -60,7 +70,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                                     lbldate = $("#PurchaseOrder_po_date").val();
                                     liner_id = $("#liner_code").val();
 
-                                    $.get("' . Yii::app()->createUrl("site/purchaseorder/preview") . '", { 
+                                    $.get("' . Yii::app()->createUrl("site/purchaseorder/preview") . '", {
                                     "comp_id": comp_id, "vendor_id": vendor_id, "lbldate" : lbldate, "liner_id" : liner_id}
                                     ).done(function( data ){
                                         $("#preview_box").html(data);
@@ -117,9 +127,6 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
         var poForm = $('#purchase-order-form');
         $('#submit_po').click(function(){
             poForm.submit();
-        });
-        $('#reset_po').click(function(){
-            poForm[0].reset();
         });
     });
 EOD;

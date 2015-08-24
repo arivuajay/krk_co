@@ -31,7 +31,7 @@ $this->breadcrumbs = array(
             </td>
         </tr>
         <tr align="center">
-            <td colspan="4"><h3>Purchase Order</h3></td>
+            <td colspan="4"><h3>Purchase Order #<?php echo $model->purchase_order_code ?></h3></td>
         </tr>
         <tr>
             <td valign="top" colspan="4">
@@ -127,27 +127,5 @@ $this->breadcrumbs = array(
             </td>
         </tr>
     </tbody></table>
-
-<div class="user-view">
-    <?php if ($export) { ?>
-        <h3 class="text-center">PurchaseOrder <?php echo $this->title ?></h3>
-        <?php
-    }
-    ?>
-    <?php
-    $this->widget('zii.widgets.CDetailView', array(
-        'data' => $model,
-        'htmlOptions' => array('class' => 'table table-striped table-bordered'),
-        'attributes' => array(
-            'po_id',
-            'po_number',
-            'po_date',
-            'po_company_id',
-            'po_vendor_id',
-        ),
-    ));
-    ?>
-</div>
-
 
 
