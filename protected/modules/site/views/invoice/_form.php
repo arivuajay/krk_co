@@ -16,7 +16,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
 
 <div class="row">
     <div class="col-lg-12" id="product-form">
-        <?php $this->renderPartial('_product_form', compact('detail_model')); ?>
+        <?php $this->renderPartial('_product_form', compact('model', 'detail_model')); ?>
     </div>
     <div class="col-lg-12 col-xs-12" id="inv_added_products">
         <div class="box box-primary">
@@ -38,15 +38,61 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                 <div class="row">
                     <div class="col-lg-6">
                         <button type="button" id="submit_po" class="btn btn-success">Submit</button>
-                        <?php echo CHtml::link('Reset', array('/site/invoice/create', 'open' => 'fresh'), array("id" => "reset_po", "class" => "btn btn-warning")) ?>
+                        <?php
+                        echo CHtml::link('Reset', array('/site/invoice/create', 'open' => 'fresh'), array("id" => "reset_po", "class" => "btn btn-warning"));
+                        echo '&nbsp;';
+                        $this->widget(
+                            'booster.widgets.TbButton', array(
+                            'label' => 'Preview',
+                            'context' => 'info',
+                            'htmlOptions' => array(
+                                'id' => 'preview_po',
+                                'data-toggle' => 'modal',
+                                'data-target' => '#previewModal',
+                                'onclick' => '{
+                                    $("#preview_box").html("<div>Loading...</div>");
+                                    comp_id = $("#Invoice_company_id").val();
+                                    vendor_id = $("#Invoice_vendor_id").val();
+                                    lbldate = $("#po_date").val();
 
-                        <button type="button" id="preview_po" class="btn btn-info">Preview</button>
+                                    $.get("' . Yii::app()->createUrl("site/invoice/preview") . '", {
+                                    "comp_id": comp_id, "vendor_id": vendor_id, "lbldate" : lbldate}
+                                    ).done(function( data ){
+                                        $("#preview_box").html(data);
+                                   });
+                                }'
+                            ),
+                                )
+                        );
+
+                        ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <?php $this->beginWidget('booster.widgets.TbModal', array('id' => 'previewModal')); ?>
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">&times;</a>
+        <h4>Preview</h4>
+    </div>
+    <div class="modal-body" id="preview_box">
+    </div>
+
+    <div class="modal-footer">
+        <?php
+        $this->widget(
+                'booster.widgets.TbButton', array(
+            'label' => 'Close',
+            'url' => '#',
+            'htmlOptions' => array('data-dismiss' => 'modal', 'id' => 'preview-dismiss'),
+                )
+        );
+        ?>
+    </div>
+
+    <?php $this->endWidget(); ?>
 
     <?php
     $user_js_format = JS_USER_DATE_FORMAT;

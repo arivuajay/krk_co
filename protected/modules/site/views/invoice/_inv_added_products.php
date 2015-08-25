@@ -35,13 +35,13 @@
                         <?php
                         echo CHtml::ajaxLink('<i class="glyphicon glyphicon-pencil"></i>', array('/site/invoice/editInvPrduct'), array(
                             "type" => "GET",
-                            "data" => array("id" => $key, "ajax" => true),
+                            "data" => array("posession" => $posession,"key" => $key, "ajax" => true),
                             "beforeSend" => 'js:function(){ $("#product-form .box").append("<div class=\"overlay\"><i class=\"fa fa-refresh fa-spin\"></i></div>"); }',
                             "update" => "#product-form",
                     ), array('live' => false, 'id' => "edit_$key"));
                         echo '&nbsp;&nbsp;';
                         echo CHtml::ajaxLink('<i class="glyphicon glyphicon-trash"></i>', array('/site/invoice/deleteInvPrduct'), array(
-                            "data" => array("id" => $key, "ajax" => true),
+                            "data" => array("posession" => $posession,"key" => $key, "ajax" => true),
                             "update" => "#inv_added_products .box-body"
                             ), array('live' => false, 'id' => "delete_$key"));
                         ?>

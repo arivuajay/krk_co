@@ -98,7 +98,13 @@ $vendors = Vendor::VendorList();
                                             }
                                         });
                                         return false;
-                                    }'
+                                    }',
+                                'change' =>'js: function(event,ui){
+                                            if (ui.item==null){
+                                                $("#po_list").val("");
+                                                $("#po_list").focus();
+                                                }
+                                            }'
                             ),
                             'htmlOptions' => array(
                                 'class' => 'form-control'

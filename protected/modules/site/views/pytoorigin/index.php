@@ -92,7 +92,21 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                 'header' => 'Actions',
                 'class' => 'booster.widgets.TbButtonColumn',
                 'htmlOptions' => array('style' => 'width: 180px;;text-align:center', 'vAlign' => 'middle', 'class' => 'action_column'),
-                'template' => '{view}{delete}',
+                'template' => '{pyto_file}{origin_file}{view}{delete}',
+                'buttons' => array(
+                    'pyto_file' => array(
+                        'label' => '<i class="fa fa-file-excel-o"></i>',
+                        'options' => array('title' => 'Pyto File', 'target' => '_blank'),
+                        'url' => 'Yii::app()->createUrl("/site/default/downloadFile",array("file"=>base64_encode($data->getFilePath(true, "pyto_file"))))',
+                        'visible' => '(is_file(Yii::app()->getBasePath().DS."..".$data->getFilePath(true, "pyto_file")))'
+                    ),
+                    'origin_file' => array(
+                        'label' => '<i class="fa fa-file-pdf-o"></i>',
+                        'options' => array('title' => 'Origin File', 'target' => '_blank'),
+                        'url' => 'Yii::app()->createUrl("/site/default/downloadFile",array("file"=>base64_encode($data->getFilePath(true, "origin_file"))))',
+                        'visible' => '(is_file(Yii::app()->getBasePath().DS."..".$data->getFilePath(true, "origin_file")))'
+                    ),
+                )
             )
         );
 

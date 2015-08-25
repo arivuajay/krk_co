@@ -63,6 +63,12 @@ $poStatus = PurchaseOrder::StatusList();
                                 $("#po_date").val(ui.item.po_date);
                                 return false;
                             }',
+                            'change' =>'js: function(event,ui){
+                                            if (ui.item==null){
+                                                $("#po_list").val("");
+                                                $("#po_list").focus();
+                                                }
+                                            }'
                         ),
                         'htmlOptions' => array(
                             'class' => 'form-control'

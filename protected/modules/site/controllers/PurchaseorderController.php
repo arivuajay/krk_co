@@ -47,8 +47,10 @@ class PurchaseorderController extends Controller {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
+        $posession = Yii::app()->user->getState('guid');
+
         if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
-            unset($_SESSION['po_added_products']);
+            unset($_SESSION['po_added_products'][$posession]);
             $this->redirect(array('/site/purchaseorder/create'));
         }
 
@@ -62,7 +64,6 @@ class PurchaseorderController extends Controller {
             $model->attributes = $_POST['PurchaseOrder'];
             if ($model->validate()) {
                 $model->save(false);
-                $posession = Yii::app()->user->getState('guid');
                 $po_products = $_SESSION['po_added_products'][$posession];
                 foreach ($po_products as $product) {
                     $detail_model = new PurchaseOrderDetails('save');
@@ -94,9 +95,8 @@ class PurchaseorderController extends Controller {
     }
 
     public function actionEditPoPrduct($posession, $key) {
-        $session = Yii::app()->session;
         $detail_model = new PurchaseOrderDetails('add_product');
-        $detail_model->attributes = $session['po_added_products'][$posession][$key];
+        $detail_model->attributes = $_SESSION['po_added_products'][$posession][$key];
         $cs = Yii::app()->clientScript;
         $cs->reset();
         $cs->scriptMap = array(
@@ -287,12 +287,12 @@ class PurchaseorderController extends Controller {
         $mailer->FromName = Yii::app()->name;
         $mailer->AddAddress($model->poVendor->vendor_email);
         $mailer->AddStringAttachment($content_PDF, "Purchase_order_{$model->purchase_order_code}.pdf");
-        $mailer->Subject = Yii::app()->name."-Purchase order #{$model->purchase_order_code}";
+        $mailer->Subject = Yii::app()->name . "-Purchase order #{$model->purchase_order_code}";
         $mailer->MsgHTML($body);
 
         try {
             $mailer->Send();
-            $model->setAttribute('sent_vendor' , 1);
+            $model->setAttribute('sent_vendor', 1);
             $model->save(false);
             Yii::app()->user->setFlash('success', 'PurchaseOrder sent to vendor successfully!!!');
             $this->redirect(array('index'));

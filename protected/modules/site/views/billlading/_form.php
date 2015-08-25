@@ -86,20 +86,26 @@ $liners = Liner::LinerList();
                                         'minLength' => '0',
                                         'autoFill' => false,
                                         'focus' => 'js:function( event, ui ) {
-                                        $( "#po_list" ).val( ui.item.purchase_order_code );
-                                        return false;
-                                    }',
+                                            $( "#po_list" ).val( ui.item.purchase_order_code );
+                                            return false;
+                                        }',
                                         'select' => 'js:function( event, ui ) {
-                                        $("#' . CHtml::activeId($model, 'bl_po_id') . '").val(ui.item.po_id);
-                                        $.ajax({
-                                            url: "' . $this->createUrl('/site/default/getInvoiceByPo') . '",
-                                            data: { id: ui.item.po_id },
-                                            success: function (data) {
-                                               $("#BillLading_bl_invoice_id").html(data);
-                                            }
-                                        });
-                                        return false;
-                                    }'
+                                            $("#' . CHtml::activeId($model, 'bl_po_id') . '").val(ui.item.po_id);
+                                            $.ajax({
+                                                url: "' . $this->createUrl('/site/default/getInvoiceByPo') . '",
+                                                data: { id: ui.item.po_id },
+                                                success: function (data) {
+                                                   $("#BillLading_bl_invoice_id").html(data);
+                                                }
+                                            });
+                                            return false;
+                                        }',
+                                        'change' =>'js: function(event,ui){
+                                            if (ui.item==null){
+                                                $("#po_list").val("");
+                                                $("#po_list").focus();
+                                                }
+                                            }'
                                     ),
                                     'htmlOptions' => array(
                                         'class' => 'form-control'

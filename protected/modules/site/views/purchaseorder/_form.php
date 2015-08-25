@@ -52,9 +52,8 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                         else
                             $reset_link = array('/site/purchaseorder/update', 'id' => $model->po_id, 'open' => 'fresh');
 
-                        echo CHtml::link('Reset', $reset_link, array("id" => "reset_po", "class" => "btn btn-warning"))
-                        ?>
-                        <?php
+                        echo CHtml::link('Reset', $reset_link, array("id" => "reset_po", "class" => "btn btn-warning"));
+
                         $this->widget(
                             'booster.widgets.TbButton', array(
                             'label' => 'Preview',

@@ -103,7 +103,7 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                 'header' => 'Actions',
                 'class' => 'booster.widgets.TbButtonColumn',
                 'htmlOptions' => array('style' => 'width: 180px;;text-align:center', 'vAlign' => 'middle', 'class' => 'action_column'),
-                'template' => '{inv_file}{pkg_list_file}{view}{delete}',
+                'template' => '{inv_file}{pkg_list_file}{view}{update}{delete}',
                 'buttons' => array(
                     'inv_file' => array(
                         'label' => '<i class="fa fa-file-excel-o"></i>',

@@ -48,7 +48,7 @@ class InvoiceItems extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('inv_id, inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id, inv_det_grade, inv_det_size', 'required', 'on' => 'add_product,save'),
+            array('inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id, inv_det_grade, inv_det_size', 'required', 'on' => 'add_product,save'),
             array('inv_id', 'required', 'on' => 'save'),
             array('inv_id, inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id,inv_det_grade, inv_det_size, modified_at, modified_by', 'numerical', 'integerOnly' => true),
             array('inv_det_grade, inv_det_size', 'length', 'max' => 500),

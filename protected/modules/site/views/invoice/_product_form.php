@@ -2,6 +2,10 @@
 $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
+if ($model->isNewRecord)
+    $posession = Yii::app()->user->getState('guid');
+else
+    $posession = "inv_{$model->invoice_id}";
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -12,9 +16,10 @@ $cs_pos_end = CClientScript::POS_END;
             <?php
             $form = $this->beginWidget('CActiveForm', array(
                 'id' => 'invoice-items-form', 'htmlOptions' => array('role' => 'form', 'class' => 'form-horizontal'),
-                'action' => Yii::app()->createUrl('/site/invoice/addProduct'),
+                'action' => Yii::app()->createUrl('/site/invoice/addProduct', array('posession' => $posession)),
                 'clientOptions' => array(
                     'validateOnSubmit' => true,
+                    'validateOnChange' => false,
                     'beforeValidate' => 'js:b4AddProd',
                     'afterValidate' => 'js:AddINVDetails'
                 ),
@@ -177,8 +182,8 @@ $cs_pos_end = CClientScript::POS_END;
 <?php
 $grade_url = Yii::app()->createUrl('/site/default/getGradeByProduct');
 $size_url = Yii::app()->createUrl('/site/default/getSizeByProduct');
-$inv_add_product = Yii::app()->createUrl('/site/invoice/addProduct');
-$inv_products_url = Yii::app()->createUrl('/site/invoice/invAddedProducts');
+$inv_add_product = Yii::app()->createUrl('/site/invoice/addProduct', array('posession' => $posession));
+$inv_products_url = Yii::app()->createUrl('/site/invoice/invAddedProducts', array('posession' => $posession));
 
 //For create only
 if (empty($detail_model->inv_det_prod_fmly_id)) {
