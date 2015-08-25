@@ -7,6 +7,7 @@
  * @property integer $po_id
  * @property string $purchase_order_code
  * @property string $po_date
+ * @property string $sent_vendor
  * @property integer $po_company_id
  * @property integer $po_vendor_id
  * @property integer $po_liner_id
@@ -33,7 +34,7 @@ class PurchaseOrder extends CActiveRecord {
     public function scopes() {
         $alias = $this->getTableAlias(false, false);
         return array(
-            'active' => array('condition' => "$alias.status = '1'"),
+            'active' => array('condition' => "$alias.status > 0"),
         );
     }
 
@@ -53,11 +54,11 @@ class PurchaseOrder extends CActiveRecord {
         return array(
             array('po_date,po_company_id,po_vendor_id', 'required'),
             array('po_company_id, po_vendor_id,po_liner_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
-            array('status', 'length', 'max' => 1),
+            array('sent_vendor,status', 'length', 'max' => 1),
             array('created_at, created_by,purchase_order_code, from_date, to_date', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('po_id, purchase_order_code, po_date, po_company_id, po_vendor_id, po_liner_id,status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('po_id, purchase_order_code, po_date, po_company_id, po_vendor_id, po_liner_id,sent_vendor,status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -87,6 +88,7 @@ class PurchaseOrder extends CActiveRecord {
             'po_company_id' => 'Company',
             'po_vendor_id' => 'Vendor',
             'po_liner_id' => 'Prefered Liner',
+            'sent_vendor' => 'Sent Vendor',
             'status' => 'Status',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
@@ -152,7 +154,8 @@ class PurchaseOrder extends CActiveRecord {
         $criteria->compare('po_company_id', $this->po_company_id);
         $criteria->compare('po_vendor_id', $this->po_vendor_id);
         $criteria->compare('po_liner_id', $this->po_liner_id);
-        $criteria->compare('status', $this->status, true);
+//        $criteria->compare('sent_vendor',$this->sent_vendor,true);
+//        $criteria->compare('status', $this->status, true);
         $criteria->compare('created_at', $this->created_at, true);
         $criteria->compare('created_by', $this->created_by, true);
         $criteria->compare('modified_at', $this->modified_at);

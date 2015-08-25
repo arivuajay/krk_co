@@ -287,10 +287,18 @@ class PurchaseorderController extends Controller {
         $mailer->FromName = Yii::app()->name;
         $mailer->AddAddress($model->poVendor->vendor_email);
         $mailer->AddStringAttachment($content_PDF, "Purchase_order_{$model->purchase_order_code}.pdf");
-        $mailer->Subject = "Purchase order #{$model->purchase_order_code}";
+        $mailer->Subject = Yii::app()->name."-Purchase order #{$model->purchase_order_code}";
         $mailer->MsgHTML($body);
 
-        $mailer->Send();
+        try {
+            $mailer->Send();
+            $model->setAttribute('sent_vendor' , 1);
+            $model->save(false);
+            Yii::app()->user->setFlash('success', 'PurchaseOrder sent to vendor successfully!!!');
+            $this->redirect(array('index'));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
     }
 
 }

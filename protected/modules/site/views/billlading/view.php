@@ -2,64 +2,21 @@
 /* @var $this BillladingController */
 /* @var $model BillLading */
 
-$this->title='View #'.$model->bl_id;
+$this->title='Bill of Lading #'.$model->bl_id;
 $this->breadcrumbs=array(
 	'Bill of Lading'=>array('index'),
 	'View '.'BillLading',
 );
 ?>
 <div class="user-view">
-    <?php    if ($export == false) {
-    ?>
-    <p>
-        <?php        $this->widget(
-                'booster.widgets.TbButton', array(
-                    'label' => 'Update',
-                    'url' => array('update', 'id' =>  $model->bl_id ),
-                    'buttonType' => 'link',
-                    'context' => 'primary',
-//                    'visible' => UserIdentity::checkAccess(Yii::app()->user->name)
-                )
-        );
-        echo "&nbsp;&nbsp;";
-        $this->widget(
-                'application.components.MyTbButton', array(
-                    'label' => 'Delete',
-                    'url' => array('delete', 'id' =>  $model->bl_id ),
-                    'buttonType' => 'link',
-                    'context' => 'danger',
-                    'htmlOptions' => array('confirm' => 'Are you sure you want to delete this item?'),
-                    'visible' => UserIdentity::checkAccess(Yii::app()->user->name)
-                )
-        );
-        echo "&nbsp;&nbsp;";
-        $this->widget(
-                'booster.widgets.TbButton', array(
-            'label' => 'Download',
-            'url' => array('view', 'id' =>  $model->bl_id , 'export' => 'PDF'),
-            'buttonType' => 'link',
-            'context' => 'warning',
-//                    'visible' => UserIdentity::checkAccess(Yii::app()->user->name)
-                )
-        );
-        ?>
-    </p>
-    <?php    }
-    ?>
-    <?php    if ($export) { ?>
-        <h3 class="text-center">BillLading <?php echo $this->title ?></h3>
-    <?php        
-    }
-    ?>
     <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
         'htmlOptions' => array('class'=>'table table-striped table-bordered'),
 	'attributes'=>array(
-		'bl_id',
-		'bl_company_id',
-		'bl_vendor_id',
-		'bl_po_id',
-		'bl_invoice_id',
+		'blCompany.company_name',
+		'blVendor.vendor_name',
+		'blPo.purchase_order_code',
+		'blInvoice.inv_no',
 		'bl_number',
 		'bl_issue_date',
 		'bl_issue_place',
@@ -68,7 +25,7 @@ $this->breadcrumbs=array(
 		'bl_vessal_name',
 		'bl_shipped_date',
 		'bl_container_number',
-		'bl_liner_id',
+		'blLiner.liner_name',
 		'bl_container_count',
 		'bl_free_days',
 		'bl_frieght_paid',
