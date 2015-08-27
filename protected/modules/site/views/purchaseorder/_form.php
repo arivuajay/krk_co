@@ -8,6 +8,11 @@ $cs_pos_end = CClientScript::POS_END;
 
 $cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
 $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
+
+if ($model->isNewRecord)
+    $posession = Yii::app()->user->getState('guid');
+else
+    $posession = "po_{$model->po_id}";
 ?>
 <div class="row">
     <div class="col-lg-12 col-xs-12">
@@ -19,7 +24,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
 
 <div class="row">
     <div class="col-lg-12" id="product-form">
-        <?php $this->renderPartial('_product_form', compact('model', 'detail_model')); ?>
+        <?php $this->renderPartial('_product_form', compact('model', 'detail_model','posession')); ?>
     </div>
     <div class="col-lg-12 col-xs-12" id="po_added_products">
         <div class="box box-primary">
@@ -69,7 +74,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                                     lbldate = $("#PurchaseOrder_po_date").val();
                                     liner_id = $("#liner_code").val();
 
-                                    $.get("' . Yii::app()->createUrl("site/purchaseorder/preview") . '", {
+                                    $.get("' . Yii::app()->createUrl("site/purchaseorder/preview",array('posession'=>$posession)) . '", {
                                     "comp_id": comp_id, "vendor_id": vendor_id, "lbldate" : lbldate, "liner_id" : liner_id}
                                     ).done(function( data ){
                                         $("#preview_box").html(data);

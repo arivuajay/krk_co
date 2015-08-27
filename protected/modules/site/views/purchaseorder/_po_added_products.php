@@ -16,7 +16,7 @@
         </tr>
     </thead>
     <tbody>
-        <?php if ($po_products): foreach ($po_products as $key => $product): ?>
+        <?php if ($po_products): foreach ($po_products as $data): $product = $data['session_data']; $key = $data['id']; ?>
         <tr data-session-key="<?php echo $key; ?>">
                     <td><?php echo ProductFamily::model()->findByPk($product['po_det_prod_fmly_id'])->pro_family_name; ?></td>
                     <td><?php echo Product::model()->findByPk($product['po_det_product_id'])->pro_name; ?></td>

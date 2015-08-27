@@ -62,7 +62,7 @@
                                 <h2>Product Details</h2>
                                 <div>
                                     <?php
-                                    $po_products = Yii::app()->session['po_added_products'];
+                                    $po_products = TempSession::model()->byMe()->findAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
                                     ?>
                                     <table cellspacing="0" class="table table-bordered table-condensed">
                                         <thead>
@@ -80,7 +80,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php if ($po_products): foreach ($po_products as $key => $product): ?>
+                                            <?php if ($po_products): foreach ($po_products as $key => $data): $product = $data['session_data']; ?>
                                                     <tr>
                                                         <td><?php echo ProductFamily::model()->findByPk($product['po_det_prod_fmly_id'])->pro_family_name; ?></td>
                                                         <td><?php echo Product::model()->findByPk($product['po_det_product_id'])->pro_name; ?></td>

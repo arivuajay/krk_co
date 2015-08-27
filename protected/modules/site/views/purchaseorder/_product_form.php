@@ -2,10 +2,6 @@
 $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
-if ($model->isNewRecord)
-    $posession = Yii::app()->user->getState('guid');
-else
-    $posession = "po_{$model->po_id}";
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -199,7 +195,7 @@ $js .= <<< EOD
 
     var _addProBtn;
     function b4AddProd(form){
-        _addProBtn = $("#add_prod").button("loading");
+//        _addProBtn = $("#add_prod").button("loading");
         return true;
     }
     function AddPODetails(f, d, e){
@@ -216,7 +212,7 @@ $js .= <<< EOD
                 dataType:'html'
             });
         }
-         _addProBtn.button('reset');
+//         _addProBtn.button('reset');
         return false;
     }
 EOD;
