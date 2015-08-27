@@ -24,7 +24,7 @@ else
 
 <div class="row">
     <div class="col-lg-12" id="product-form">
-        <?php $this->renderPartial('_product_form', compact('model', 'detail_model','posession')); ?>
+        <?php $this->renderPartial('_product_form', compact('model', 'detail_model', 'posession')); ?>
     </div>
     <div class="col-lg-12 col-xs-12" id="po_added_products">
         <div class="box box-primary">
@@ -60,7 +60,7 @@ else
                         echo CHtml::link('Reset', $reset_link, array("id" => "reset_po", "class" => "btn btn-warning"));
 
                         $this->widget(
-                            'booster.widgets.TbButton', array(
+                                'booster.widgets.TbButton', array(
                             'label' => 'Preview',
                             'context' => 'info',
                             'htmlOptions' => array(
@@ -74,10 +74,11 @@ else
                                     lbldate = $("#PurchaseOrder_po_date").val();
                                     liner_id = $("#liner_code").val();
 
-                                    $.get("' . Yii::app()->createUrl("site/purchaseorder/preview",array('posession'=>$posession)) . '", {
+                                    $.get("' . Yii::app()->createUrl("site/purchaseorder/preview", array('posession' => $posession)) . '", {
                                     "comp_id": comp_id, "vendor_id": vendor_id, "lbldate" : lbldate, "liner_id" : liner_id}
                                     ).done(function( data ){
                                         $("#preview_box").html(data);
+                                        return false;
                                    });
                                 }'
                             ),
@@ -96,36 +97,27 @@ else
         </div>
     </div>
 
-    <?php
-    $this->beginWidget(
-            'booster.widgets.TbModal', array('id' => 'previewModal')
-    );
-    ?>
+    <?php $this->beginWidget('booster.widgets.TbModal', array('id' => 'previewModal')); ?>
     <div class="modal-header">
         <a class="close" data-dismiss="modal">&times;</a>
         <h4>Preview</h4>
     </div>
-    <div class="modal-body" id="preview_box">
-    </div>
-
+    <div class="modal-body" id="preview_box"></div>
     <div class="modal-footer">
         <?php
-        $this->widget(
-                'booster.widgets.TbButton', array(
+        $this->widget('booster.widgets.TbButton', array(
             'label' => 'Close',
             'url' => '#',
             'htmlOptions' => array('data-dismiss' => 'modal', 'id' => 'preview-dismiss'),
-                )
-        );
+        ));
         ?>
     </div>
-
     <?php $this->endWidget(); ?>
 
 
-    <?php
-    $user_js_format = JS_USER_DATE_FORMAT;
-    $js = <<< EOD
+<?php
+$user_js_format = JS_USER_DATE_FORMAT;
+$js = <<< EOD
     $(document).ready(function(){
         $('.datepicker').datepicker({ format: '$user_js_format' });
         var poForm = $('#purchase-order-form');
@@ -134,5 +126,5 @@ else
         });
     });
 EOD;
-    $cs->registerScript('_po_form', $js);
-    ?>
+$cs->registerScript('_po_form', $js);
+?>
