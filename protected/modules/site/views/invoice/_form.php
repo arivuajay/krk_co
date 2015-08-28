@@ -70,7 +70,7 @@ else
                                     lbldate = $("#po_date").val();
 
                                     $.get("' . Yii::app()->createUrl("site/invoice/preview") . '", {
-                                    "comp_id": comp_id, "vendor_id": vendor_id, "lbldate" : lbldate}
+                                    "comp_id": comp_id, "vendor_id": vendor_id, "lbldate" : lbldate,"posession": "' . $posession . '"}
                                     ).done(function( data ){
                                         $("#preview_box").html(data);
                                    });
