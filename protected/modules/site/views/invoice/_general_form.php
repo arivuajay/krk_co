@@ -22,7 +22,7 @@ unset($poStatus[1]);
             <div class="form-group">
                 <?php echo $form->labelEx($model, 'vendor_id', array('class' => 'col-sm-4 control-label')); ?>
                 <div class="col-sm-6">
-                    <?php echo $form->dropDownList($model, 'vendor_id', $vendors, array('class' => 'form-control', 'prompt' => 'Select Vendor')); ?>
+                    <?php echo $form->dropDownList($model, 'vendor_id', $vendors, array('class' => 'form-control', 'prompt' => 'Select Vendor','onchange'=>'$("#po_list").val(""); $("#permit_list").val("");')); ?>
                     <?php echo $form->error($model, 'vendor_id'); ?>
                 </div>
             </div>
@@ -88,6 +88,9 @@ unset($poStatus[1]);
                             }
                         };'
                     ));
+                    if (!empty($model->po_id))
+                        Yii::app()->clientScript->registerScript('trigger_po_info', "$('#po_list').val('" . $model->po->purchase_order_code . "');");
+
                     echo $form->hiddenField($model, 'po_id');
                     ?>
                     <?php echo $form->error($model, 'po_id'); ?>
@@ -131,7 +134,69 @@ unset($poStatus[1]);
             <div class="form-group">
                 <?php echo $form->labelEx($model, 'permit_no', array('class' => 'col-sm-4 control-label')); ?>
                 <div class="col-sm-6">
-                    <?php echo $form->textField($model, 'permit_no', array('class' => 'form-control', 'size' => 60, 'maxlength' => 100)); ?>
+                    <?php
+                    $this->widget('application.components.myAutoComplete', array(
+                        'source' => 'js: function(request, response) {
+                                    $("#permit_list").addClass("load-input");
+                                    $.ajax({
+                                        url: "' . $this->createUrl('/site/default/getPermitByClient') . '",
+                                        dataType: "json",
+                                        data: {
+                                            term: request.term,
+                                            vendor: $("#Invoice_vendor_id").val(),
+                                            company: $("#Invoice_company_id").val()
+                                        },
+                                        success: function (data) {
+                                            if(!data.length){
+                                                data.push({ id: 0, label: "No data found" });
+                                            }
+                                            $("#permit_list").removeClass("load-input");
+                                            response(data);
+                                        }
+                                    })
+                                 }',
+                        'name' => 'permit_list',
+                        'options' => array(
+                            'minLength' => '0',
+                            'autoFill' => false,
+                            'focus' => 'js:function( event, ui ) {
+                                $( "#permit_list" ).val( ui.item.permit_no );
+                                return false;
+                            }',
+                            'select' => 'js:function( event, ui ) {
+                                $("#' . CHtml::activeId($model, 'permit_no') . '").val(ui.item.permit_no);
+                                return false;
+                            }',
+                            'change' => 'js: function(event,ui){
+                                            if (ui.item==null){
+                                                $("#permit_list").val("");
+                                                $("#permit_list").focus();
+                                                }
+                                            }'
+                        ),
+                        'htmlOptions' => array(
+                            'class' => 'form-control'
+                        ),
+                        'methodChain' => '.data("autocomplete")._renderItem = function( ul, item ) {
+                            if(item.id == 0){
+                                return $( "<li></li>" )
+                                    .data( "item.autocomplete", item )
+                                    .append( "<a>" + item.label +  "</a>" )
+                                    .appendTo( ul );
+                            }else{
+                            return $( "<li></li>" )
+                                .data( "item.autocomplete", item )
+                                .append( "<a>" + item.permit_no +  "</a>" )
+                                .appendTo( ul );
+                            }
+                        };'
+                    ));
+
+                    if (!empty($model->permit_no))
+                        Yii::app()->clientScript->registerScript('trigger_permit_info', "$('#permit_list').val('" . $model->permit_no . "');");
+
+                    echo $form->hiddenField($model, 'permit_no');
+                    ?>
                     <?php echo $form->error($model, 'permit_no'); ?>
                 </div>
             </div>
@@ -183,6 +248,6 @@ unset($poStatus[1]);
         </div>
     </div>
 </div>
-<div id="additioanl_data" class=""></div>
+<div id="additioanl_data" class="hidden"></div>
 <?php echo CHtml::hiddenField('action'); ?>
 <?php $this->endWidget(); ?>

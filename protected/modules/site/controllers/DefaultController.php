@@ -44,6 +44,7 @@ class DefaultController extends Controller {
                     'getVendorInfo',
                     'getLinerInfo',
                     'downloadFile',
+                    'getPermitByClient',
                 ),
                 'users' => array('*'),
             ),
@@ -264,7 +265,7 @@ class DefaultController extends Controller {
         if ($invoices) {
             $options[] = CHtml::tag('option', array('value' => ''), 'Select Container', true);
             $criteria = new CDbCriteria();
-            $criteria->select = array('*','SUM(inv_det_cotton_qty) as CntrQty');
+            $criteria->select = array('*', 'SUM(inv_det_cotton_qty) as CntrQty');
             $criteria->condition = "inv_id = '{$id}'";
             $criteria->group = 'inv_det_ctnr_no';
 
@@ -402,6 +403,22 @@ class DefaultController extends Controller {
         Yii::app()->end();
     }
 
+    public function actionGetPermitByClient($term, $vendor = '', $company = '') {
+        $criteria = new CDbCriteria();
+        $criteria->select = array('permit_id', 'permit_no');
+
+        $criteria->compare('permit_no', $term, true);
+        if ($vendor)
+            $criteria->compare('vendor_id', $vendor);
+        if ($company)
+            $criteria->compare('company_id', $company);
+
+        $results = Permit::model()->findAll($criteria);
+
+        echo CJSON::encode($results);
+        Yii::app()->end();
+    }
+
     public function actionGetPOInfo($id) {
         $result = PurchaseOrder::model()->findByPk($id);
         $this->renderPartial('_po_info', compact('result'));
@@ -422,7 +439,7 @@ class DefaultController extends Controller {
 
     public function actionDownloadFile($file) {
         $file = base64_decode($file);
-        return Yii::app()->getRequest()->sendFile(basename($file), @file_get_contents(Yii::app()->getBasePath() . DS .'..' . $file));
+        return Yii::app()->getRequest()->sendFile(basename($file), @file_get_contents(Yii::app()->getBasePath() . DS . '..' . $file));
     }
 
 }
