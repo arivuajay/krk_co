@@ -15,8 +15,8 @@
             <th scope="col">Action</th>
         </tr>
     </thead>
-    <?php if ($po_products): $ctn_qty = $cntr_qty = $amount = 0; ?>
-        <tbody>
+    <tbody>
+        <?php if ($po_products): $ctn_qty = $cntr_qty = $amount = 0; ?>
             <?php
             $json_data = '';
             foreach ($po_products as $key => $data):
@@ -58,19 +58,18 @@
                         ?>
                     </td>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-        <tfoot>
-            <tr class="totalRow">
-                <th colspan="7">&nbsp;</th>
-                <th><?php echo $ctn_qty; ?></th>
-                <th><?php echo $cntr_qty ?></th>
-                <th>&nbsp;</th>
-                <th><?php echo $amount; ?></th>
-                <th>&nbsp;</th>
-            </tr>
-        </tfoot>
-    <?php endif; ?>
+            <?php endforeach; endif; ?>
+    </tbody>
+    <tfoot>
+        <tr class="totalRow">
+            <th colspan="7">&nbsp;</th>
+            <th><?php echo $ctn_qty; ?></th>
+            <th><?php echo $cntr_qty ?></th>
+            <th>&nbsp;</th>
+            <th><?php echo $amount; ?></th>
+            <th>&nbsp;</th>
+        </tr>
+    </tfoot>
 </table>
 <?php
 $cs = Yii::app()->getClientScript();

@@ -61,11 +61,11 @@ class InvoiceController extends Controller {
 
         if (isset($_POST['Invoice'])) {
             $model->attributes = $_POST['Invoice'];
-            if (isset($_POST['action']) && ($_POST['action'] == 'save_po')) {
+            if (isset($_POST['action']) && ($_POST['action'] == 'save_inv')) {
                 $this->tempSave($posession, $model->attributes, $_POST['OrderDetails']);
                 $notes = "Invoice Saved successfully.";
                 $redir = array('create');
-            } else if (isset($_POST['action']) && ($_POST['action'] == 'submit_po')) {
+            } else if (isset($_POST['action']) && ($_POST['action'] == 'submit_inv')) {
                 if ($model->validate()) {
                     $model->setUploadDirectory(UPLOAD_DIR);
                     $model->uploadFile();
@@ -107,11 +107,11 @@ class InvoiceController extends Controller {
         if (isset($_POST['Invoice'])) {
             $model->attributes = $_POST['Invoice'];
 
-            if (isset($_POST['action']) && ($_POST['action'] == 'save_po')) {
+            if (isset($_POST['action']) && ($_POST['action'] == 'save_inv')) {
                 $this->tempSave($posession, $model->attributes, $_POST['OrderDetails']);
                 $notes = "Invoice Saved successfully.";
                 $redir = array('update', 'id' => $id);
-            } else if (isset($_POST['action']) && ($_POST['action'] == 'submit_po')) {
+            } else if (isset($_POST['action']) && ($_POST['action'] == 'submit_inv')) {
                 if ($model->validate()) {
                     $model->setUploadDirectory(UPLOAD_DIR);
                     $model->uploadFile();
@@ -317,7 +317,7 @@ class InvoiceController extends Controller {
                 }
             }
         }
-        $this->renderPartial('_preview', compact('company', 'vendor', 'liner', 'lbldate','inv_products'));
+        $this->renderPartial('_preview', compact('company', 'vendor', 'liner', 'lbldate', 'inv_products'));
     }
 
 }

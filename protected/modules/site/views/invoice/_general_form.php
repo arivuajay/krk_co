@@ -183,6 +183,6 @@ unset($poStatus[1]);
         </div>
     </div>
 </div>
-<div id="additioanl_data" class="hidden"></div>
+<div id="additioanl_data" class=""></div>
 <?php echo CHtml::hiddenField('action'); ?>
 <?php $this->endWidget(); ?>

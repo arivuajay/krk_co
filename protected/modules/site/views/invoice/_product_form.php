@@ -226,18 +226,6 @@ $js = <<< EOD
         return true;
     }
 
-    function PoProductList(){
-     $.ajax({
-            'url':'$inv_products_url',
-//            'beforeSend':function(){
-//                $('#inv_added_products .box').append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
-//            },
-            'success':function(html){
-                $("#inv_added_products .box-body").html(html);
-//                $('#inv_added_products .overlay').remove();
-            }
-        });
-    }
     var _addProBtn;
     function b4AddProd(form){
         _addProBtn = $("#add_prod").button("loading");
@@ -251,7 +239,10 @@ $js = <<< EOD
                 url: '$inv_add_product',
                 data:data,
                 success:function(data){
-                    PoProductList();
+                    data = $.parseJSON(data);
+                    $('#invoice-form #additioanl_data').append('<textarea name="OrderDetails[]" id="addt_'+data.key_no+'">'+JSON.stringify(data.mdlData)+'</textarea>');
+                    $('#inv_added_products table tbody').append(data.bindData);
+                    newSum();
                 },
                 dataType:'html'
             });

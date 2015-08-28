@@ -16,9 +16,9 @@
             <th scope="col">Action</th>
         </tr>
     </thead>
-    <?php if ($inv_products): $ctn_qty = $amount = 0; ?>
-        <tbody>
-            <?php foreach ($inv_products as $key => $product): $item_price = $product['inv_det_cotton_qty'] * $product['inv_det_price']; ?>
+    <tbody>
+        <?php if ($inv_products): $ctn_qty = $amount = 0;
+            foreach ($inv_products as $key => $product): $item_price = $product['inv_det_cotton_qty'] * $product['inv_det_price']; ?>
                 <tr data-session-key="<?php echo $key; ?>">
                     <td><?php echo ProductFamily::model()->findByPk($product['inv_det_prod_fmly_id'])->pro_family_name; ?></td>
                     <td><?php echo Product::model()->findByPk($product['inv_det_product_id'])->pro_name; ?></td>
@@ -29,11 +29,13 @@
                     <td><?php echo $product['inv_det_gross_weight']; ?></td>
                     <td><?php echo $product['inv_det_currency']; ?></td>
                     <td><?php echo $product['inv_det_cotton_qty'];
-        $ctn_qty += $product['inv_det_cotton_qty']; ?></td>
+                $ctn_qty += $product['inv_det_cotton_qty'];
+                ?></td>
                     <td><?php echo $product['inv_det_ctnr_no']; ?></td>
                     <td><?php echo $product['inv_det_price']; ?></td>
                     <td><?php echo $item_price;
-        $amount += $item_price; ?></td>
+                $amount += $item_price;
+                ?></td>
                     <td valign="middle">
                         <?php
 //                        echo CHtml::ajaxLink('<i class="glyphicon glyphicon-pencil"></i>', array('/site/invoice/editInvPrduct'), array(
@@ -47,17 +49,17 @@
                         ?>
                     </td>
                 </tr>
-    <?php endforeach; ?>
-        </tbody>
-        <tfoot>
-            <tr class="totalRow">
-                <th colspan="8">&nbsp;</th>
-                <th><?php echo $ctn_qty; ?></th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
-                <th><?php echo $amount; ?></th>
-                <th>&nbsp;</th>
-            </tr>
-        </tfoot>
-<?php endif; ?>
+    <?php endforeach;
+endif; ?>
+    </tbody>
+    <tfoot>
+        <tr class="totalRow">
+            <th colspan="8">&nbsp;</th>
+            <th><?php echo $ctn_qty; ?></th>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+            <th><?php echo $amount; ?></th>
+            <th>&nbsp;</th>
+        </tr>
+    </tfoot>
 </table>
