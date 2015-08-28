@@ -18,7 +18,10 @@
     </thead>
     <tbody>
         <?php if ($inv_products): $ctn_qty = $amount = 0;
-            foreach ($inv_products as $key => $product): $item_price = $product['inv_det_cotton_qty'] * $product['inv_det_price']; ?>
+            foreach ($inv_products as $key => $data):
+                $json_data .='<textarea name="OrderDetails[]" id="addt_' . $key . '">' . $data . '</textarea>';
+                $product = CJSON::decode($data);
+                $item_price = $product['inv_det_cotton_qty'] * $product['inv_det_price']; ?>
                 <tr data-session-key="<?php echo $key; ?>">
                     <td><?php echo ProductFamily::model()->findByPk($product['inv_det_prod_fmly_id'])->pro_family_name; ?></td>
                     <td><?php echo Product::model()->findByPk($product['inv_det_product_id'])->pro_name; ?></td>
@@ -63,3 +66,12 @@ endif; ?>
         </tr>
     </tfoot>
 </table>
+<?php
+$cs = Yii::app()->getClientScript();
+$js = <<< EOD
+    $(document).ready(function(){
+        $('#invoice-form #additioanl_data').html('$json_data');
+    });
+EOD;
+$cs->registerScript('_po_products', $js);
+?>

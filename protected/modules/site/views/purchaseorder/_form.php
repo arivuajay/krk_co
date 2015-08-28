@@ -46,8 +46,8 @@ else
                 <div class="row">
                     <div class="col-lg-6">
                         <ul>
-                            <li>Unsaved product(s) row are <span class="label label-danger">RED</span> marked.</li>
-                            <li>On Preview screen, Submitted or Saved Products only will display. Unsaved product(s) which are <span class="label label-danger">RED</span> row(s) are not display.</li>
+                            <li>Unsaved product(s) row are <span style="background-color: #f2dede; color:#a94442">&nbsp;RED&nbsp;</span> marked.</li>
+                            <li>On Preview screen, Submitted or Saved Products only will display. Unsaved product(s) which are <span style="background-color: #f2dede; color:#a94442">&nbsp;RED&nbsp;</span> row(s) are not display.</li>
                         </ul>
                         <div id="terms">
                         </div>
