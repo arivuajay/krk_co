@@ -211,6 +211,7 @@ class Payment extends CActiveRecord {
             $pagination = array('pageSize' => PAGE_SIZE);
         else
             $pagination = false;
+        
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
             'pagination' => $pagination

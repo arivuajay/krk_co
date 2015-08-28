@@ -167,7 +167,7 @@ class PaymentController extends Controller {
             $mPDF1->Output("Payments.pdf", EYiiPdf::OUTPUT_TO_DOWNLOAD);
         } else {
             if ($this->isExportRequest()) {
-    //            $model->unsetAttributes();
+                $model->unsetAttributes();
                 $this->exportCSV(array('Payment:'), null, false);
                 $this->exportCSV($model->dataProvider(), array('vendorname', 'paymenttype', 'pay_date', 'pay_amount', 'ponumber', 'invoicenumber'));
             }

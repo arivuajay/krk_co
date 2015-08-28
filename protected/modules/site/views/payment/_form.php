@@ -27,31 +27,35 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
             $payment_types = Payment::PaymentTypelist();
             ?>
             <div class="box-body">
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'vendor_id', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->dropDownList($model, 'vendor_id', $vendors, array('class' => 'form-control', 'prompt' => 'Select Vendor',
-                            'onchange' => '
+                <div class="row">
+                    <div class="col-lg-6 col-xs-6">
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'vendor_id', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php
+                                echo $form->dropDownList($model, 'vendor_id', $vendors, array('class' => 'form-control', 'prompt' => 'Select Vendor',
+                                    'onchange' => '
                                 $("#po_list").val("");
-                                ')); ?>
-                        <?php echo $form->error($model, 'vendor_id'); ?>
-                    </div>
-                </div>
+                                '));
+                                ?>
+                                <?php echo $form->error($model, 'vendor_id'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_type', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->dropDownList($model, 'pay_type', $payment_types, array('class' => 'form-control', 'prompt' => 'Select Payment Types')); ?>
-                        <?php echo $form->error($model, 'pay_type'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_type', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->dropDownList($model, 'pay_type', $payment_types, array('class' => 'form-control', 'prompt' => 'Select Payment Types')); ?>
+                                <?php echo $form->error($model, 'pay_type'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'po_id', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                    <?php
-                    $this->widget('application.components.myAutoComplete', array(
-                        'source' => 'js: function(request, response) {
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'po_id', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php
+                                $this->widget('application.components.myAutoComplete', array(
+                                    'source' => 'js: function(request, response) {
                                     $("#po_list").addClass("load-input");
                                     $.ajax({
                                         url: "' . $this->createUrl('/site/default/getPOSByClient') . '",
@@ -71,15 +75,15 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                                         }
                                     })
                                  }',
-                        'name' => 'po_list',
-                        'options' => array(
-                            'minLength' => '0',
-                            'autoFill' => false,
-                            'focus' => 'js:function( event, ui ) {
+                                    'name' => 'po_list',
+                                    'options' => array(
+                                        'minLength' => '0',
+                                        'autoFill' => false,
+                                        'focus' => 'js:function( event, ui ) {
                                 $( "#po_list" ).val( ui.item.purchase_order_code );
                                 return false;
                             }',
-                            'select' => 'js:function( event, ui ) {
+                                        'select' => 'js:function( event, ui ) {
                                             $("#' . CHtml::activeId($model, 'po_id') . '").val(ui.item.po_id);
                                             $.ajax({
                                                 url: "' . $this->createUrl('/site/default/getInvoiceByPo') . '",
@@ -90,17 +94,17 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                                             });
                                             return false;
                                         }',
-                            'change' =>'js: function(event,ui){
+                                        'change' => 'js: function(event,ui){
                                             if (ui.item==null){
                                                 $("#po_list").val("");
                                                 $("#po_list").focus();
                                                 }
                                             }'
-                        ),
-                        'htmlOptions' => array(
-                            'class' => 'form-control'
-                        ),
-                        'methodChain' => '.data( "autocomplete" )._renderItem = function( ul, item ) {
+                                    ),
+                                    'htmlOptions' => array(
+                                        'class' => 'form-control'
+                                    ),
+                                    'methodChain' => '.data( "autocomplete" )._renderItem = function( ul, item ) {
                             if(item.id == 0){
                                 return $( "<li></li>" )
                                     .data( "item.autocomplete", item )
@@ -113,18 +117,19 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                                 .appendTo( ul );
                             }
                         };'
-                    ));
-                    echo $form->hiddenField($model, 'po_id');
-                    ?>
-                        <?php // echo $form->textField($model, 'po_id', array('class' => 'form-control')); ?>
-                        <?php echo $form->error($model, 'po_id'); ?>
-                    </div>
-                </div>
+                                ));
+                                echo $form->hiddenField($model, 'po_id');
+                                ?>
+                                <?php // echo $form->textField($model, 'po_id', array('class' => 'form-control')); ?>
+                                <?php echo $form->error($model, 'po_id'); ?>
+                            </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'invoice_id', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php
+                        </div>
+
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'invoice_id', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php
                                 echo $form->dropDownList($model, 'invoice_id', array(), array('class' => 'form-control',
                                     'prompt' => 'Select Invoice',
                                     'ajax' => array(
@@ -135,146 +140,152 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                                         'success' => 'function(data){ data = JSON.parse(data); $("#Payment_invoice_amount").val(data.total_inv_amount); }',
                                 )));
                                 ?>
-                        <?php // echo $form->textField($model, 'invoice_id', array('class' => 'form-control')); ?>
-                        <?php echo $form->error($model, 'invoice_id'); ?>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'invoice_amount', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <div class="input-group">
-                            <div class="input-group-addon" id="fmt_currency">USD ($)</div>
-                            <?php echo $form->textField($model, 'invoice_amount', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10, 'readonly' => true, 'style' => 'z-index: 1;')); ?>
+                                <?php // echo $form->textField($model, 'invoice_id', array('class' => 'form-control')); ?>
+                                <?php echo $form->error($model, 'invoice_id'); ?>
+                            </div>
                         </div>
-                        <?php echo $form->error($model, 'invoice_amount'); ?>
-                    </div>
-                </div>
-                
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_amount', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'pay_amount', array('class' => 'form-control inr_calc', 'size' => 10, 'maxlength' => 10)); ?>
-                        <?php echo $form->error($model, 'pay_amount'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'invoice_amount', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <div class="input-group">
+                                    <div class="input-group-addon" id="fmt_currency">USD ($)</div>
+                                    <?php echo $form->textField($model, 'invoice_amount', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10, 'readonly' => true, 'style' => 'z-index: 1;')); ?>
+                                </div>
+                                <?php echo $form->error($model, 'invoice_amount'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_deal_id', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'pay_deal_id', array('class' => 'form-control', 'size' => 60, 'maxlength' => 100)); ?>
-                        <?php echo $form->error($model, 'pay_deal_id'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_amount', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_amount', array('class' => 'form-control inr_calc', 'size' => 10, 'maxlength' => 10)); ?>
+                                <?php echo $form->error($model, 'pay_amount'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_inr_rate', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'pay_inr_rate', array('class' => 'form-control inr_calc', 'size' => 10, 'maxlength' => 10)); ?>
-                        <?php echo $form->error($model, 'pay_inr_rate'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_deal_id', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_deal_id', array('class' => 'form-control', 'size' => 60, 'maxlength' => 100)); ?>
+                                <?php echo $form->error($model, 'pay_deal_id'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_date', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'pay_date', array('class' => 'form-control datepicker')); ?>
-                        <?php echo $form->error($model, 'pay_date'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_inr_rate', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_inr_rate', array('class' => 'form-control inr_calc', 'size' => 10, 'maxlength' => 10)); ?>
+                                <?php echo $form->error($model, 'pay_inr_rate'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_inr_amount', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'pay_inr_amount', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10, 'readonly' => true)); ?>
-                        <?php echo $form->error($model, 'pay_inr_amount'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_date', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_date', array('class' => 'form-control datepicker')); ?>
+                                <?php echo $form->error($model, 'pay_date'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_mode', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'pay_mode', array('class' => 'form-control', 'size' => 50, 'maxlength' => 50)); ?>
-                        <?php echo $form->error($model, 'pay_mode'); ?>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_inr_amount', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_inr_amount', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10, 'readonly' => true)); ?>
+                                <?php echo $form->error($model, 'pay_inr_amount'); ?>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_ref_info', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'pay_ref_info', array('class' => 'form-control', 'size' => 60, 'maxlength' => 100)); ?>
-                        <?php echo $form->error($model, 'pay_ref_info'); ?>
-                    </div>
-                </div>
+                    <div class="col-lg-6 col-xs-6">
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_transaction_id', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'pay_transaction_id', array('class' => 'form-control', 'size' => 50, 'maxlength' => 50)); ?>
-                        <?php echo $form->error($model, 'pay_transaction_id'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_mode', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_mode', array('class' => 'form-control', 'size' => 50, 'maxlength' => 50)); ?>
+                                <?php echo $form->error($model, 'pay_mode'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_bank_name', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textField($model, 'pay_bank_name', array('class' => 'form-control', 'size' => 50, 'maxlength' => 50)); ?>
-                        <?php echo $form->error($model, 'pay_bank_name'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_ref_info', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_ref_info', array('class' => 'form-control', 'size' => 60, 'maxlength' => 100)); ?>
+                                <?php echo $form->error($model, 'pay_ref_info'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_remarks', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->textArea($model, 'pay_remarks', array('class' => 'form-control', 'rows' => 6, 'cols' => 50)); ?>
-                        <?php echo $form->error($model, 'pay_remarks'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_transaction_id', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_transaction_id', array('class' => 'form-control', 'size' => 50, 'maxlength' => 50)); ?>
+                                <?php echo $form->error($model, 'pay_transaction_id'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_shift_advise', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->fileField($model, 'pay_shift_advise'); ?>
-                        <?php echo $form->error($model, 'pay_shift_advise'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_bank_name', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_bank_name', array('class' => 'form-control', 'size' => 50, 'maxlength' => 50)); ?>
+                                <?php echo $form->error($model, 'pay_bank_name'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_debit_advise', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->fileField($model, 'pay_debit_advise'); ?>
-                        <?php echo $form->error($model, 'pay_debit_advise'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_remarks', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textArea($model, 'pay_remarks', array('class' => 'form-control', 'rows' => 6, 'cols' => 50)); ?>
+                                <?php echo $form->error($model, 'pay_remarks'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_other_doc', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->fileField($model, 'pay_other_doc'); ?>
-                        <?php echo $form->error($model, 'pay_other_doc'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_shift_advise', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->fileField($model, 'pay_shift_advise'); ?>
+                                <?php echo $form->error($model, 'pay_shift_advise'); ?>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <?php echo $form->labelEx($model, 'pay_deal_id_copy', array('class' => 'col-sm-2 control-label')); ?>
-                    <div class="col-sm-5">
-                        <?php echo $form->fileField($model, 'pay_deal_id_copy'); ?>
-                        <?php echo $form->error($model, 'pay_deal_id_copy'); ?>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_debit_advise', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->fileField($model, 'pay_debit_advise'); ?>
+                                <?php echo $form->error($model, 'pay_debit_advise'); ?>
+                            </div>
+                        </div>
 
-            </div><!-- /.box-body -->
-            <div class="box-footer">
-                <div class="form-group">
-                    <div class="col-sm-0 col-sm-offset-2">
-                        <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_other_doc', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->fileField($model, 'pay_other_doc'); ?>
+                                <?php echo $form->error($model, 'pay_other_doc'); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_deal_id_copy', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->fileField($model, 'pay_deal_id_copy'); ?>
+                                <?php echo $form->error($model, 'pay_deal_id_copy'); ?>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
-            <?php $this->endWidget(); ?>
+
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+            <div class="form-group">
+                <div class="col-sm-0 col-sm-offset-2">
+                    <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
+                </div>
+            </div>
         </div>
-    </div><!-- ./col -->
+        <?php $this->endWidget(); ?>
+    </div>
+</div><!-- ./col -->
 </div>
 
 <?php

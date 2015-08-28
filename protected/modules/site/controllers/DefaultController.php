@@ -271,7 +271,7 @@ class DefaultController extends Controller {
             $invoiceItems = InvoiceItems::model()->findAll($criteria);
 
             $total_inv_amount = 0;
-             $totQty = 0;
+            $totQty = 0;
             foreach ($invoiceItems as $item):
                 $options[] = "{$item->inv_det_ctnr_no} - {$item->CntrQty}";
                 $total_inv_amount += $item->invoiceamount;
