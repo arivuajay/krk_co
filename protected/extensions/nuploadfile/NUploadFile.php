@@ -23,7 +23,8 @@ class NUploadFile extends CActiveRecordBehavior {
     }
 
     public function afterDelete($event) {
-        $this->removeFile($this->owner->{$this->fileField});
+        if (!is_array($this->fileField))
+            $this->removeFile($this->owner->{$this->fileField});
     }
 
     public function uploadFile() {

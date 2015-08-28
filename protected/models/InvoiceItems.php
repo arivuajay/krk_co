@@ -35,6 +35,7 @@
 class InvoiceItems extends CActiveRecord {
 
     public $CntrQty;
+//    public $invoiceamount;
 
     /**
      * @return string the associated database table name
@@ -170,4 +171,7 @@ class InvoiceItems extends CActiveRecord {
         ));
     }
 
+    public function getInvoiceAmount() {
+        return $this->inv_det_cotton_qty * $this->inv_det_price;
+    }
 }

@@ -48,6 +48,7 @@
                         array('label' => '<i class="fa fa-user"></i> <span>Invoice & Packing List</span>', 'url' => array('/site/invoice/index')),
                         array('label' => '<i class="fa fa-user"></i> <span>Bill of Lading</span>', 'url' => array('/site/billlading/index')),
                         array('label' => '<i class="fa fa-user"></i> <span>Pyto&Orgine Certificate</span>', 'url' => array('/site/pytoorigin/index')),
+                        array('label' => '<i class="fa fa-user"></i> <span>Payment</span>', 'url' => array('/site/payment/index')),
 //                        array('label' => '<i class="fa fa-weixin"></i> <span>Process Chart</span>', 'url' => '#'),
 //                        array('label' => '<i class="fa fa-user"></i> <span>Permit</span>', 'url' => '#'),
                     ),
