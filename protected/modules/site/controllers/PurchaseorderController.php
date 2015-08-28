@@ -47,7 +47,7 @@ class PurchaseorderController extends Controller {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
-        $posession = Yii::app()->user->getState('guid');
+        $posession = 'new';
 
         if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
             TempSession::model()->byMe()->deleteAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
@@ -57,22 +57,13 @@ class PurchaseorderController extends Controller {
         $model = new PurchaseOrder;
         $detail_model = new PurchaseOrderDetails('add_product');
 
-// Uncomment the following line if AJAX validation is needed
         $this->performAjaxValidation($model);
 
         if (isset($_POST['PurchaseOrder'])) {
             $model->attributes = $_POST['PurchaseOrder'];
             if ($model->validate()) {
                 $model->save(false);
-                $po_products = TempSession::model()->byMe()->findAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
-                foreach ($po_products as $data) {
-                    $detail_model = new PurchaseOrderDetails('save');
-                    $detail_model->attributes = $data['session_data'];
-                    $detail_model->po_id = $model->po_id;
-                    $detail_model->save(false);
-                }
-
-                TempSession::model()->byMe()->deleteAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
+                $this->itemSave($posession, $model->po_id);
                 Myclass::addAuditTrail("Created PurchaseOrder successfully.", "user");
                 Yii::app()->user->setFlash('success', 'PurchaseOrder Created Successfully!!!');
                 $this->redirect(array('index'));
@@ -80,6 +71,59 @@ class PurchaseorderController extends Controller {
         }
 
         $this->render('create', compact('model', 'detail_model'));
+    }
+
+    /**
+     * Updates a particular model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id the ID of the model to be updated
+     */
+    public function actionUpdate($id) {
+        $model = $this->loadModel($id);
+        $detail_model = new PurchaseOrderDetails('add_product');
+        $posession = "po_{$model->po_id}";
+        if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
+            TempSession::model()->byMe()->deleteAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
+            $this->redirect(array('/site/purchaseorder/update', 'id' => $model->po_id));
+        }
+
+        $this->performAjaxValidation($model);
+
+        if (isset($_POST['PurchaseOrder'])) {
+            $model->attributes = $_POST['PurchaseOrder'];
+            if ($model->validate()) {
+                $model->save(false);
+                PurchaseOrderDetails::model()->deleteAll("po_id = '{$model->po_id}'");
+                $this->itemSave($posession, $model->po_id);
+                Myclass::addAuditTrail("Updated PurchaseOrder successfully.", "user");
+                Yii::app()->user->setFlash('success', 'PurchaseOrder Updated Successfully!!!');
+                $this->redirect(array('index'));
+            }
+        } elseif (TempSession::model()->byMe()->count("session_name = 'po_added_products' AND session_key = '{$posession}'") == 0) {
+            $items = PurchaseOrderDetails::model()->findAll("po_id = '{$model->po_id}'");
+            foreach ($items as $item):
+                $tmp_sess = new TempSession();
+                $tmp_sess->session_name = 'po_added_products';
+                $tmp_sess->session_key = $posession;
+                $tmp_sess->session_data = CJSON::encode($item->attributes);
+                $tmp_sess->save();
+            endforeach;
+        }
+
+        $this->render('update', compact('model', 'detail_model'));
+    }
+
+    protected function itemSave($posession, $poid) {
+        $items = TempSession::model()->byMe()->findAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
+        foreach ($items as $item) {
+            $detail_model = new PurchaseOrderDetails('save');
+            $detail_model->attributes = $item['session_data'];
+            $detail_model->po_id = $poid;
+            $detail_model->save(false);
+        }
+        TempSession::model()->byMe()->deleteAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
+
+        return;
     }
 
     public function actionAddProduct($posession) {
@@ -112,7 +156,7 @@ class PurchaseorderController extends Controller {
             'jquery.min.js' => false
         );
 
-        $this->renderPartial('_product_form', compact('model', 'detail_model','posession'), false, true);
+        $this->renderPartial('_product_form', compact('model', 'detail_model', 'posession'), false, true);
 
         Yii::app()->end();
     }
@@ -129,46 +173,7 @@ class PurchaseorderController extends Controller {
         Yii::app()->end();
     }
 
-    /**
-     * Updates a particular model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id the ID of the model to be updated
-     */
-    public function actionUpdate($id) {
-        $model = $this->loadModel($id);
-        $detail_model = new PurchaseOrderDetails('add_product');
-        $posession = "po_{$model->po_id}";
-        if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
-            TempSession::model()->byMe()->deleteAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
-            $this->redirect(array('/site/purchaseorder/update', 'id' => $model->po_id));
-        }
 
-// Uncomment the following line if AJAX validation is needed
-        $this->performAjaxValidation($model);
-
-        if (isset($_POST['PurchaseOrder'])) {
-            $model->attributes = $_POST['PurchaseOrder'];
-            if ($model->validate()) {
-                $model->save(false);
-                PurchaseOrderDetails::model()->deleteAll("po_id = '{$model->po_id}'");
-                $po_products = TempSession::model()->byMe()->findAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
-                foreach ($po_products as $product) {
-                    $detail_model = new PurchaseOrderDetails('save');
-                    $detail_model->attributes = $data['session_data'];
-                    ;
-                    $detail_model->po_id = $model->po_id;
-                    $detail_model->save(false);
-                }
-
-                TempSession::model()->byMe()->deleteAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
-                Myclass::addAuditTrail("Updated PurchaseOrder successfully.", "user");
-                Yii::app()->user->setFlash('success', 'PurchaseOrder Updated Successfully!!!');
-                $this->redirect(array('index'));
-            }
-        }
-
-        $this->render('update', compact('model', 'detail_model'));
-    }
 
     /**
      * Deletes a particular model.

@@ -42,6 +42,7 @@ class DefaultController extends Controller {
                     'getPOSByClient',
                     'getPOInfo',
                     'getVendorInfo',
+                    'getLinerInfo',
                     'downloadFile',
                 ),
                 'users' => array('*'),
@@ -262,8 +263,15 @@ class DefaultController extends Controller {
 
         if ($invoices) {
             $options[] = CHtml::tag('option', array('value' => ''), 'Select Container', true);
-            foreach ($invoices->invoiceItems as $item):
-                $options[] = CHtml::tag('option', array('value' => $item->inv_det_ctnr_no, 'data-ctn' => $item->inv_det_cotton_qty), CHtml::encode($item->inv_det_ctnr_no), true);
+            $criteria = new CDbCriteria();
+            $criteria->select = array('*','SUM(inv_det_cotton_qty) as CntrQty');
+            $criteria->condition = "inv_id = '{$id}'";
+            $criteria->group = 'inv_det_ctnr_no';
+
+            $invoiceItems = InvoiceItems::model()->findAll($criteria);
+
+            foreach ($invoiceItems as $item):
+                $options[] = CHtml::tag('option', array('value' => $item->inv_det_ctnr_no, 'data-ctn' => $item->CntrQty), CHtml::encode($item->inv_det_ctnr_no), true);
             endforeach;
 
             $result['bol_no'] = $invoices->bol_no;
@@ -397,6 +405,12 @@ class DefaultController extends Controller {
     public function actionGetVendorInfo($id) {
         $result = Vendor::model()->findByPk($id);
         $this->renderPartial('_vendor_info', compact('result'));
+        Yii::app()->end();
+    }
+
+    public function actionGetLinerInfo($id) {
+        $result = Liner::model()->findByPk($id);
+        echo CJSON::encode($result);
         Yii::app()->end();
     }
 

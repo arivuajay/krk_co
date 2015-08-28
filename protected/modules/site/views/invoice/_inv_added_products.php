@@ -17,7 +17,7 @@
         </tr>
     </thead>
     <tbody>
-        <?php if ($inv_products): foreach ($inv_products as $key => $product): ?>
+        <?php if ($inv_products): $ctn_qty = $amount = 0; foreach ($inv_products as $key => $product): ?>
         <tr data-session-key="<?php echo $key; ?>">
                     <td><?php echo ProductFamily::model()->findByPk($product['inv_det_prod_fmly_id'])->pro_family_name; ?></td>
                     <td><?php echo Product::model()->findByPk($product['inv_det_product_id'])->pro_name; ?></td>

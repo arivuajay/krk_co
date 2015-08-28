@@ -10,7 +10,7 @@ $cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
 $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
 
 if ($model->isNewRecord)
-    $posession = Yii::app()->user->getState('guid');
+    $posession = 'new';
 else
     $posession = "po_{$model->po_id}";
 ?>

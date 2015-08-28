@@ -87,11 +87,18 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
             array(
                 'header' => 'Vendor notify',
                 'value' => function($data) {
-                                if ($data->sent_vendor)
-                                    return 'Already sent';
-                                else
-                                    return CHtml::link('Sent to vendor', array('/site/purchaseorder/sendvendor', 'id' => $data->po_id), array("class" => "btn btn-xs btn-primary"));
-                            },
+            if ($data->sent_vendor)
+                return 'Already sent';
+            else
+                return CHtml::link('Sent to vendor', array('/site/purchaseorder/sendvendor', 'id' => $data->po_id), array("class" => "btn btn-xs btn-primary"));
+        },
+                'type' => 'raw'
+            ),
+            array(
+                'name' => 'status',
+                'value' => function($data) {
+            return PurchaseOrder::StatusList($data->status);
+        },
                 'type' => 'raw'
             ),
             array(

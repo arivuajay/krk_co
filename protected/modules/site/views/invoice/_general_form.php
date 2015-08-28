@@ -10,6 +10,7 @@ $form = $this->beginWidget('CActiveForm', array(
 $companies = Company::CompanyList();
 $vendors = Vendor::VendorList();
 $poStatus = PurchaseOrder::StatusList();
+unset($poStatus[1]);
 ?>
 <div class="box-header">
     <h3 class="box-title">General Info</h3>
@@ -138,7 +139,7 @@ $poStatus = PurchaseOrder::StatusList();
             <div class="form-group">
                 <?php echo $form->labelEx($model, 'po_cur_status', array('class' => 'col-sm-4 control-label')); ?>
                 <div class="col-sm-6">
-                    <?php echo $form->dropDownList($model, 'po_cur_status', $poStatus, array('class' => 'form-control', 'prompt' => 'Select PO Status')); ?>
+                    <?php echo $form->dropDownList($model, 'po_cur_status', $poStatus, array('class' => 'form-control')); ?>
                     <?php echo $form->error($model, 'po_cur_status'); ?>
                 </div>
             </div>

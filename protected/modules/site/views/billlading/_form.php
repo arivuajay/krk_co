@@ -13,6 +13,7 @@ $form = $this->beginWidget('CActiveForm', array(
     'htmlOptions' => array('role' => 'form', 'class' => 'form-horizontal', 'enctype' => 'multipart/form-data'),
     'clientOptions' => array(
         'validateOnSubmit' => true,
+        'validateOnChange' => false,
     ),
     'enableAjaxValidation' => true,
         ));
@@ -209,7 +210,14 @@ $liners = Liner::LinerList();
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'bl_liner_id', array('class' => 'col-sm-3 control-label')); ?>
                             <div class="col-sm-6">
-                                <?php echo $form->dropDownList($model, 'bl_liner_id', $liners, array('class' => 'form-control', 'prompt' => 'Select Liner')); ?>
+                                <?php
+                        echo $form->dropDownList($model, 'bl_liner_id', $liners, array('class' => 'form-control', 'prompt' => 'Select Liner',
+                            'ajax' => array(
+                                'type' => 'GET',
+                                'url' => Yii::app()->createUrl('/site/default/getLinerInfo'),
+                                'success' => 'function(data){ data = JSON.parse(data); $("#BillLading_bl_free_days").val(data.no_of_free_days); }',
+                                'data' => array('id' => 'js:this.value'))));
+                        ?>
                                 <?php echo $form->error($model, 'bl_liner_id'); ?>
                             </div>
                         </div>

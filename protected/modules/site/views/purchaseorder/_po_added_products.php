@@ -16,36 +16,56 @@
         </tr>
     </thead>
     <tbody>
-        <?php if ($po_products): foreach ($po_products as $data): $product = $data['session_data']; $key = $data['id']; ?>
-        <tr data-session-key="<?php echo $key; ?>">
+        <?php
+        if ($po_products): $ctn_qty = $cntr_qty = $amount = 0;
+            foreach ($po_products as $data):
+                $product = $data['session_data'];
+                $key = $data['id'];
+                $item_price = $product['po_det_cotton_qty'] * $product['po_det_price'];
+                ?>
+                <tr data-session-key="<?php echo $key; ?>">
                     <td><?php echo ProductFamily::model()->findByPk($product['po_det_prod_fmly_id'])->pro_family_name; ?></td>
                     <td><?php echo Product::model()->findByPk($product['po_det_product_id'])->pro_name; ?></td>
                     <td><?php echo ProductVariety::model()->findByPk($product['po_det_variety_id'])->variety_name; ?></td>
-                    <td><?php echo implode(",",CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $product['po_det_grade'])), 'grade_id', 'grade_long_name')); ?></td>
-                    <td><?php echo implode(",",CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $product['po_det_size'])), 'size_id', 'size_name')); ?></td>
+                    <td><?php echo implode(",", CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $product['po_det_grade'])), 'grade_id', 'grade_long_name')); ?></td>
+                    <td><?php echo implode(",", CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $product['po_det_size'])), 'size_id', 'size_name')); ?></td>
                     <td><?php echo $product['po_det_net_weight']; ?></td>
                     <td><?php echo $product['po_det_currency']; ?></td>
-                    <td><?php echo $product['po_det_cotton_qty']; ?></td>
-                    <td><?php echo $product['po_det_container_qty']; ?></td>
+                    <td><?php echo $product['po_det_cotton_qty'];
+        $ctn_qty += $product['po_det_cotton_qty']
+                ?></td>
+                    <td><?php echo $product['po_det_container_qty'];
+                $cntr_qty += $product['po_det_container_qty']
+                ?></td>
                     <td><?php echo $product['po_det_price']; ?></td>
-                    <td><?php echo $product['po_det_cotton_qty'] * $product['po_det_price']; ?></td>
+                    <td><?php echo $item_price;
+                $amount += $item_price;
+                ?></td>
                     <td valign="middle">
                         <?php
                         echo CHtml::ajaxLink('<i class="glyphicon glyphicon-pencil"></i>', array('/site/purchaseorder/editPoPrduct'), array(
                             "type" => "GET",
-                            "data" => array("posession" => $posession,"key" => $key, "ajax" => true),
+                            "data" => array("posession" => $posession, "key" => $key, "ajax" => true),
                             "beforeSend" => 'js:function(){ $("#product-form .box").append("<div class=\"overlay\"><i class=\"fa fa-refresh fa-spin\"></i></div>"); }',
                             "update" => "#product-form",
-                    ), array('live' => false, 'id' => "edit_$key"));
+                                ), array('live' => false, 'id' => "edit_$key"));
                         echo '&nbsp;&nbsp;';
                         echo CHtml::ajaxLink('<i class="glyphicon glyphicon-trash"></i>', array('/site/purchaseorder/deletePoPrduct'), array(
-                            "data" => array("posession" => $posession,"key" => $key, "ajax" => true),
+                            "data" => array("posession" => $posession, "key" => $key, "ajax" => true),
                             "update" => "#po_added_products .box-body"
-                            ), array('live' => false, 'id' => "delete_$key"));
+                                ), array('live' => false, 'id' => "delete_$key"));
                         ?>
                     </td>
                 </tr>
-            <?php endforeach;
-        endif; ?>
+    <?php endforeach; ?>
+            <tr>
+                <td colspan="7">&nbsp;</td>
+                <td><?php echo $ctn_qty; ?></td>
+                <td><?php echo $cntr_qty ?></td>
+                <td>&nbsp;</td>
+                <td><?php echo $amount; ?></td>
+                <td>&nbsp;</td>
+            </tr>
+<?php endif; ?>
     </tbody>
 </table>

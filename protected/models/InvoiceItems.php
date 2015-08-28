@@ -34,6 +34,8 @@
  */
 class InvoiceItems extends CActiveRecord {
 
+    public $CntrQty;
+
     /**
      * @return string the associated database table name
      */
@@ -167,4 +169,5 @@ class InvoiceItems extends CActiveRecord {
             )
         ));
     }
+
 }
