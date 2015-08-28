@@ -31,7 +31,7 @@ else
             <div class="box-header">
                 <h3 class="box-title">Manage Products</h3>
             </div>
-            <div class="box-body">PO Products</div>
+            <div class="box-body"><?php $this->renderPartial('_po_added_products', compact('posession', 'po_products')); ?></div>
         </div>
     </div>
 </div>
@@ -46,11 +46,13 @@ else
                 <div class="row">
                     <div class="col-lg-6">
                         <ul>
-                            <li>Added products are auto save.Those are available until click on RESET button</li>
+                            <li>Unsaved product(s) row are <span class="label label-danger">RED</span> marked.</li>
+                            <li>On Preview screen, Submitted or Saved Products only will display. Unsaved product(s) which are <span class="label label-danger">RED</span> row(s) are not display.</li>
                         </ul>
                         <div id="terms">
                         </div>
-                        <button type="button" id="submit_po" class="btn btn-success">Submit</button>
+                        <button type="button" id="save_po" class="btn btn-success" name="save_po">Save</button>
+                        <button type="button" id="submit_po" class="btn btn-success" name="submit_po">Submit</button>
                         <?php
                         if ($model->isNewRecord)
                             $reset_link = array('/site/purchaseorder/create', 'open' => 'fresh');
@@ -58,7 +60,7 @@ else
                             $reset_link = array('/site/purchaseorder/update', 'id' => $model->po_id, 'open' => 'fresh');
 
                         echo CHtml::link('Reset', $reset_link, array("id" => "reset_po", "class" => "btn btn-warning"));
-
+                        echo '&nbsp;';
                         $this->widget(
                                 'booster.widgets.TbButton', array(
                             'label' => 'Preview',
@@ -89,7 +91,9 @@ else
                     <div class="col-lg-6">
                         <label class="col-sm-3">Prefered Liner: </label>
                         <div class="col-sm-6">
-                            <?php echo CHtml::dropDownList('liner_code', '', CHtml::listData(Liner::model()->active()->findAll(), 'liner_id', 'liner_name'), array('prompt' => 'Select Liner', 'class' => 'form-control', 'onchange' => 'js:$("#PurchaseOrder_po_liner_id").val(this.value);')); ?>
+                            <?php
+                            echo CHtml::dropDownList('liner_code', $model->po_liner_id, CHtml::listData(Liner::model()->active()->findAll(), 'liner_id', 'liner_name'), array('prompt' => 'Select Liner', 'class' => 'form-control', 'onchange' => 'js:$("#PurchaseOrder_po_liner_id").val(this.value);'));
+                            ?>
                         </div>
                     </div>
                 </div>
@@ -115,16 +119,17 @@ else
     <?php $this->endWidget(); ?>
 
 
-<?php
-$user_js_format = JS_USER_DATE_FORMAT;
-$js = <<< EOD
+    <?php
+    $user_js_format = JS_USER_DATE_FORMAT;
+    $js = <<< EOD
     $(document).ready(function(){
         $('.datepicker').datepicker({ format: '$user_js_format' });
         var poForm = $('#purchase-order-form');
-        $('#submit_po').click(function(){
+        $('#submit_po,#save_po').click(function(){
+            $('#purchase-order-form input#action').val($(this).attr('name'));
             poForm.submit();
         });
     });
 EOD;
-$cs->registerScript('_po_form', $js);
-?>
+    $cs->registerScript('_po_form', $js);
+    ?>

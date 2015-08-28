@@ -16,7 +16,7 @@
  * @package booster.widgets.modals
  */
 class TbModal extends CWidget {
-	
+
 	/**
 	 * @var boolean indicates whether to automatically open the modal when initialized. Defaults to 'false'.
 	 */
@@ -48,7 +48,7 @@ class TbModal extends CWidget {
 	 * Initializes the widget.
 	 */
 	public function init() {
-		
+
 		if (!isset($this->htmlOptions['id'])) {
 			$this->htmlOptions['id'] = $this->getId();
 		}
@@ -72,7 +72,7 @@ class TbModal extends CWidget {
 			}
 		}
 		echo CHtml::openTag('div', $this->htmlOptions);
-		echo '<div class="modal-dialog"><div class="modal-content">';
+		echo '<div class="modal-dialog modal-lg"><div class="modal-content">';
 	}
 
 	/**
@@ -81,7 +81,7 @@ class TbModal extends CWidget {
 	 * Runs the widget.
 	 */
 	public function run() {
-		
+
 		$id = $this->htmlOptions['id'];
 
 		echo '</div></div></div>';

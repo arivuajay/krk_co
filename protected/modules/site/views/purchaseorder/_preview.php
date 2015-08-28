@@ -61,43 +61,66 @@
                             <td>
                                 <h2>Product Details</h2>
                                 <div>
-                                    <?php
-                                    $po_products = TempSession::model()->byMe()->findAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
-                                    ?>
-                                    <table cellspacing="0" class="table table-bordered table-condensed">
+                                    <table class="table table-condensed">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Family</th>
                                                 <th scope="col">Product</th>
                                                 <th scope="col">Varity</th>
-                                                <th scope="col">Size</th>
                                                 <th scope="col">Grade</th>
-                                                <th scope="col">Qty in CTN</th>
-                                                <th scope="col">Price/CTN</th>
-                                                <th scope="col">Qty in CTNR</th>
+                                                <th scope="col">Size</th>
                                                 <th scope="col">Net Weight</th>
+                                                <th scope="col">Currency Type</th>
+                                                <th scope="col">Qty in CTN</th>
+                                                <th scope="col">Qty in CTNR</th>
+                                                <th scope="col">Price/CTN</th>
                                                 <th scope="col">Amount</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <?php if ($po_products): foreach ($po_products as $key => $data): $product = $data['session_data']; ?>
-                                                    <tr>
+                                        <?php if ($po_products): $ctn_qty = $cntr_qty = $amount = 0; ?>
+                                            <tbody>
+                                                <?php
+                                                $json_data = '';
+                                                foreach ($po_products as $key => $data):
+                                                    $json_data .='<textarea name="OrderDetails[]" id="addt_' . $key . '">' . $data . '</textarea>';
+                                                    $product = CJSON::decode($data);
+                                                    $item_price = $product['po_det_cotton_qty'] * $product['po_det_price'];
+                                                    ?>
+                                                    <tr data-session-key="<?php echo $key; ?>">
                                                         <td><?php echo ProductFamily::model()->findByPk($product['po_det_prod_fmly_id'])->pro_family_name; ?></td>
                                                         <td><?php echo Product::model()->findByPk($product['po_det_product_id'])->pro_name; ?></td>
                                                         <td><?php echo ProductVariety::model()->findByPk($product['po_det_variety_id'])->variety_name; ?></td>
-                                                        <td><?php echo implode(CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $product['po_det_size'])), 'size_id', 'size_name')); ?></td>
-                                                        <td><?php echo implode(CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $product['po_det_grade'])), 'grade_id', 'grade_long_name')); ?></td>
+                                                        <td><?php echo implode(",", CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $product['po_det_grade'])), 'grade_id', 'grade_long_name')); ?></td>
+                                                        <td><?php echo implode(",", CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $product['po_det_size'])), 'size_id', 'size_name')); ?></td>
                                                         <td><?php echo $product['po_det_net_weight']; ?></td>
-                                                        <!--<td><?php echo $product['po_det_currency']; ?></td>-->
-                                                        <td><?php echo $product['po_det_cotton_qty']; ?></td>
-                                                        <td><?php echo $product['po_det_container_qty']; ?></td>
+                                                        <td><?php echo $product['po_det_currency']; ?></td>
+                                                        <td><?php
+                                                            echo $product['po_det_cotton_qty'];
+                                                            $ctn_qty += $product['po_det_cotton_qty']
+                                                            ?></td>
+                                                        <td><?php
+                                                            echo $product['po_det_container_qty'];
+                                                            $cntr_qty += $product['po_det_container_qty']
+                                                            ?></td>
                                                         <td><?php echo $product['po_det_price']; ?></td>
-                                                        <td><?php echo $product['po_det_cotton_qty'] * $product['po_det_price']; ?></td>
+                                                        <td><?php
+                                                            echo $item_price;
+                                                            $amount += $item_price;
+                                                            ?></td>
                                                     </tr>
-                                                <?php endforeach;
-                                            endif;
-                                            ?>
-                                        </tbody>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="totalRow">
+                                                    <th colspan="7">&nbsp;</th>
+                                                    <th><?php echo $ctn_qty; ?></th>
+                                                    <th><?php echo $cntr_qty ?></th>
+                                                    <th>&nbsp;</th>
+                                                    <th><?php echo $amount; ?></th>
+                                                    <th>&nbsp;</th>
+                                                </tr>
+                                            </tfoot>
+                                        <?php endif; ?>
                                     </table>
                                 </div>
 
@@ -120,7 +143,7 @@
                         <tr height="30%">
                             <td>
                                 <h2>Terms &amp; Conditions</h2>
-<?php $this->renderPartial('/masters/_terms', array('vendor' => @$vendor))  ?>
+                                <?php $this->renderPartial('/masters/_terms', array('vendor' => @$vendor)) ?>
                             </td>
                         </tr>
                     </tbody></table>

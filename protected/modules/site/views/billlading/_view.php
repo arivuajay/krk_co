@@ -54,9 +54,6 @@
 	<?php echo CHtml::encode($data->bl_shipped_date); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('bl_container_number')); ?>:</b>
-	<?php echo CHtml::encode($data->bl_container_number); ?>
-	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('bl_liner_id')); ?>:</b>
 	<?php echo CHtml::encode($data->bl_liner_id); ?>

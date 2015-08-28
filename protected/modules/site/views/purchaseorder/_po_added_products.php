@@ -15,12 +15,13 @@
             <th scope="col">Action</th>
         </tr>
     </thead>
-    <tbody>
-        <?php
-        if ($po_products): $ctn_qty = $cntr_qty = $amount = 0;
-            foreach ($po_products as $data):
-                $product = $data['session_data'];
-                $key = $data['id'];
+    <?php if ($po_products): $ctn_qty = $cntr_qty = $amount = 0; ?>
+        <tbody>
+            <?php
+            $json_data = '';
+            foreach ($po_products as $key => $data):
+                $json_data .='<textarea name="OrderDetails[]" id="addt_' . $key . '">' . $data . '</textarea>';
+                $product = CJSON::decode($data);
                 $item_price = $product['po_det_cotton_qty'] * $product['po_det_price'];
                 ?>
                 <tr data-session-key="<?php echo $key; ?>">
@@ -31,41 +32,52 @@
                     <td><?php echo implode(",", CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $product['po_det_size'])), 'size_id', 'size_name')); ?></td>
                     <td><?php echo $product['po_det_net_weight']; ?></td>
                     <td><?php echo $product['po_det_currency']; ?></td>
-                    <td><?php echo $product['po_det_cotton_qty'];
-        $ctn_qty += $product['po_det_cotton_qty']
-                ?></td>
-                    <td><?php echo $product['po_det_container_qty'];
-                $cntr_qty += $product['po_det_container_qty']
-                ?></td>
+                    <td><?php
+                        echo $product['po_det_cotton_qty'];
+                        $ctn_qty += $product['po_det_cotton_qty']
+                        ?></td>
+                    <td><?php
+                        echo $product['po_det_container_qty'];
+                        $cntr_qty += $product['po_det_container_qty']
+                        ?></td>
                     <td><?php echo $product['po_det_price']; ?></td>
-                    <td><?php echo $item_price;
-                $amount += $item_price;
-                ?></td>
+                    <td><?php
+                        echo $item_price;
+                        $amount += $item_price;
+                        ?></td>
                     <td valign="middle">
                         <?php
-                        echo CHtml::ajaxLink('<i class="glyphicon glyphicon-pencil"></i>', array('/site/purchaseorder/editPoPrduct'), array(
-                            "type" => "GET",
-                            "data" => array("posession" => $posession, "key" => $key, "ajax" => true),
-                            "beforeSend" => 'js:function(){ $("#product-form .box").append("<div class=\"overlay\"><i class=\"fa fa-refresh fa-spin\"></i></div>"); }',
-                            "update" => "#product-form",
-                                ), array('live' => false, 'id' => "edit_$key"));
-                        echo '&nbsp;&nbsp;';
-                        echo CHtml::ajaxLink('<i class="glyphicon glyphicon-trash"></i>', array('/site/purchaseorder/deletePoPrduct'), array(
-                            "data" => array("posession" => $posession, "key" => $key, "ajax" => true),
-                            "update" => "#po_added_products .box-body"
-                                ), array('live' => false, 'id' => "delete_$key"));
+//                        echo CHtml::ajaxLink('<i class="glyphicon glyphicon-pencil"></i>', array('/site/purchaseorder/editPoPrduct'), array(
+//                            "type" => "GET",
+//                            "data" => array("posession" => $posession, "key" => $key, "ajax" => true),
+//                            "beforeSend" => 'js:function(){ $("#product-form .box").append("<div class=\"overlay\"><i class=\"fa fa-refresh fa-spin\"></i></div>"); }',
+//                            "update" => "#product-form",
+//                                ), array('live' => false, 'id' => "edit_$key"));
+//                        echo '&nbsp;&nbsp;';
+                        echo CHtml::link('<i class="glyphicon glyphicon-trash"></i>', "javascript:void(0);", array('class' => 'delete_prod', 'data-uid' => "$key"));
                         ?>
                     </td>
                 </tr>
-    <?php endforeach; ?>
-            <tr>
-                <td colspan="7">&nbsp;</td>
-                <td><?php echo $ctn_qty; ?></td>
-                <td><?php echo $cntr_qty ?></td>
-                <td>&nbsp;</td>
-                <td><?php echo $amount; ?></td>
-                <td>&nbsp;</td>
+            <?php endforeach; ?>
+        </tbody>
+        <tfoot>
+            <tr class="totalRow">
+                <th colspan="7">&nbsp;</th>
+                <th><?php echo $ctn_qty; ?></th>
+                <th><?php echo $cntr_qty ?></th>
+                <th>&nbsp;</th>
+                <th><?php echo $amount; ?></th>
+                <th>&nbsp;</th>
             </tr>
-<?php endif; ?>
-    </tbody>
+        </tfoot>
+    <?php endif; ?>
 </table>
+<?php
+$cs = Yii::app()->getClientScript();
+$js = <<< EOD
+    $(document).ready(function(){
+        $('#purchase-order-form #additioanl_data').html('$json_data');
+    });
+EOD;
+$cs->registerScript('_po_products', $js);
+?>

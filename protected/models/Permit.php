@@ -6,6 +6,7 @@
  * The followings are the available columns in table '{{permit}}':
  * @property integer $permit_id
  * @property integer $company_id
+ * @property integer $vendor_id
  * @property string $permit_no
  * @property string $doissue
  * @property string $valupto
@@ -19,6 +20,7 @@
  * @property integer $modified_by
  *
  * The followings are the available model relations:
+ * @property Vendor $vendor
  * @property Company $company
  */
 class Permit extends CActiveRecord {
@@ -50,15 +52,15 @@ class Permit extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('company_id, permit_no, doissue, valupto, created_at, created_by', 'required'),
-            array('company_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
+            array('company_id, vendor_id, permit_no, doissue, valupto, created_at, created_by', 'required'),
+            array('company_id, vendor_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('permit_no, permit_regno, permit_poissue', 'length', 'max' => 100),
             array('permit_file', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
             array('status', 'length', 'max' => 1),
             array('modified_at,isexpired', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('permit_id, company_id, permit_no, doissue, valupto, permit_regno, permit_poissue, permit_file, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('permit_id, vendor_id,company_id, permit_no, doissue, valupto, permit_regno, permit_poissue, permit_file, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -69,6 +71,7 @@ class Permit extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            'vendor' => array(self::BELONGS_TO, 'Vendor', 'vendor_id'),
             'company' => array(self::BELONGS_TO, 'Company', 'company_id'),
         );
     }
@@ -80,6 +83,7 @@ class Permit extends CActiveRecord {
         return array(
             'permit_id' => 'Permit',
             'company_id' => 'Company',
+            'vendor_id' => 'Vendor',
             'permit_no' => 'Permit No',
             'doissue' => 'Date of Issue',
             'valupto' => 'Valid Upto',
@@ -123,6 +127,7 @@ class Permit extends CActiveRecord {
 
         $criteria->compare('permit_id', $this->permit_id);
         $criteria->compare('company_id', $this->company_id);
+        $criteria->compare('vendor_id', $this->vendor_id);
         $criteria->compare('permit_no', $this->permit_no, true);
         $criteria->compare('doissue', $this->doissue, true);
         $criteria->compare('valupto', $this->valupto, true);

@@ -72,11 +72,6 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'bl_container_number'); ?>
-		<?php echo $form->textField($model,'bl_container_number',array('class'=>'form-control','size'=>60,'maxlength'=>100)); ?>
-	</div>
-
-	<div class="row">
 		<?php echo $form->label($model,'bl_liner_id'); ?>
 		<?php echo $form->textField($model,'bl_liner_id',array('class'=>'form-control')); ?>
 	</div>

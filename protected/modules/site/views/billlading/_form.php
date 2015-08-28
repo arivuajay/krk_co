@@ -101,7 +101,7 @@ $liners = Liner::LinerList();
                                             });
                                             return false;
                                         }',
-                                        'change' =>'js: function(event,ui){
+                                        'change' => 'js: function(event,ui){
                                             if (ui.item==null){
                                                 $("#po_list").val("");
                                                 $("#po_list").focus();
@@ -136,11 +136,12 @@ $liners = Liner::LinerList();
                                         'datatType' => 'json',
                                         'url' => $this->createUrl('/site/default/getInvoiceDetail'),
                                         'data' => array('id' => 'js:this.value'),
-                                        'success' => 'function(data){ data = JSON.parse(data); $("#BillLading_bl_number").val(data.bol_no); $("#BillLading_bl_container_number").html(data.containers); }',
+                                        'success' => 'function(data){ data = JSON.parse(data); $("#BillLading_bl_number").val(data.bol_no); $("#bl_info #container_list").html(data.containers); $("#BillLading_bl_container_count").val(data.tot_qty); }',
                                 )));
                                 ?>
                                 <?php echo $form->error($model, 'bl_invoice_id'); ?>
                             </div>
+
                         </div>
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'bl_number', array('class' => 'col-sm-3 control-label')); ?>
@@ -200,24 +201,16 @@ $liners = Liner::LinerList();
                         </div>
 
                         <div class="form-group">
-                            <?php echo $form->labelEx($model, 'bl_container_number', array('class' => 'col-sm-3 control-label')); ?>
-                            <div class="col-sm-6">
-                                <?php echo $form->dropDownList($model, 'bl_container_number', array(), array('class' => 'form-control', 'prompt' => 'Select Container')); ?>
-                                <?php echo $form->error($model, 'bl_container_number'); ?>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
                             <?php echo $form->labelEx($model, 'bl_liner_id', array('class' => 'col-sm-3 control-label')); ?>
                             <div class="col-sm-6">
                                 <?php
-                        echo $form->dropDownList($model, 'bl_liner_id', $liners, array('class' => 'form-control', 'prompt' => 'Select Liner',
-                            'ajax' => array(
-                                'type' => 'GET',
-                                'url' => Yii::app()->createUrl('/site/default/getLinerInfo'),
-                                'success' => 'function(data){ data = JSON.parse(data); $("#BillLading_bl_free_days").val(data.no_of_free_days); }',
-                                'data' => array('id' => 'js:this.value'))));
-                        ?>
+                                echo $form->dropDownList($model, 'bl_liner_id', $liners, array('class' => 'form-control', 'prompt' => 'Select Liner',
+                                    'ajax' => array(
+                                        'type' => 'GET',
+                                        'url' => Yii::app()->createUrl('/site/default/getLinerInfo'),
+                                        'success' => 'function(data){ data = JSON.parse(data); $("#def_liner_days").html("Max. Days : "+data.no_of_free_days); }',
+                                        'data' => array('id' => 'js:this.value'))));
+                                ?>
                                 <?php echo $form->error($model, 'bl_liner_id'); ?>
                             </div>
                         </div>
@@ -229,13 +222,18 @@ $liners = Liner::LinerList();
     </div>
 </div>
 
-<div class="row">
+<div class="row" id="bl_info">
     <div class="col-lg-12 col-xs-12">
         <div class="box box-primary">
             <div class="box-header">
                 <h3 class="box-title">BL Info</h3>
             </div>
             <div class="box-body">
+                <div class="form-group">
+                    <?php echo CHtml::label('&nbsp;','' ,array('class' => 'col-sm-3')); ?>
+                    <div class="col-sm-6" id="container_list"></div>
+                </div>
+
                 <div class="form-group">
                     <?php echo $form->labelEx($model, 'bl_container_count', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
@@ -247,7 +245,10 @@ $liners = Liner::LinerList();
                 <div class="form-group">
                     <?php echo $form->labelEx($model, 'bl_free_days', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
-                        <?php echo $form->textField($model, 'bl_free_days', array('class' => 'form-control')); ?>
+                        <div class="input-group">
+                            <div class="input-group-addon" id="def_liner_days"></div>
+                            <?php echo $form->textField($model, 'bl_free_days', array('class' => 'form-control', 'maxlength' => 15, 'size' => 15)); ?>
+                        </div>
                         <?php echo $form->error($model, 'bl_free_days'); ?>
                     </div>
                 </div>
@@ -281,7 +282,7 @@ $liners = Liner::LinerList();
 
                 <div class="form-group">
                     <div class="col-sm-6">
-                    <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
+                        <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary')); ?>
                     </div>
                 </div>
             </div>
@@ -298,11 +299,6 @@ $user_js_format = JS_USER_DATE_FORMAT;
 $js = <<< EOD
 $(document).ready(function(){
     $('.datepicker').datepicker({ format: '$user_js_format' });
-    $('#BillLading_bl_container_number').on('change',function(){
-        _ctn = $(this).find(':selected').data('ctn');
-         if(!_ctn) _ctn = 0;
-        $('#BillLading_bl_container_count').val(_ctn);
-    });
 });
 EOD;
 $cs->registerScript('_bill_lad_form', $js);

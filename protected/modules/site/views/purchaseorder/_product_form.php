@@ -151,15 +151,7 @@ $po_add_product = Yii::app()->createUrl('/site/purchaseorder/addProduct', array(
 $po_products_url = Yii::app()->createUrl('/site/purchaseorder/poAddedProducts', array('posession' => $posession));
 
 //For create only
-if (empty($detail_model->po_det_prod_fmly_id)) {
-    $js = <<< EOD
-    $(function(){
-        PoProductList();
-    });
-EOD;
-}
-
-$js .= <<< EOD
+$js = <<< EOD
     $(document).ready(function(){
         $('body').on('change','#PurchaseOrderDetails_po_det_product_id',function(){
             $.ajax({
@@ -176,30 +168,41 @@ $js .= <<< EOD
             });
             return false;
         });
+
+        $('body').on('click','.delete_prod',function(){
+           if(confirm('Are you sure want to remove?')){
+                _uid = $(this).data('uid');
+                $('#po_added_products table tr[data-session-key="'+_uid+'"]').animate( {backgroundColor:'red'}, 500).fadeOut(500,function() {
+                    $('#purchase-order-form #additioanl_data textarea#addt_'+_uid).remove();
+                    $('#po_added_products table tr[data-session-key="'+_uid+'"]').remove();
+                });
+            }
+
+            return false;
+        });
     });
 
-
-
-    function PoProductList(){
-     $.ajax({
-            'url':'$po_products_url',
-//            'beforeSend':function(){
-//                $('#po_added_products .box').append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
-//            },
-            'success':function(html){
-                $("#po_added_products .box-body").html(html);
-//                $('#po_added_products .overlay').remove();
-            }
+    function newSum() {
+        var _table = $('#po_added_products table');
+        var total_qty_ctn = total_qty_cntr = total_amt = 0;
+        _table.find('tbody tr').each(function()  {
+            total_qty_ctn  += parseInt($(this).find('td:nth-child(8)').html());
+            total_qty_cntr += parseInt($(this).find('td:nth-child(9)').html());
+            total_amt      += parseInt($(this).find('td:nth-child(11)').html());
         });
+
+        _table.find('tfoot tr.totalRow th:nth-child(2)').html(total_qty_ctn);
+        _table.find('tfoot tr.totalRow th:nth-child(3)').html(total_qty_cntr);
+        _table.find('tfoot tr.totalRow th:nth-child(5)').html(total_amt);
+        return true;
     }
 
     var _addProBtn;
     function b4AddProd(form){
-//        _addProBtn = $("#add_prod").button("loading");
+        _addProBtn = $("#add_prod").button("loading");
         return true;
     }
     function AddPODetails(f, d, e){
-
         if (e == false) {
             var data=$("#purchase-order-details-form").serialize();
             $.ajax({
@@ -207,12 +210,14 @@ $js .= <<< EOD
                 url: '$po_add_product',
                 data:data,
                 success:function(data){
-                    PoProductList();
+                    data = $.parseJSON(data);
+                    $('#purchase-order-form #additioanl_data').append('<textarea name="OrderDetails[]" id="addt_'+data.key_no+'">'+JSON.stringify(data.mdlData)+'</textarea>');
+                    $('#po_added_products table tbody').append(data.bindData);
+                    newSum();
                 },
-                dataType:'html'
             });
         }
-//         _addProBtn.button('reset');
+         _addProBtn.button('reset');
         return false;
     }
 EOD;

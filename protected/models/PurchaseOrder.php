@@ -53,9 +53,9 @@ class PurchaseOrder extends CActiveRecord {
         // will receive user inputs.
         return array(
             array('po_date,po_company_id,po_vendor_id', 'required'),
-            array('po_company_id, po_vendor_id,po_liner_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
+            array('po_company_id, po_vendor_id,po_liner_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('sent_vendor,status', 'length', 'max' => 1),
-            array('created_at, created_by,purchase_order_code, from_date, to_date', 'safe'),
+            array('created_at, modified_at,purchase_order_code, from_date, to_date', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('po_id, purchase_order_code, po_date, po_company_id, po_vendor_id, po_liner_id,sent_vendor,status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
@@ -189,7 +189,8 @@ class PurchaseOrder extends CActiveRecord {
     protected function afterSave() {
         parent::afterSave();
         if ($this->isNewRecord) {
-            $this->purchase_order_code = "PO" . str_pad($this->po_id, 13, 0, STR_PAD_LEFT);
+            $fiscal_year = (date('n') > 3) ? date('Y')+1 : date('Y');
+            $this->purchase_order_code = "FY{$fiscal_year}". date('_y_d_m_', strtotime($this->po_date))."PO{$this->po_id}";
             $this->isNewRecord = false;
             $this->saveAttributes(array('purchase_order_code'));
         }

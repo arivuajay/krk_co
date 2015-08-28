@@ -58,7 +58,6 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 		'bl_discharge_port',
 		'bl_vessal_name',
 		'bl_shipped_date',
-		'bl_container_number',
 		'bl_liner_id',
 		'bl_container_count',
 		'bl_free_days',

@@ -50,11 +50,15 @@ $vendors = Vendor::VendorList();
                                 $("#terms").html(data);
                            });'
             ));
+            if (!empty($model->po_liner_id))
+                Yii::app()->clientScript->registerScript('trigger_vendor_info', "$('#PurchaseOrder_po_vendor_id').trigger('change');");
             ?>
-    <?php echo $form->error($model, 'po_vendor_id'); ?>
+            <?php echo $form->error($model, 'po_vendor_id'); ?>
         </div>
     </div>
-<?php echo $form->hiddenField($model, 'po_liner_id'); ?>
-<?php echo $form->error($model, 'po_liner_id'); ?>
+    <?php echo $form->hiddenField($model, 'po_liner_id'); ?>
+    <?php echo CHtml::hiddenField('action'); ?>
+    <?php echo $form->error($model, 'po_liner_id'); ?>
+    <div id="additioanl_data" class="hidden"></div>
 </div>
 <?php $this->endWidget(); ?>

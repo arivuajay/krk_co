@@ -24,7 +24,6 @@ $this->breadcrumbs=array(
 		'bl_discharge_port',
 		'bl_vessal_name',
 		'bl_shipped_date',
-		'bl_container_number',
 		'blLiner.liner_name',
 		'bl_container_count',
 		'bl_free_days',

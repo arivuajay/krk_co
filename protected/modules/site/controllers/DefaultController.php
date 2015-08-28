@@ -262,20 +262,22 @@ class DefaultController extends Controller {
         $result = $options = array();
 
         if ($invoices) {
-            $options[] = CHtml::tag('option', array('value' => ''), 'Select Container', true);
+            $options = array();
             $criteria = new CDbCriteria();
             $criteria->select = array('*','SUM(inv_det_cotton_qty) as CntrQty');
             $criteria->condition = "inv_id = '{$id}'";
             $criteria->group = 'inv_det_ctnr_no';
 
             $invoiceItems = InvoiceItems::model()->findAll($criteria);
-
+            $totQty = 0;
             foreach ($invoiceItems as $item):
-                $options[] = CHtml::tag('option', array('value' => $item->inv_det_ctnr_no, 'data-ctn' => $item->CntrQty), CHtml::encode($item->inv_det_ctnr_no), true);
+                $options[] = "{$item->inv_det_ctnr_no} - {$item->CntrQty}";
+                $totQty += $item->CntrQty;
             endforeach;
 
             $result['bol_no'] = $invoices->bol_no;
-            $result['containers'] = implode("", $options);
+            $result['containers'] = implode("<br />", $options);
+            $result['tot_qty'] = $totQty;
         }
 
         echo CJSON::encode($result);

@@ -16,8 +16,7 @@
  * @property string $bl_discharge_port
  * @property string $bl_vessal_name
  * @property string $bl_shipped_date
- * @property string $bl_container_number
- * @property integer $bl_liner_id
+* @property integer $bl_liner_id
  * @property integer $bl_container_count
  * @property integer $bl_free_days
  * @property string $bl_frieght_paid
@@ -64,13 +63,13 @@ class BillLading extends CActiveRecord {
         return array(
             array('bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_number', 'required'),
             array('bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_liner_id, bl_free_days, modified_at, modified_by', 'numerical', 'integerOnly' => true),
-            array('bl_number, bl_issue_place, bl_load_port, bl_discharge_port, bl_vessal_name, bl_container_number', 'length', 'max' => 100),
+            array('bl_number, bl_issue_place, bl_load_port, bl_discharge_port, bl_vessal_name', 'length', 'max' => 100),
             array('bl_frieght_paid, status', 'length', 'max' => 1),
             array('bl_documents', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
             array('bl_issue_date, bl_shipped_date, bl_documents, created_at, created_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('bl_id, bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_number, bl_issue_date, bl_issue_place, bl_load_port, bl_discharge_port, bl_vessal_name, bl_shipped_date, bl_container_number, bl_liner_id, bl_container_count, bl_free_days, bl_frieght_paid, bl_documents, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('bl_id, bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_number, bl_issue_date, bl_issue_place, bl_load_port, bl_discharge_port, bl_vessal_name, bl_shipped_date, bl_liner_id, bl_container_count, bl_free_days, bl_frieght_paid, bl_documents, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 

@@ -5,6 +5,10 @@ $gridColumns = array(
         'name' => 'company.company_name',
         'htmlOptions' => array('width' => '150px'),
     ),
+    array(
+        'name' => 'vendor.vendor_name',
+        'htmlOptions' => array('width' => '150px'),
+    ),
     'permit_no',
     'valupto',
     'permit_regno',

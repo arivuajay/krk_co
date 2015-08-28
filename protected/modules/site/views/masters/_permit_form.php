@@ -17,17 +17,25 @@ $form = $this->beginWidget('CActiveForm', array(
     'id' => 'permit-form',
     'htmlOptions' => array('role' => 'form', 'class' => 'form-horizontal', 'enctype' => 'multipart/form-data'),
     'action' => $act_url,
-    'clientOptions' => array('validateOnSubmit' => true),
+    'clientOptions' => array('validateOnSubmit' => true,'validateOnChange' => false),
     'enableAjaxValidation' => true,
         ));
 
-$companies = CHtml::listData(Company::model()->active()->findAll(), 'company_id', 'company_name');
+$companies = Company::CompanyList();
+$vendors = Vendor::VendorList();
 ?>
 <div class="form-group">
     <?php echo $form->labelEx($perm_model, 'company_id', array('class' => 'col-sm-4 control-label')); ?>
     <div class="col-sm-8">
         <?php echo $form->dropDownList($perm_model, 'company_id', $companies, array('class' => 'form-control', 'prompt' => 'Select company')); ?>
         <?php echo $form->error($perm_model, 'company_id'); ?>
+    </div>
+</div>
+<div class="form-group">
+    <?php echo $form->labelEx($perm_model, 'vendor_id', array('class' => 'col-sm-4 control-label')); ?>
+    <div class="col-sm-8">
+        <?php echo $form->dropDownList($perm_model, 'vendor_id', $vendors, array('class' => 'form-control', 'prompt' => 'Select Vendor')); ?>
+        <?php echo $form->error($perm_model, 'vendor_id'); ?>
     </div>
 </div>
 
