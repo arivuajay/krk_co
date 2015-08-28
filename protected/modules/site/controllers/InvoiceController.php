@@ -309,12 +309,14 @@ class InvoiceController extends Controller {
             $lbldate = $_GET['lbldate'];
         }
         if ($_GET['posession'] && !empty($_GET['posession'])) {
-            if (!$inv_products = TempSession::model()->byMe()->find("session_name = '$this->sess_name' AND session_key = '{$_GET['posession']}'")) {
+            if (!$tmp_data = TempSession::model()->byMe()->find("session_name = '$this->sess_name' AND session_key = '{$_GET['posession']}'")) {
                 if ((substr($_GET['posession'], 0, 3) == "inv_") && ($inv_id = substr($_GET['posession'], 3))) {
                     $model = Invoice::model()->findByPk($inv_id);
                     foreach ($model->invoiceItems as $item)
                         $inv_products[] = CJSON::encode($item->attributes);
                 }
+            }else{
+                $inv_products = $tmp_data->session_data['InvoiceItems'];
             }
         }
         $this->renderPartial('_preview', compact('company', 'vendor', 'liner', 'lbldate', 'inv_products'));

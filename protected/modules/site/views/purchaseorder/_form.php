@@ -76,8 +76,8 @@ else
                                     lbldate = $("#PurchaseOrder_po_date").val();
                                     liner_id = $("#liner_code").val();
 
-                                    $.get("' . Yii::app()->createUrl("site/purchaseorder/preview", array('posession' => $posession)) . '", {
-                                    "comp_id": comp_id, "vendor_id": vendor_id, "lbldate" : lbldate, "liner_id" : liner_id}
+                                    $.get("' . Yii::app()->createUrl("site/purchaseorder/preview") . '", {
+                                    "comp_id": comp_id, "vendor_id": vendor_id, "lbldate" : lbldate, "liner_id" : liner_id,"posession": "' . $posession . '"}
                                     ).done(function( data ){
                                         $("#preview_box").html(data);
                                         return false;
