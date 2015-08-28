@@ -1,6 +1,9 @@
 <?php
 
 class PurchaseorderController extends Controller {
+
+    protected $sess_name = 'po_added_products';
+
     /**
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -77,7 +80,7 @@ class PurchaseorderController extends Controller {
             Myclass::addAuditTrail($notes, "user");
             Yii::app()->user->setFlash('success', $notes);
             $this->redirect($redir);
-        } else if ($tmp_data = TempSession::model()->byMe()->find("session_name = 'po_added_products' AND session_key = '{$posession}'")) {
+        } else if ($tmp_data = TempSession::model()->byMe()->find("session_name = '$this->sess_name' AND session_key = '{$posession}'")) {
             $model->attributes = $tmp_data->session_data['PurchaseOrder'];
             $po_products = $tmp_data->session_data['PurchaseOrderDetails'];
         }
@@ -94,8 +97,9 @@ class PurchaseorderController extends Controller {
         $model = $this->loadModel($id);
         $detail_model = new PurchaseOrderDetails('add_product');
         $posession = "po_{$model->po_id}";
+
         if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
-            TempSession::model()->byMe()->deleteAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
+            TempSession::model()->byMe()->deleteAll("session_name = '$this->sess_name' AND session_key = '{$posession}'");
             $this->redirect(array('/site/purchaseorder/update', 'id' => $model->po_id));
         }
 
@@ -120,21 +124,22 @@ class PurchaseorderController extends Controller {
             Myclass::addAuditTrail($notes, "user");
             Yii::app()->user->setFlash('success', $notes);
             $this->redirect($redir);
-        } else if ($tmp_data = TempSession::model()->byMe()->find("session_name = 'po_added_products' AND session_key = '{$posession}'")) {
+        } else if ($tmp_data = TempSession::model()->byMe()->find("session_name = '$this->sess_name' AND session_key = '{$posession}'")) {
             $model->attributes = $tmp_data->session_data['PurchaseOrder'];
             $po_products = $tmp_data->session_data['PurchaseOrderDetails'];
         } else {
             foreach ($model->purchaseOrderDetails as $item)
                 $po_products[] = CJSON::encode($item->attributes);
         }
+
         $this->render('update', compact('model', 'detail_model', 'po_products'));
     }
 
     protected function tempSave($posession, $po, $orderdetail) {
-        TempSession::model()->byMe()->deleteAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
+        TempSession::model()->byMe()->deleteAll("session_name = '$this->sess_name' AND session_key = '{$posession}'");
         $temp_array = array('PurchaseOrder' => $po, 'PurchaseOrderDetails' => $orderdetail);
         $tmp_sess = new TempSession();
-        $tmp_sess->session_name = 'po_added_products';
+        $tmp_sess->session_name = $this->sess_name;
         $tmp_sess->session_key = $posession;
         $tmp_sess->session_data = CJSON::encode($temp_array);
         $tmp_sess->save();
@@ -147,7 +152,7 @@ class PurchaseorderController extends Controller {
             $detail_model->po_id = $po['po_id'];
             $detail_model->save(false);
         }
-        TempSession::model()->byMe()->deleteAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
+        TempSession::model()->byMe()->deleteAll("session_name = '$this->sess_name' AND session_key = '{$posession}'");
 
         return true;
     }
@@ -195,7 +200,7 @@ class PurchaseorderController extends Controller {
 //            $model = new PurchaseOrder;
 //
 //        $detail_model = new PurchaseOrderDetails('add_product');
-//        $detail_model->attributes = TempSession::model()->byMe()->findByPk($key, "session_name = 'po_added_products' AND session_key = '{$posession}'")->session_data;
+//        $detail_model->attributes = TempSession::model()->byMe()->findByPk($key, "session_name = '$this->sess_name' AND session_key = '{$posession}'")->session_data;
 //        $cs = Yii::app()->clientScript;
 //        $cs->reset();
 //        $cs->scriptMap = array(
@@ -209,13 +214,13 @@ class PurchaseorderController extends Controller {
 //    }
 
     public function actionDeletePoPrduct($posession, $key) {
-        TempSession::model()->byMe()->deleteByPk($key, "session_name = 'po_added_products' AND session_key = '{$posession}'");
+        TempSession::model()->byMe()->deleteByPk($key, "session_name = '$this->sess_name' AND session_key = '{$posession}'");
         $this->forward('poAddedProducts');
         Yii::app()->end();
     }
 
 //    public function actionPoAddedProducts($posession) {
-//        $po_products = TempSession::model()->byMe()->findAll("session_name = 'po_added_products' AND session_key = '{$posession}'");
+//        $po_products = TempSession::model()->byMe()->findAll("session_name = '$this->sess_name' AND session_key = '{$posession}'");
 //        $this->renderPartial('_po_added_products', compact('posession', 'po_products'), false, true);
 //        Yii::app()->end();
 //    }
@@ -318,8 +323,8 @@ class PurchaseorderController extends Controller {
             $lbldate = $_GET['lbldate'];
         }
         if ($_GET['posession'] && !empty($_GET['posession'])) {
-            if (!$po_products = TempSession::model()->byMe()->find("session_name = 'po_added_products' AND session_key = '{$_GET['posession']}'")) {
-                if((substr($_GET['posession'], 0, 3) == "po_") && ($po_id = substr($_GET['posession'], 3))) {
+            if (!$po_products = TempSession::model()->byMe()->find("session_name = '$this->sess_name' AND session_key = '{$_GET['posession']}'")) {
+                if ((substr($_GET['posession'], 0, 3) == "po_") && ($po_id = substr($_GET['posession'], 3))) {
                     $model = PurchaseOrder::model()->findByPk($po_id);
                     foreach ($model->purchaseOrderDetails as $item)
                         $po_products[] = CJSON::encode($item->attributes);

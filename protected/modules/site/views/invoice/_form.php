@@ -5,6 +5,10 @@ $cs_pos_end = CClientScript::POS_END;
 
 $cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
 $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
+if ($model->isNewRecord)
+    $posession = Yii::app()->user->getState('guid');
+else
+    $posession = "inv_{$model->invoice_id}";
 ?>
 <div class="row">
     <div class="col-lg-12 col-xs-12">
@@ -16,14 +20,14 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
 
 <div class="row">
     <div class="col-lg-12" id="product-form">
-        <?php $this->renderPartial('_product_form', compact('model', 'detail_model')); ?>
+        <?php $this->renderPartial('_product_form', compact('model', 'detail_model', 'posession')); ?>
     </div>
     <div class="col-lg-12 col-xs-12" id="inv_added_products">
         <div class="box box-primary">
             <div class="box-header">
                 <h3 class="box-title">Manage Products</h3>
             </div>
-            <div class="box-body">Invoice Products</div>
+            <div class="box-body"><?php $this->renderPartial('_inv_added_products', compact('posession', 'inv_products')); ?></div>
         </div>
     </div>
 </div>
@@ -37,12 +41,22 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
             <div class="box-body">
                 <div class="row">
                     <div class="col-lg-6">
-                        <button type="button" id="submit_po" class="btn btn-success">Submit</button>
+                        <ul>
+                            <li>Unsaved product(s) row are <span class="label label-danger">RED</span> marked.</li>
+                            <li>On Preview screen, Submitted or Saved Products only will display. Unsaved product(s) which are <span class="label label-danger">RED</span> row(s) are not display.</li>
+                        </ul>
+                        <button type="button" id="save_inv" class="btn btn-success" name="save_inv">Save</button>
+                        <button type="button" id="submit_inv" class="btn btn-success" name="submit_inv">Submit</button>
                         <?php
-                        echo CHtml::link('Reset', array('/site/invoice/create', 'open' => 'fresh'), array("id" => "reset_po", "class" => "btn btn-warning"));
+                        if ($model->isNewRecord)
+                            $reset_link = array('/site/invoice/create', 'open' => 'fresh');
+                        else
+                            $reset_link = array('/site/invoice/update', 'id' => $model->invoice_id, 'open' => 'fresh');
+
+                        echo CHtml::link('Reset', $reset_link, array("id" => "reset_po", "class" => "btn btn-warning"));
                         echo '&nbsp;';
                         $this->widget(
-                            'booster.widgets.TbButton', array(
+                                'booster.widgets.TbButton', array(
                             'label' => 'Preview',
                             'context' => 'info',
                             'htmlOptions' => array(
@@ -64,7 +78,6 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                             ),
                                 )
                         );
-
                         ?>
                     </div>
                 </div>
@@ -77,9 +90,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
         <a class="close" data-dismiss="modal">&times;</a>
         <h4>Preview</h4>
     </div>
-    <div class="modal-body" id="preview_box">
-    </div>
-
+    <div class="modal-body" id="preview_box"></div>
     <div class="modal-footer">
         <?php
         $this->widget(
@@ -91,7 +102,6 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
         );
         ?>
     </div>
-
     <?php $this->endWidget(); ?>
 
     <?php
@@ -100,11 +110,9 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
 $(document).ready(function(){
     $('.datepicker').datepicker({ format: '$user_js_format' });
     var invForm = $('#invoice-form');
-    $('#submit_po').click(function(){
+    $('#submit_inv,#save_inv').click(function(){
+        $('#invoice-form input#action').val($(this).attr('name'));
         invForm.submit();
-    });
-    $('#reset_po').click(function(){
-        invForm[0].reset();
     });
 });
 EOD;

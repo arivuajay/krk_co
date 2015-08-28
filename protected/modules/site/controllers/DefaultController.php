@@ -271,14 +271,17 @@ class DefaultController extends Controller {
             $invoiceItems = InvoiceItems::model()->findAll($criteria);
 
             $total_inv_amount = 0;
+             $totQty = 0;
             foreach ($invoiceItems as $item):
-                $options[] = CHtml::tag('option', array('value' => $item->inv_det_ctnr_no, 'data-ctn' => $item->CntrQty), CHtml::encode($item->inv_det_ctnr_no), true);
+                $options[] = "{$item->inv_det_ctnr_no} - {$item->CntrQty}";
                 $total_inv_amount += $item->invoiceamount;
+                $totQty += $item->CntrQty;
             endforeach;
 
             $result['bol_no'] = $invoices->bol_no;
             $result['total_inv_amount'] = $total_inv_amount;
-            $result['containers'] = implode("", $options);
+            $result['containers'] = implode("<br />", $options);
+            $result['tot_qty'] = $totQty;
         }
 
         echo CJSON::encode($result);

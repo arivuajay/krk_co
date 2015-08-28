@@ -4,6 +4,7 @@ $form = $this->beginWidget('CActiveForm', array(
     'htmlOptions' => array('role' => 'form', 'class' => 'form-horizontal', 'enctype' => 'multipart/form-data'),
     'clientOptions' => array(
         'validateOnSubmit' => true,
+        'validateOnChange' => false,
     ),
     'enableAjaxValidation' => true,
         ));
@@ -29,7 +30,6 @@ unset($poStatus[1]);
             <div class="form-group">
                 <?php echo $form->labelEx($model, 'po_id', array('class' => 'col-sm-4 control-label')); ?>
                 <div class="col-sm-6">
-
                     <?php
                     $this->widget('application.components.myAutoComplete', array(
                         'source' => 'js: function(request, response) {
@@ -64,7 +64,7 @@ unset($poStatus[1]);
                                 $("#po_date").val(ui.item.po_date);
                                 return false;
                             }',
-                            'change' =>'js: function(event,ui){
+                            'change' => 'js: function(event,ui){
                                             if (ui.item==null){
                                                 $("#po_list").val("");
                                                 $("#po_list").focus();
@@ -183,4 +183,6 @@ unset($poStatus[1]);
         </div>
     </div>
 </div>
+<div id="additioanl_data" class="hidden"></div>
+<?php echo CHtml::hiddenField('action'); ?>
 <?php $this->endWidget(); ?>

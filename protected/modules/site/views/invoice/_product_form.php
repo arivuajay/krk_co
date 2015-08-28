@@ -2,10 +2,6 @@
 $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
-if ($model->isNewRecord)
-    $posession = Yii::app()->user->getState('guid');
-else
-    $posession = "inv_{$model->invoice_id}";
 ?>
 <div class="box box-primary">
     <div class="box-header">
@@ -186,15 +182,7 @@ $inv_add_product = Yii::app()->createUrl('/site/invoice/addProduct', array('pose
 $inv_products_url = Yii::app()->createUrl('/site/invoice/invAddedProducts', array('posession' => $posession));
 
 //For create only
-if (empty($detail_model->inv_det_prod_fmly_id)) {
-    $js = <<< EOD
-    $(function(){
-        PoProductList();
-    });
-EOD;
-}
-
-$js .= <<< EOD
+$js = <<< EOD
     $(document).ready(function(){
         $('body').on('change','#InvoiceItems_inv_det_product_id',function(){
             $.ajax({
@@ -211,7 +199,32 @@ $js .= <<< EOD
             });
             return false;
         });
+
+        $('body').on('click','.delete_prod',function(){
+           if(confirm('Are you sure want to remove?')){
+                _uid = $(this).data('uid');
+                $('#inv_added_products table tr[data-session-key="'+_uid+'"]').animate( {backgroundColor:'red'}, 500).fadeOut(500,function() {
+                    $('#invoice-form #additioanl_data textarea#addt_'+_uid).remove();
+                    $('#inv_added_products table tr[data-session-key="'+_uid+'"]').remove();
+                });
+            }
+
+            return false;
+        });
     });
+
+    function newSum() {
+        var _table = $('#inv_added_products table');
+        var total_qty_ctn = total_amt = 0;
+        _table.find('tbody tr').each(function()  {
+            total_qty_ctn  += parseInt($(this).find('td:nth-child(9)').html());
+            total_amt      += parseInt($(this).find('td:nth-child(12)').html());
+        });
+
+        _table.find('tfoot tr.totalRow th:nth-child(2)').html(total_qty_ctn);
+        _table.find('tfoot tr.totalRow th:nth-child(5)').html(total_amt);
+        return true;
+    }
 
     function PoProductList(){
      $.ajax({

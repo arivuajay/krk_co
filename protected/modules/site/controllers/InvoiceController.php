@@ -1,6 +1,9 @@
 <?php
 
 class InvoiceController extends Controller {
+
+    protected $sess_name = 'inv_added_products';
+
     /**
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -24,7 +27,7 @@ class InvoiceController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct','preview'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct', 'preview'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -43,10 +46,10 @@ class InvoiceController extends Controller {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
-        $posession = Yii::app()->user->getState('guid');
+        $posession = 'new';
 
         if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
-            unset($_SESSION['inv_added_products'][$posession]);
+            empSession::model()->byMe()->deleteAll("session_name = '{$this->sess_name}' AND session_key = '{$posession}'");
             $this->redirect(array('/site/invoice/create'));
         }
 
@@ -58,67 +61,29 @@ class InvoiceController extends Controller {
 
         if (isset($_POST['Invoice'])) {
             $model->attributes = $_POST['Invoice'];
-            if ($model->validate()) {
-                $model->setUploadDirectory(UPLOAD_DIR);
-                $model->uploadFile();
-                $model->save(false);
-                $inv_products = $_SESSION['inv_added_products'][$posession];
-                foreach ($inv_products as $product) {
-                    $detail_model = new InvoiceItems('save');
-                    $detail_model->attributes = $product;
-                    $detail_model->inv_id = $model->invoice_id;
-                    $detail_model->save(false);
+            if (isset($_POST['action']) && ($_POST['action'] == 'save_po')) {
+                $this->tempSave($posession, $model->attributes, $_POST['OrderDetails']);
+                $notes = "Invoice Saved successfully.";
+                $redir = array('create');
+            } else if (isset($_POST['action']) && ($_POST['action'] == 'submit_po')) {
+                if ($model->validate()) {
+                    $model->setUploadDirectory(UPLOAD_DIR);
+                    $model->uploadFile();
+                    $model->save(false);
+                    $this->itemSave($posession, $model->attributes, $_POST['OrderDetails']);
+                    $notes = "Created Invoice successfully.";
+                    $redir = array('index');
                 }
-
-                unset($_SESSION['inv_added_products'][$posession]);
-                Myclass::addAuditTrail("Created Invoice successfully.", "user");
-                Yii::app()->user->setFlash('success', 'Invoice Created Successfully!!!');
-                $this->redirect(array('index'));
             }
+        } else if ($tmp_data = TempSession::model()->byMe()->find("session_name = '{$this->sess_name}' AND session_key = '{$posession}'")) {
+            $model->attributes = $tmp_data->session_data['Invoice'];
+            $inv_products = $tmp_data->session_data['InvoiceItems'];
+        } else {
+            foreach ($model->invoiceItems as $item)
+                $inv_products[] = CJSON::encode($item->attributes);
         }
 
-        $this->render('create', compact('model', 'detail_model'));
-    }
-
-    public function actionAddProduct($posession) {
-        $detail_model = new InvoiceItems('add_product');
-
-        // Uncomment the following line if AJAX validation is needed
-        $this->performAjaxValidation($detail_model);
-        if (isset($_POST['InvoiceItems'])) {
-            $detail_model->attributes = $_POST['InvoiceItems'];
-            $_SESSION['inv_added_products'][$posession][rand()] = $detail_model->attributes;
-        }
-        Yii::app()->end();
-    }
-
-    public function actionEditInvPrduct($posession, $key) {
-        $session = Yii::app()->session;
-        $detail_model = new InvoiceItems('add_product');
-        $detail_model->attributes = $_SESSION['inv_added_products'][$posession][$key];
-        $cs = Yii::app()->clientScript;
-        $cs->reset();
-        $cs->scriptMap = array(
-            'jquery.js' => false,
-            'jquery.min.js' => false,
-        );
-
-        $this->renderPartial('_product_form', compact('detail_model'), false, true);
-
-        Yii::app()->end();
-    }
-
-    public function actionDeleteInvPrduct($posession, $key) {
-        $key = (int) $key;
-        unset($_SESSION['inv_added_products'][$posession][$key]);
-        $this->forward('invAddedProducts');
-        Yii::app()->end();
-    }
-
-    public function actionInvAddedProducts($posession) {
-        $inv_products = $_SESSION['inv_added_products'][$posession];
-        $this->renderPartial('_inv_added_products', compact('inv_products'), false, true);
-        Yii::app()->end();
+        $this->render('create', compact('model', 'detail_model', 'inv_products'));
     }
 
     /**
@@ -129,10 +94,10 @@ class InvoiceController extends Controller {
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
         $detail_model = new InvoiceItems('add_product');
-        $posession = "inv_{$model->po_id}";
+        $posession = "inv_{$model->invoice_id}";
 
         if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
-            unset($_SESSION['inv_added_products'][$posession]);
+            TempSession::model()->byMe()->deleteAll("session_name = '$this->sess_name' AND session_key = '{$posession}'");
             $this->redirect(array('/site/invoice/update', 'id' => $model->invoice_id));
         }
 
@@ -141,30 +106,120 @@ class InvoiceController extends Controller {
 
         if (isset($_POST['Invoice'])) {
             $model->attributes = $_POST['Invoice'];
-            if ($model->validate()) {
-                $model->setUploadDirectory(UPLOAD_DIR);
-                $model->uploadFile();
-                $model->save(false);
-                InvoiceItems::model()->deleteAll("inv_id = '{$model->invoice_id}'");
-                $inv_products = $_SESSION['inv_added_products'][$posession];
-                foreach ($inv_products as $product) {
-                    $detail_model = new InvoiceItems('save');
-                    $detail_model->attributes = $product;
-                    $detail_model->inv_id = $model->invoice_id;
-                    $detail_model->save(false);
-                }
 
-                unset($_SESSION['inv_added_products'][$posession]);
-                Myclass::addAuditTrail("Updated Invoice successfully.", "user");
-                Yii::app()->user->setFlash('success', 'Invoice Updated Successfully!!!');
-                $this->redirect(array('index'));
+            if (isset($_POST['action']) && ($_POST['action'] == 'save_po')) {
+                $this->tempSave($posession, $model->attributes, $_POST['OrderDetails']);
+                $notes = "Invoice Saved successfully.";
+                $redir = array('update', 'id' => $id);
+            } else if (isset($_POST['action']) && ($_POST['action'] == 'submit_po')) {
+                if ($model->validate()) {
+                    $model->setUploadDirectory(UPLOAD_DIR);
+                    $model->uploadFile();
+                    $model->save(false);
+                    InvoiceItems::model()->deleteAll("inv_id = '{$model->invoice_id}'");
+                    $this->itemSave($posession, $model->attributes, $_POST['OrderDetails']);
+                    $notes = "Updated Invoice successfully.";
+                    $redir = array('index');
+                }
             }
-        } elseif (empty($_SESSION['inv_added_products'][$posession])) {
-            $_SESSION['inv_added_products'][$posession] = InvoiceItems::model()->findAll("inv_id = '{$model->invoice_id}'");
+            Myclass::addAuditTrail($notes, "user");
+            Yii::app()->user->setFlash('success', $notes);
+            $this->redirect($redir);
+        } else if ($tmp_data = TempSession::model()->byMe()->find("session_name = '$this->sess_name' AND session_key = '{$posession}'")) {
+            $model->attributes = $tmp_data->session_data['Invoice'];
+            $inv_products = $tmp_data->session_data['InvoiceItems'];
+        } else {
+            foreach ($model->invoiceItems as $item)
+                $inv_products[] = CJSON::encode($item->attributes);
         }
 
-        $this->render('update', compact('model', 'detail_model'));
+        $this->render('update', compact('model', 'detail_model', 'inv_products'));
     }
+
+    protected function tempSave($posession, $po, $orderdetail) {
+        TempSession::model()->byMe()->deleteAll("session_name = '{$this->sess_name}' AND session_key = '{$posession}'");
+        $temp_array = array('Invoice' => $po, 'InvoiceItems' => $orderdetail);
+        $tmp_sess = new TempSession();
+        $tmp_sess->session_name = $this->sess_name;
+        $tmp_sess->session_key = $posession;
+        $tmp_sess->session_data = CJSON::encode($temp_array);
+        $tmp_sess->save();
+    }
+
+    protected function itemSave($posession, $po, $orderdetail) {
+        foreach ($orderdetail as $item) {
+            $detail_model = new InvoiceItems('save');
+            $detail_model->attributes = CJSON::decode($item);
+            $detail_model->inv_id = $po['invoice_id'];
+            $detail_model->save(false);
+        }
+        TempSession::model()->byMe()->deleteAll("session_name = '{$this->sess_name}' AND session_key = '{$posession}'");
+
+        return true;
+    }
+
+    public function actionAddProduct($posession) {
+        $detail_model = new InvoiceItems('add_product');
+        $this->performAjaxValidation($detail_model);
+        if (isset($_POST['InvoiceItems'])) {
+            $key = rand();
+            $row = $this->bindAddedRow($_POST['InvoiceItems'], $key);
+            echo CJSON::encode(array('key_no' => $key, 'mdlData' => $_POST['InvoiceItems'], 'bindData' => $row));
+        }
+
+        Yii::app()->end();
+    }
+
+    protected function bindAddedRow($product, $key) {
+        $item_price = $product['inv_det_cotton_qty'] * $product['inv_det_price'];
+        $row = '';
+        $row .= '<tr data-session-key="' . $key . '" class="alert alert-danger">';
+        $row .= '<td>' . ProductFamily::model()->findByPk($product['inv_det_prod_fmly_id'])->pro_family_name . '</td>';
+        $row .= '<td>' . Product::model()->findByPk($product['inv_det_product_id'])->pro_name . '</td>';
+        $row .= '<td>' . ProductVariety::model()->findByPk($product['inv_det_variety_id'])->variety_name . '</td>';
+        $row .= '<td>' . implode(",", CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $product['inv_det_grade'])), 'grade_id', 'grade_long_name')) . '</td>';
+        $row .= '<td>' . implode(",", CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $product['inv_det_size'])), 'size_id', 'size_name')) . '</td>';
+        $row .= '<td>' . $product['inv_det_net_weight'] . '</td>';
+        $row .= '<td>' . $product['inv_det_gross_weight'] . '</td>';
+        $row .= '<td>' . $product['inv_det_currency'] . '</td>';
+        $row .= '<td>' . $product['inv_det_cotton_qty'] . '</td>';
+        $row .= '<td>' . $product['inv_det_ctnr_no'] . '</td>';
+        $row .= '<td>' . $product['inv_det_price'] . '</td>';
+        $row .= '<td>' . $item_price . '</td>';
+        $row .= '<td valign="middle">';
+        $row .= CHtml::link('<i class="glyphicon glyphicon-trash"></i>', "javascript:void(0);", array('class' => 'delete_prod', 'data-uid' => "$key"));
+        $row .= '</td></tr>';
+
+        return $row;
+    }
+
+//    public function actionEditInvPrduct($posession, $key) {
+//        $session = Yii::app()->session;
+//        $detail_model = new InvoiceItems('add_product');
+//        $detail_model->attributes = $_SESSION['inv_added_products'][$posession][$key];
+//        $cs = Yii::app()->clientScript;
+//        $cs->reset();
+//        $cs->scriptMap = array(
+//            'jquery.js' => false,
+//            'jquery.min.js' => false,
+//        );
+//
+//        $this->renderPartial('_product_form', compact('detail_model'), false, true);
+//
+//        Yii::app()->end();
+//    }
+
+    public function actionDeleteInvPrduct($posession, $key) {
+        TempSession::model()->byMe()->deleteByPk($key, "session_name = '$this->sess_name' AND session_key = '{$posession}'");
+        $this->forward('invAddedProducts');
+        Yii::app()->end();
+    }
+
+//    public function actionInvAddedProducts($posession) {
+//        $inv_products = $_SESSION['inv_added_products'][$posession];
+//        $this->renderPartial('_inv_added_products', compact('inv_products'), false, true);
+//        Yii::app()->end();
+//    }
 
     /**
      * Deletes a particular model.
@@ -253,7 +308,16 @@ class InvoiceController extends Controller {
         if ($_GET['lbldate'] && !empty($_GET['lbldate'])) {
             $lbldate = $_GET['lbldate'];
         }
-        $this->renderPartial('_preview', compact('company', 'vendor', 'liner', 'lbldate'));
+        if ($_GET['posession'] && !empty($_GET['posession'])) {
+            if (!$inv_products = TempSession::model()->byMe()->find("session_name = '$this->sess_name' AND session_key = '{$_GET['posession']}'")) {
+                if ((substr($_GET['posession'], 0, 3) == "inv_") && ($inv_id = substr($_GET['posession'], 3))) {
+                    $model = Invoice::model()->findByPk($inv_id);
+                    foreach ($model->invoiceItems as $item)
+                        $inv_products[] = CJSON::encode($item->attributes);
+                }
+            }
+        }
+        $this->renderPartial('_preview', compact('company', 'vendor', 'liner', 'lbldate','inv_products'));
     }
 
 }

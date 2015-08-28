@@ -8,7 +8,6 @@ $cs_pos_end = CClientScript::POS_END;
         <h3 class="box-title">Product Info</h3>
     </div>
     <div class="box-body" >
-
         <div class="row">
             <?php
             $form = $this->beginWidget('CActiveForm', array(
