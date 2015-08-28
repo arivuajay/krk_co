@@ -50,7 +50,7 @@ $vendors = Vendor::VendorList();
                                 $("#terms").html(data);
                            });'
             ));
-            if (!empty($model->po_liner_id))
+            if (!empty($model->po_vendor_id))
                 Yii::app()->clientScript->registerScript('trigger_vendor_info', "$('#PurchaseOrder_po_vendor_id').trigger('change');");
             ?>
             <?php echo $form->error($model, 'po_vendor_id'); ?>
