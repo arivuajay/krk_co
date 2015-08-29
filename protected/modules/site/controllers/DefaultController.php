@@ -263,7 +263,7 @@ class DefaultController extends Controller {
         $result = $options = array();
 
         if ($invoices) {
-            $options[] = CHtml::tag('option', array('value' => ''), 'Select Container', true);
+            $options = array();
             $criteria = new CDbCriteria();
             $criteria->select = array('*', 'SUM(inv_det_cotton_qty) as CntrQty');
             $criteria->condition = "inv_id = '{$id}'";
