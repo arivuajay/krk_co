@@ -247,8 +247,8 @@ class InvoiceController extends Controller {
      */
     public function actionIndex() {
         $model = new Invoice();
+        $model->unsetAttributes();
         if (isset($_REQUEST['Invoice']) && !empty($_REQUEST['Invoice'])) {
-            $model->unsetAttributes();
             $model->attributes = $_GET['Invoice'];
         }
 
@@ -315,7 +315,7 @@ class InvoiceController extends Controller {
                     foreach ($model->invoiceItems as $item)
                         $inv_products[] = CJSON::encode($item->attributes);
                 }
-            }else{
+            } else {
                 $inv_products = $tmp_data->session_data['InvoiceItems'];
             }
         }

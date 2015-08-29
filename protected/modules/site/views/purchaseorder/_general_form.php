@@ -56,6 +56,14 @@ $vendors = Vendor::VendorList();
             <?php echo $form->error($model, 'po_vendor_id'); ?>
         </div>
     </div>
+    
+    <div class="form-group">
+        <?php echo $form->labelEx($model, 'po_remarks', array('class' => 'col-sm-2 control-label')); ?>
+        <div class="col-sm-5">
+            <?php echo $form->textArea($model, 'po_remarks', array('class' => 'form-control')); ?>
+            <?php echo $form->error($model, 'po_remarks'); ?>
+        </div>
+    </div>
     <?php echo $form->hiddenField($model, 'po_liner_id'); ?>
     <?php echo CHtml::hiddenField('action'); ?>
     <?php echo $form->error($model, 'po_liner_id'); ?>

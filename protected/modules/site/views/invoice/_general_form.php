@@ -121,8 +121,7 @@ unset($poStatus[1]);
                     <?php echo $form->error($model, 'inv_date'); ?>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-6">
+            
             <div class="form-group">
                 <?php echo $form->labelEx($model, 'company_id', array('class' => 'col-sm-4 control-label')); ?>
                 <div class="col-sm-6">
@@ -130,6 +129,8 @@ unset($poStatus[1]);
                     <?php echo $form->error($model, 'company_id'); ?>
                 </div>
             </div>
+        </div>
+        <div class="col-lg-6">
 
             <div class="form-group">
                 <?php echo $form->labelEx($model, 'permit_no', array('class' => 'col-sm-4 control-label')); ?>
@@ -225,6 +226,13 @@ unset($poStatus[1]);
                 </div>
             </div>
 
+            <div class="form-group">
+                <?php echo $form->labelEx($model, 'inv_remarks', array('class' => 'col-sm-4 control-label')); ?>
+                <div class="col-sm-6">
+                    <?php echo $form->textArea($model, 'inv_remarks', array('class' => 'form-control')); ?>
+                    <?php echo $form->error($model, 'inv_remarks'); ?>
+                </div>
+            </div>
         </div>
     </div>
 </div>

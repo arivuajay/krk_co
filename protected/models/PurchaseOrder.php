@@ -18,6 +18,7 @@
  * @property integer $modified_by
  * @property string $from_date
  * @property string $to_date
+ * @property string $po_remarks
  *
  * The followings are the available model relations:
  * @property Invoice[] $invoices
@@ -55,7 +56,7 @@ class PurchaseOrder extends CActiveRecord {
             array('po_date,po_company_id,po_vendor_id', 'required'),
             array('po_company_id, po_vendor_id,po_liner_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('sent_vendor,status', 'length', 'max' => 1),
-            array('created_at, modified_at,purchase_order_code, from_date, to_date', 'safe'),
+            array('created_at, modified_at,purchase_order_code, from_date, to_date, po_remarks', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('po_id, purchase_order_code, po_date, po_company_id, po_vendor_id, po_liner_id,sent_vendor,status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
@@ -96,6 +97,7 @@ class PurchaseOrder extends CActiveRecord {
             'modified_by' => 'Modified By',
             'from_date' => 'From date',
             'to_date' => 'To date',
+            'po_remarks' => 'Remarks',
         );
     }
 

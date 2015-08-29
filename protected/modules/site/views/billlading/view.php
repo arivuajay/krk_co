@@ -27,8 +27,16 @@ $this->breadcrumbs=array(
 		'blLiner.liner_name',
 		'bl_container_count',
 		'bl_free_days',
-		'bl_frieght_paid',
-		'bl_documents',
+            array(
+                'name' => 'bl_frieght_paid',
+                'value' => $model->bl_frieght_paid == 'Y' ? 'Yes' : 'No'
+            ),
+            array(
+                'name' => 'bl_documents',
+                'type' => 'raw',
+                'value' => !empty($model->bl_documents) ? CHtml::link('Click to view', $model->getFilePath(false, 'bl_documents'), array('target' => '_blank', 'id' => 'bl_documents')) : 'Not set'
+            ),
+		'bl_remarks',
 	),
 )); ?>
 </div>

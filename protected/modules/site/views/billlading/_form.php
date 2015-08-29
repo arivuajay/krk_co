@@ -158,8 +158,6 @@ $liners = Liner::LinerList();
                                 <?php echo $form->error($model, 'bl_issue_date'); ?>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6 col-xs-6">
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'bl_issue_place', array('class' => 'col-sm-3 control-label')); ?>
                             <div class="col-sm-6">
@@ -167,7 +165,8 @@ $liners = Liner::LinerList();
                                 <?php echo $form->error($model, 'bl_issue_place'); ?>
                             </div>
                         </div>
-
+                    </div>
+                    <div class="col-lg-6 col-xs-6">
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'bl_load_port', array('class' => 'col-sm-3 control-label')); ?>
                             <div class="col-sm-6">
@@ -214,6 +213,14 @@ $liners = Liner::LinerList();
                                 <?php echo $form->error($model, 'bl_liner_id'); ?>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'bl_remarks', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textArea($model, 'bl_remarks', array('class' => 'form-control')); ?>
+                                <?php echo $form->error($model, 'bl_remarks'); ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -230,7 +237,7 @@ $liners = Liner::LinerList();
             </div>
             <div class="box-body">
                 <div class="form-group">
-                    <?php echo CHtml::label('&nbsp;','' ,array('class' => 'col-sm-3')); ?>
+                    <?php echo CHtml::label('&nbsp;', '', array('class' => 'col-sm-3')); ?>
                     <div class="col-sm-6" id="container_list"></div>
                 </div>
 

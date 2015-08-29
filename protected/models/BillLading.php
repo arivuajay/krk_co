@@ -21,6 +21,7 @@
  * @property integer $bl_free_days
  * @property string $bl_frieght_paid
  * @property string $bl_documents
+ * @property string $bl_remarks
  * @property string $status
  * @property string $created_at
  * @property string $created_by
@@ -66,7 +67,7 @@ class BillLading extends CActiveRecord {
             array('bl_number, bl_issue_place, bl_load_port, bl_discharge_port, bl_vessal_name', 'length', 'max' => 100),
             array('bl_frieght_paid, status', 'length', 'max' => 1),
             array('bl_documents', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
-            array('bl_issue_date, bl_shipped_date, bl_documents, created_at, created_by', 'safe'),
+            array('bl_issue_date, bl_shipped_date, bl_documents, created_at, created_by, bl_remarks', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('bl_id, bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_number, bl_issue_date, bl_issue_place, bl_load_port, bl_discharge_port, bl_vessal_name, bl_shipped_date, bl_liner_id, bl_container_count, bl_free_days, bl_frieght_paid, bl_documents, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
@@ -116,6 +117,7 @@ class BillLading extends CActiveRecord {
             'created_by' => 'Created By',
             'modified_at' => 'Modified At',
             'modified_by' => 'Modified By',
+            'bl_remarks' => 'Remarks',
         );
     }
 

@@ -21,6 +21,7 @@
  * @property integer $created_by
  * @property string $modified_at
  * @property integer $modified_by
+ * @property string $inv_remarks
  *
  * The followings are the available model relations:
  * @property Company $company
@@ -66,7 +67,7 @@ class Invoice extends CActiveRecord {
             array('vendor_id, company_id, po_id, po_cur_status,status, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('permit_no, bol_no, inv_no, vessel_name', 'length', 'max' => 100),
             array('inv_file, pkg_list_file', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
-            array('inv_date, modified_at', 'safe'),
+            array('inv_date, modified_at, inv_remarks', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('invoice_id, vendor_id, company_id, po_id, permit_no, bol_no, inv_no, vessel_name, inv_date, inv_file, pkg_list_file, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
@@ -110,6 +111,7 @@ class Invoice extends CActiveRecord {
             'created_by' => 'Created By',
             'modified_at' => 'Modified At',
             'modified_by' => 'Modified By',
+            'inv_remarks' => 'Remarks',
         );
     }
 
