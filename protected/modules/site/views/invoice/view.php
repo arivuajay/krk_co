@@ -45,7 +45,10 @@ $this->breadcrumbs = array(
     ));
 
     echo "<h3>Invoice Items:</h3>";
-    $this->renderPartial('_inv_added_products', array('inv_products' => $model->invoiceItems));
+    $inv_products = array();
+    foreach ($model->invoiceItems as $item)
+                $inv_products[] = CJSON::encode($item->attributes);
+    $this->renderPartial('_inv_added_products', compact('inv_products'));
     ?>
 </div>
 

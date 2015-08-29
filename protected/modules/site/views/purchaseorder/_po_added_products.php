@@ -22,7 +22,11 @@
             foreach ($po_products as $key => $data):
                 $json_data .='<textarea name="OrderDetails[]" id="addt_' . $key . '">' . $data . '</textarea>';
                 $product = CJSON::decode($data);
+
+                $ctn_qty += $product['po_det_cotton_qty'];
+                $cntr_qty += $product['po_det_container_qty'];
                 $item_price = $product['po_det_cotton_qty'] * $product['po_det_price'];
+                $amount += $item_price;
                 ?>
                 <tr data-session-key="<?php echo $key; ?>">
                     <td><?php echo ProductFamily::model()->findByPk($product['po_det_prod_fmly_id'])->pro_family_name; ?></td>
@@ -32,19 +36,10 @@
                     <td><?php echo implode(",", CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $product['po_det_size'])), 'size_id', 'size_name')); ?></td>
                     <td><?php echo $product['po_det_net_weight']; ?></td>
                     <td><?php echo $product['po_det_currency']; ?></td>
-                    <td><?php
-                        echo $product['po_det_cotton_qty'];
-                        $ctn_qty += $product['po_det_cotton_qty']
-                        ?></td>
-                    <td><?php
-                        echo $product['po_det_container_qty'];
-                        $cntr_qty += $product['po_det_container_qty']
-                        ?></td>
+                    <td><?php echo $product['po_det_cotton_qty']; ?></td>
+                    <td><?php echo $product['po_det_container_qty']; ?></td>
                     <td><?php echo $product['po_det_price']; ?></td>
-                    <td><?php
-                        echo $item_price;
-                        $amount += $item_price;
-                        ?></td>
+                    <td><?php echo $item_price; ?></td>
                     <td valign="middle">
                         <?php
 //                        echo CHtml::ajaxLink('<i class="glyphicon glyphicon-pencil"></i>', array('/site/purchaseorder/editPoPrduct'), array(
@@ -58,7 +53,8 @@
                         ?>
                     </td>
                 </tr>
-            <?php endforeach; endif; ?>
+                    <?php endforeach;
+                endif; ?>
     </tbody>
     <tfoot>
         <tr class="totalRow">

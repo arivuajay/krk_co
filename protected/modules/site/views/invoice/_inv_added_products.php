@@ -17,11 +17,15 @@
         </tr>
     </thead>
     <tbody>
-        <?php if ($inv_products): $ctn_qty = $amount = 0;
+        <?php
+        if ($inv_products): $ctn_qty = $amount = 0;
             foreach ($inv_products as $key => $data):
                 $json_data .='<textarea name="OrderDetails[]" id="addt_' . $key . '">' . $data . '</textarea>';
                 $product = CJSON::decode($data);
-                $item_price = $product['inv_det_cotton_qty'] * $product['inv_det_price']; ?>
+                $ctn_qty += $product['inv_det_cotton_qty'];
+                $item_price = $product['inv_det_cotton_qty'] * $product['inv_det_price'];
+                $amount += $item_price;
+                ?>
                 <tr data-session-key="<?php echo $key; ?>">
                     <td><?php echo ProductFamily::model()->findByPk($product['inv_det_prod_fmly_id'])->pro_family_name; ?></td>
                     <td><?php echo Product::model()->findByPk($product['inv_det_product_id'])->pro_name; ?></td>
@@ -31,14 +35,10 @@
                     <td><?php echo $product['inv_det_net_weight']; ?></td>
                     <td><?php echo $product['inv_det_gross_weight']; ?></td>
                     <td><?php echo $product['inv_det_currency']; ?></td>
-                    <td><?php echo $product['inv_det_cotton_qty'];
-                $ctn_qty += $product['inv_det_cotton_qty'];
-                ?></td>
+                    <td><?php echo $product['inv_det_cotton_qty']; ?></td>
                     <td><?php echo $product['inv_det_ctnr_no']; ?></td>
                     <td><?php echo $product['inv_det_price']; ?></td>
-                    <td><?php echo $item_price;
-                $amount += $item_price;
-                ?></td>
+                    <td><?php echo $item_price; ?></td>
                     <td valign="middle">
                         <?php
 //                        echo CHtml::ajaxLink('<i class="glyphicon glyphicon-pencil"></i>', array('/site/invoice/editInvPrduct'), array(
@@ -52,8 +52,9 @@
                         ?>
                     </td>
                 </tr>
-    <?php endforeach;
-endif; ?>
+            <?php endforeach;
+        endif;
+        ?>
     </tbody>
     <tfoot>
         <tr class="totalRow">
