@@ -1,23 +1,21 @@
 <?php
-/* @var $this PurchaseorderController */
+/* @var $this PaymentController */
 /* @var $dataProvider CActiveDataProvider */
 
-$this->title = 'PO Report';
+$this->title = 'Payments';
 $this->breadcrumbs = array(
-    'PO Report',
+    'Payments',
 );
 $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
-$cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
-$cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
 $cs->registerScriptFile($themeUrl . '/js/datatables/jquery.dataTables.js', $cs_pos_end);
 $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $cs_pos_end);
 ?>
 <div class="col-lg-12 col-md-12" id="advance-search-block">
     <div class="row mb10" id="advance-search-label">
-        <?php echo CHtml::link('<i class="fa fa-angle-right"></i> Show Advance Search', 'javascript:void(0);', array('class' => 'pull-right')); ?>
+        <?php echo CHtml::link('<i class="fa fa-angle-right"></i> Hide Advance Search', 'javascript:void(0);', array('class' => 'pull-right')); ?>
     </div>
     <div class="row" id="advance-search-form" style="display: block">
         <div class="panel panel-primary">
@@ -33,34 +31,29 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                     $form = $this->beginWidget('CActiveForm', array(
                         'id' => 'search-form',
                         'method' => 'get',
-                        'action' => array('/site/purchaseorder/report'),
+                        'action' => array('/site/payment/report'),
                         'htmlOptions' => array('role' => 'form')
                     ));
                     $vendors = Vendor::VendorList();
+                    $payment_types = Payment::PaymentTypelist();
                     ?>
 
                     <div class="col-lg-4 col-md-4">
                         <div class="form-group">
-                            <?php echo $form->labelEx($model, 'purchase_order_code', array('class' => ' control-label')); ?>
-                            <?php echo $form->textField($model, 'purchase_order_code', array('class' => 'form-control', 'size' => 60, 'maxlength' => 255)); ?>
+                            <?php echo $form->labelEx($model, 'vendor_id', array('class' => ' control-label')); ?>
+                            <?php echo $form->dropDownList($model, 'vendor_id', $vendors, array('class' => 'form-control', 'prompt' => '')); ?>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4">
                         <div class="form-group">
-                            <?php echo $form->labelEx($model, 'po_vendor_id', array('class' => ' control-label')); ?>
-                            <?php echo $form->dropDownList($model, 'po_vendor_id', $vendors, array('class' => 'form-control', 'prompt' => '')); ?>
+                            <?php echo $form->labelEx($model, 'pay_type', array('class' => ' control-label')); ?>
+                            <?php echo $form->dropDownList($model, 'pay_type', $payment_types, array('class' => 'form-control', 'prompt' => '')); ?>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4">
                         <div class="form-group">
-                            <?php echo $form->labelEx($model, 'from_date', array('class' => ' control-label')); ?>
-                            <?php echo $form->textField($model, 'from_date', array('class' => 'form-control datepicker')); ?>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4">
-                        <div class="form-group">
-                            <?php echo $form->labelEx($model, 'to_date', array('class' => ' control-label')); ?>
-                            <?php echo $form->textField($model, 'to_date', array('class' => 'form-control datepicker')); ?>
+                            <?php echo $form->labelEx($model, 'invoice_id', array('class' => ' control-label')); ?>
+                            <?php echo $form->textField($model, 'invoice_id', array('class' => 'form-control')); ?>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-2">
@@ -87,7 +80,7 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                     </div>
                 </div>-->
         <?php
-        echo CHtml::link('<i class="fa fa-plus"></i>&nbsp;&nbsp;Create PurchaseOrder', array('/site/purchaseorder/create'), array('class' => 'btn btn-success pull-right mb10'));
+        echo CHtml::link('<i class="fa fa-plus"></i>&nbsp;&nbsp;Create Payment', array('/site/payment/create'), array('class' => 'btn btn-success pull-right mb10'));
         echo '<div class="col-md-1">';
         $this->widget(
                 'booster.widgets.TbButton', array(
@@ -102,11 +95,13 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
         );
         echo '</div>';
         echo '<div class="col-md-1">';
-        echo $this->renderExportGridButton('po-base-grid', '<i class="fa fa-file-excel-o"></i> Export CSV', array('class' => 'btn btn-danger'));
+        echo $this->renderExportGridButton('payment-base-grid', '<i class="fa fa-file-excel-o"></i> Export CSV', array('class' => 'btn btn-danger'));
         echo '</div>';
         ?>
+
     </div>
 </div>
+
 
 <div class="col-lg-12 col-md-12">
     <div class="row">
@@ -114,19 +109,12 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
     </div>
 </div>
 
-<?php
-$user_js_format = JS_USER_DATE_FORMAT;
-$js = <<< EOD
-    $(document).ready(function(){
-        $('.datepicker').datepicker({ format: '$user_js_format' });
-    });
-EOD;
-$cs->registerScript('_po_report', $js);
-
+<?php 
 Yii::app()->clientScript->registerScript('exportgrid', "$('#export_pdf').on('click',function() {
-    var downloadUrl=$('#po-base-grid').yiiGridView('getUrl');
+    var downloadUrl=$('#payment-base-grid').yiiGridView('getUrl');
     downloadUrl+=((downloadUrl.indexOf('?')==-1)?'?':'&');
     downloadUrl+='export=PDF';
     window.open( downloadUrl ,'_blank');
 });");
+    
 ?>

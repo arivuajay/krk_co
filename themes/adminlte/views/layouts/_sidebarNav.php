@@ -44,11 +44,11 @@
                     'itemOptions' => array('class' => 'treeview active'),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
-                        array('label' => '<i class="fa fa-music"></i> <span>Purchase Order</span>', 'url' => array('/site/purchaseorder/index')),
+                        array('label' => '<i class="fa fa-music"></i> <span>Purchase Order</span>', 'url' => array('/site/purchaseorder/index'), 'active' => (Yii::app()->controller->id == 'purchaseorder' && Yii::app()->controller->action->id == 'index')),
                         array('label' => '<i class="fa fa-user"></i> <span>Invoice & Packing List</span>', 'url' => array('/site/invoice/index')),
                         array('label' => '<i class="fa fa-user"></i> <span>Bill of Lading</span>', 'url' => array('/site/billlading/index')),
                         array('label' => '<i class="fa fa-user"></i> <span>Pyto&Orgine Certificate</span>', 'url' => array('/site/pytoorigin/index')),
-                        array('label' => '<i class="fa fa-user"></i> <span>Payment</span>', 'url' => array('/site/payment/index')),
+                        array('label' => '<i class="fa fa-user"></i> <span>Payment</span>', 'url' => array('/site/payment/index'), 'active' => (Yii::app()->controller->id == 'payment' && Yii::app()->controller->action->id == 'index')),
 //                        array('label' => '<i class="fa fa-weixin"></i> <span>Process Chart</span>', 'url' => '#'),
 //                        array('label' => '<i class="fa fa-user"></i> <span>Permit</span>', 'url' => '#'),
                     ),
@@ -58,7 +58,8 @@
                     'itemOptions' => array('class' => 'treeview active'),
                     'submenuOptions' => array('class' => 'treeview-menu'),
                     'items' => array(
-                        array('label' => '<i class="fa fa-music"></i> <span>PO Report</span>', 'url' => array('/site/purchaseorder/report')),
+                        array('label' => '<i class="fa fa-music"></i> <span>PO Report</span>', 'url' => array('/site/purchaseorder/report'), 'active' => (Yii::app()->controller->id == 'purchaseorder' && Yii::app()->controller->action->id == 'report')),
+                        array('label' => '<i class="fa fa-user"></i> <span>Payment Report</span>', 'url' => array('/site/payment/report'), 'active' => (Yii::app()->controller->id == 'payment' && Yii::app()->controller->action->id == 'report')),
                     ),
                 ),
             ),

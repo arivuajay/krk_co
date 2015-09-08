@@ -9,6 +9,14 @@ class PurchaseorderController extends Controller {
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
 
+    public function behaviors() {
+        return array(
+            'exportableGrid' => array(
+                'class' => 'application.components.ExportableGridBehavior',
+                'filename' => "Purchaseorder_" . time() . ".csv",
+//                'csvDelimiter' => ',', //i.e. Excel friendly csv delimiter
+        ));
+    }
     /**
      * @return array action filters
      */
@@ -266,7 +274,23 @@ class PurchaseorderController extends Controller {
             $model->attributes = $_GET['PurchaseOrder'];
         }
 
-        $this->render('report', compact('model'));
+        $export = isset($_REQUEST['export']) && $_REQUEST['export'] == 'PDF';
+        $compact = compact('model', 'export');
+        if ($export) {
+            $model->page_size = false;
+            $mPDF1 = Yii::app()->ePdf->mpdf();
+            $stylesheet = $this->pdfStyles();
+            $mPDF1->WriteHTML($stylesheet, 1);
+            $mPDF1->WriteHTML($this->renderPartial('_grid', $compact, true));
+            $mPDF1->Output("PurchaseOrder.pdf", EYiiPdf::OUTPUT_TO_DOWNLOAD);
+        } else {
+            if ($this->isExportRequest()) {
+//                $model->unsetAttributes();
+                $this->exportCSV(array('PurchaseOrder:'), null, false);
+                $this->exportCSV($model->dataProvider(), array('purchase_order_code', 'po_date'));
+            }
+            $this->render('report', $compact);
+        }
     }
 
     /**

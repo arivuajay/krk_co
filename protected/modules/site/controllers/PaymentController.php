@@ -36,7 +36,7 @@ class PaymentController extends Controller {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'admin', 'delete'),
+                'actions' => array('index', 'view', 'create', 'admin', 'delete', 'report'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -159,6 +159,32 @@ class PaymentController extends Controller {
         $export = isset($_REQUEST['export']) && $_REQUEST['export'] == 'PDF';
         $compact = compact('model', 'export');
         if ($export) {
+//            $model->page_size = false;
+//            $mPDF1 = Yii::app()->ePdf->mpdf();
+//            $stylesheet = $this->pdfStyles();
+//            $mPDF1->WriteHTML($stylesheet, 1);
+//            $mPDF1->WriteHTML($this->renderPartial('_grid', $compact, true));
+//            $mPDF1->Output("Payments.pdf", EYiiPdf::OUTPUT_TO_DOWNLOAD);
+        } else {
+            if ($this->isExportRequest()) {
+//                $model->unsetAttributes();
+//                $this->exportCSV(array('Payment:'), null, false);
+//                $this->exportCSV($model->dataProvider(), array('vendorname', 'paymenttype', 'pay_date', 'pay_amount', 'ponumber', 'invoicenumber'));
+            }
+            $this->render('index', $compact);
+        }
+    }
+
+    public function actionReport() {
+        $model = new Payment();
+        if (isset($_REQUEST['Payment']) && !empty($_REQUEST['Payment'])) {
+            $model->unsetAttributes();
+            $model->attributes = $_GET['Payment'];
+        }
+        
+        $export = isset($_REQUEST['export']) && $_REQUEST['export'] == 'PDF';
+        $compact = compact('model', 'export');
+        if ($export) {
             $model->page_size = false;
             $mPDF1 = Yii::app()->ePdf->mpdf();
             $stylesheet = $this->pdfStyles();
@@ -167,11 +193,11 @@ class PaymentController extends Controller {
             $mPDF1->Output("Payments.pdf", EYiiPdf::OUTPUT_TO_DOWNLOAD);
         } else {
             if ($this->isExportRequest()) {
-                $model->unsetAttributes();
+//                $model->unsetAttributes();
                 $this->exportCSV(array('Payment:'), null, false);
                 $this->exportCSV($model->dataProvider(), array('vendorname', 'paymenttype', 'pay_date', 'pay_amount', 'ponumber', 'invoicenumber'));
             }
-            $this->render('index', $compact);
+            $this->render('report', $compact);
         }
     }
 

@@ -29,6 +29,7 @@
  */
 class PurchaseOrder extends CActiveRecord {
 
+    public $page_size = true;
     public $from_date;
     public $to_date;
 
@@ -167,6 +168,11 @@ class PurchaseOrder extends CActiveRecord {
             $criteria->addBetweenCondition('po_date', date('Y-m-d', strtotime($this->from_date)), date('Y-m-d', strtotime($this->to_date)));
         }
 
+        if($this->page_size)
+            $pagination = array('pageSize' => PAGE_SIZE);
+        else
+            $pagination = false;
+        
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
             'pagination' => array(

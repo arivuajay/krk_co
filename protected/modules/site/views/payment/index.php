@@ -81,21 +81,6 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                 </div>-->
         <?php
         echo CHtml::link('<i class="fa fa-plus"></i>&nbsp;&nbsp;Create Payment', array('/site/payment/create'), array('class' => 'btn btn-success pull-right mb10'));
-        echo '<div class="col-md-1">';
-        $this->widget(
-                'booster.widgets.TbButton', array(
-            'label' => ' Export PDF',
-            'icon' => 'fa fa-file-pdf-o',
-            'url' => array('index', 'export' => 'PDF'),
-            'buttonType' => 'link',
-            'context' => 'warning',
-//                    
-                )
-        );
-        echo '</div>';
-        echo '<div class="col-md-1">';
-        echo $this->renderExportGridButton('payment-base-grid', '<i class="fa fa-file-excel-o"></i> Export CSV', array('class' => 'btn btn-danger'));
-        echo '</div>';
         ?>
 
     </div>
