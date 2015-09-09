@@ -287,7 +287,7 @@ class PurchaseorderController extends Controller {
             if ($this->isExportRequest()) {
 //                $model->unsetAttributes();
                 $this->exportCSV(array('PurchaseOrder:'), null, false);
-                $this->exportCSV($model->dataProvider(), array('purchase_order_code', 'po_date'));
+                $this->exportCSV($model->dataProvider(), array('purchase_order_code', 'po_date', 'companyname', 'vendorname'));
             }
             $this->render('report', $compact);
         }

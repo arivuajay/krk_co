@@ -218,4 +218,11 @@ class PurchaseOrder extends CActiveRecord {
         return $status;
     }
 
+    public function getCompanyname() {
+        return $this->poCompany->company_name;
+    }
+    
+    public function getVendorname() {
+        return $this->poVendor->vendor_name;
+    }
 }
