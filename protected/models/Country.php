@@ -13,7 +13,7 @@
  * The followings are the available model relations:
  * @property Liner[] $liners
  */
-class Country extends CActiveRecord {
+class Country extends RActiveRecord {
 
     public function scopes() {
         $alias = $this->getTableAlias(false, false);

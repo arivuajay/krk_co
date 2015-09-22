@@ -17,7 +17,7 @@
  * The followings are the available model relations:
  * @property Product $product
  */
-class ProductSize extends CActiveRecord {
+class ProductSize extends RActiveRecord {
 
     /**
      * @return string the associated database table name
@@ -137,18 +137,6 @@ class ProductSize extends CActiveRecord {
                 'pageSize' => PAGE_SIZE,
             )
         ));
-    }
-
-    protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
-
-        return parent::beforeValidate();
     }
 
     public function checkSize_code($id) {

@@ -27,7 +27,7 @@
  * The followings are the available model relations:
  * @property VendorType $vendorType
  */
-class Vendor extends CActiveRecord {
+class Vendor extends RActiveRecord {
 
 //    public $vendortype;
     
@@ -171,18 +171,6 @@ class Vendor extends CActiveRecord {
                 'pageSize' => PAGE_SIZE,
             )
         ));
-    }
-
-    protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
-
-        return parent::beforeValidate();
     }
 
     public static function VendorList($is_active = TRUE, $key = NULL) {

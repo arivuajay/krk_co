@@ -35,7 +35,7 @@
  * @property PurchaseOrder $blPo
  * @property Vendor $blVendor
  */
-class BillLading extends CActiveRecord {
+class BillLading extends RActiveRecord {
 
     const FILE_SIZE = 5;
 

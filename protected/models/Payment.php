@@ -34,7 +34,7 @@
  * @property PurchaseOrder $po
  * @property Vendor $vendor
  */
-class Payment extends CActiveRecord {
+class Payment extends RActiveRecord {
 
     public $page_size = true;
     /**

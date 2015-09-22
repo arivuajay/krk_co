@@ -26,7 +26,7 @@
  * @property PurchaseOrder $pytoPo
  * @property Vendor $pytoVendor
  */
-class PytoOrigin extends CActiveRecord {
+class PytoOrigin extends RActiveRecord {
 
     const FILE_SIZE = 5;
 
@@ -154,13 +154,6 @@ class PytoOrigin extends CActiveRecord {
     }
 
     protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
         $this->doinspection = date('Y-m-d', strtotime($this->doinspection));
 
         return parent::beforeValidate();

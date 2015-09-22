@@ -13,7 +13,7 @@
  * @property string $modified_at
  * @property integer $modified_by
  */
-class Company extends CActiveRecord {
+class Company extends RActiveRecord {
 
     /**
      * @return string the associated database table name
@@ -125,17 +125,17 @@ class Company extends CActiveRecord {
         ));
     }
 
-    protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
-
-        return parent::beforeValidate();
-    }
+//    protected function beforeValidate() {
+//        if ($this->isNewRecord) {
+//            $this->created_at = new CDbExpression('NOW()');
+//            $this->created_by = Yii::app()->user->id;
+//        } else {
+//            $this->modified_at = new CDbExpression('NOW()');
+//            $this->modified_by = Yii::app()->user->id;
+//        }
+//
+//        return parent::beforeValidate();
+//    }
 
     public static function CompanyList($is_active = TRUE, $key = NULL) {
         if ($is_active && $key == NULL)

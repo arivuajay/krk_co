@@ -32,7 +32,7 @@
  * @property ProductVariety $invDetVariety
  * @property ProductFamily $invDetProdFmly
  */
-class InvoiceItems extends CActiveRecord {
+class InvoiceItems extends RActiveRecord {
 
     public $CntrQty;
 //    public $invoiceamount;

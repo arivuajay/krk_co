@@ -1,42 +1,26 @@
 <?php
 
 /**
- * This is the model class for table "{{product_grade}}".
+ * This is the model class for table "{{expenses}}".
  *
- * The followings are the available columns in table '{{product_grade}}':
- * @property integer $grade_id
- * @property integer $product_id
- * @property string $grade_code
- * @property string $grade_short_name
- * @property string $grade_long_name
- * @property string $status
+ * The followings are the available columns in table '{{expenses}}':
+ * @property integer $exp_id
+ * @property string $exp_name
+ * @property string $exp_amount
+ * @property string $exp_remarks
+ * @property string $exp_type
  * @property string $created_at
- * @property integer $created_by
- * @property string $modified_at
+ * @property string $created_by
+ * @property integer $modified_at
  * @property integer $modified_by
- *
- * The followings are the available model relations:
- * @property Product $product
  */
-class ProductGrade extends RActiveRecord {
-
-    public $MAX_ID;
-
-    /**
-     * @return string the associated database table name
-     */
-    public function scopes() {
-        $alias = $this->getTableAlias(false, false);
-        return array(
-            'active' => array('condition' => "$alias.status = '1'"),
-        );
-    }
+class Expenses extends RActiveRecord {
 
     /**
      * @return string the associated database table name
      */
     public function tableName() {
-        return '{{product_grade}}';
+        return '{{expenses}}';
     }
 
     /**
@@ -46,14 +30,15 @@ class ProductGrade extends RActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('product_id, grade_short_name, grade_long_name, created_at, created_by', 'required'),
-            array('product_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
-            array('grade_short_name, grade_long_name', 'length', 'max' => 255),
-            array('status', 'length', 'max' => 1),
-            array('modified_at,grade_code', 'safe'),
+            array('exp_name, exp_amount, exp_remarks, exp_type', 'required'),
+            array('modified_at, modified_by', 'numerical', 'integerOnly' => true),
+            array('exp_name', 'length', 'max' => 100),
+            array('exp_amount', 'numerical', 'integerOnly' => false),
+            array('exp_type', 'length', 'max' => 1),
+            array('exp_remarks, created_at, created_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('grade_id, grade_code, product_id, grade_short_name, grade_long_name, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('exp_id, exp_name, exp_amount, exp_remarks, exp_type, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -64,7 +49,8 @@ class ProductGrade extends RActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
-            'product' => array(self::BELONGS_TO, 'Product', 'product_id'),
+            'createdBy' => array(self::BELONGS_TO, 'User', 'created_by'),
+            'modifiedBy' => array(self::BELONGS_TO, 'User', 'modified_by'),
         );
     }
 
@@ -73,11 +59,11 @@ class ProductGrade extends RActiveRecord {
      */
     public function attributeLabels() {
         return array(
-            'grade_id' => 'Grade',
-            'product_id' => 'Product',
-            'grade_short_name' => 'Grade Short Name',
-            'grade_long_name' => 'Grade Long Name',
-            'status' => 'Status',
+            'exp_id' => 'Exp',
+            'exp_name' => 'Expense Name',
+            'exp_amount' => 'Amount',
+            'exp_remarks' => 'Remarks',
+            'exp_type' => 'Type',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'modified_at' => 'Modified At',
@@ -102,15 +88,14 @@ class ProductGrade extends RActiveRecord {
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('grade_id', $this->grade_id);
-        $criteria->compare('product_id', $this->product_id);
-        $criteria->compare('grade_code', $this->grade_code, true);
-        $criteria->compare('grade_short_name', $this->grade_short_name, true);
-        $criteria->compare('grade_long_name', $this->grade_long_name, true);
-        $criteria->compare('status', $this->status, true);
+        $criteria->compare('exp_id', $this->exp_id);
+        $criteria->compare('exp_name', $this->exp_name, true);
+        $criteria->compare('exp_amount', $this->exp_amount, true);
+        $criteria->compare('exp_remarks', $this->exp_remarks, true);
+        $criteria->compare('exp_type', $this->exp_type, true);
         $criteria->compare('created_at', $this->created_at, true);
-        $criteria->compare('created_by', $this->created_by);
-        $criteria->compare('modified_at', $this->modified_at, true);
+        $criteria->compare('created_by', $this->created_by, true);
+        $criteria->compare('modified_at', $this->modified_at);
         $criteria->compare('modified_by', $this->modified_by);
 
         return new CActiveDataProvider($this, array(
@@ -125,7 +110,7 @@ class ProductGrade extends RActiveRecord {
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return ProductGrade the static model class
+     * @return Expenses the static model class
      */
     public static function model($className = __CLASS__) {
         return parent::model($className);
@@ -139,17 +124,13 @@ class ProductGrade extends RActiveRecord {
         ));
     }
 
-    public function checkGrade_code($id) {
-        return "G" . str_pad($id, 3, 0, STR_PAD_LEFT);
+    public function getExpensetypelist($key = null) {
+        $list = array(
+            'C' => 'Cash',
+            'N' => 'Non-cash'
+        );
+        if($key != null)
+            return $list[$key];
+        return $list;
     }
-
-    protected function afterSave() {
-        parent::afterSave();
-        if ($this->isNewRecord) {
-            $this->grade_code = $this->checkGrade_code($this->grade_id);
-            $this->isNewRecord = false;
-            $this->saveAttributes(array('grade_code'));
-        }
-    }
-
 }

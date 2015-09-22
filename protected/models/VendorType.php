@@ -12,7 +12,7 @@
  * @property string $modified_at
  * @property integer $modified_by
  */
-class VendorType extends CActiveRecord {
+class VendorType extends RActiveRecord {
 
     public function scopes() {
         $alias = $this->getTableAlias(false, false);

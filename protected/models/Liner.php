@@ -18,7 +18,7 @@
  * The followings are the available model relations:
  * @property Country $country
  */
-class Liner extends CActiveRecord {
+class Liner extends RActiveRecord {
 
     /**
      * @return string the associated database table name
@@ -136,18 +136,6 @@ class Liner extends CActiveRecord {
                 'pageSize' => PAGE_SIZE,
             )
         ));
-    }
-
-    protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
-
-        return parent::beforeValidate();
     }
 
     public static function LinerList($is_active = TRUE, $key = NULL) {

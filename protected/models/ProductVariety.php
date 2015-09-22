@@ -17,7 +17,7 @@
  * The followings are the available model relations:
  * @property Product $product
  */
-class ProductVariety extends CActiveRecord {
+class ProductVariety extends RActiveRecord {
     /**
      * @return string the associated database table name
      */
@@ -132,18 +132,6 @@ class ProductVariety extends CActiveRecord {
                 'pageSize' => PAGE_SIZE,
             )
         ));
-    }
-
-    protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
-
-        return parent::beforeValidate();
     }
 
     public function checkVariety_code($id) {

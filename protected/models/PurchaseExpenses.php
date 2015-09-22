@@ -1,31 +1,29 @@
 <?php
 
 /**
- * This is the model class for table "{{product_family}}".
+ * This is the model class for table "{{purchase_expenses}}".
  *
- * The followings are the available columns in table '{{product_family}}':
- * @property integer $pro_family_id
- * @property string $pro_family_name
- * @property string $status
- * @property integer $created_by
+ * The followings are the available columns in table '{{purchase_expenses}}':
+ * @property integer $pur_exp_id
+ * @property integer $po_id
+ * @property string $pur_exp_date
+ * @property string $pur_exp_amount
+ * @property string $pur_exp_remarks
  * @property string $created_at
+ * @property string $created_by
+ * @property integer $modified_at
  * @property integer $modified_by
- * @property string $modified_at
+ *
+ * The followings are the available model relations:
+ * @property PurchaseOrder $po
  */
-class ProductFamily extends RActiveRecord {
+class PurchaseExpenses extends RActiveRecord {
 
     /**
      * @return string the associated database table name
      */
-    public function scopes() {
-        $alias = $this->getTableAlias(false, false);
-        return array(
-            'active' => array('condition' => "$alias.status = '1'"),
-        );
-    }
-
     public function tableName() {
-        return '{{product_family}}';
+        return '{{purchase_expenses}}';
     }
 
     /**
@@ -35,14 +33,13 @@ class ProductFamily extends RActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('pro_family_name, created_by, created_at', 'required'),
-            array('created_by, modified_by', 'numerical', 'integerOnly' => true),
-            array('pro_family_name', 'length', 'max' => 255),
-            array('status', 'length', 'max' => 1),
-            array('modified_at,pro_family_code', 'safe'),
+            array('po_id, pur_exp_date, pur_exp_amount, pur_exp_remarks, created_at', 'required'),
+            array('po_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
+            array('pur_exp_amount', 'numerical', 'integerOnly' => false),
+            array('created_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('pro_family_id,pro_family_code, pro_family_name, status, created_by, created_at, modified_by, modified_at', 'safe', 'on' => 'search'),
+            array('pur_exp_id, po_id, pur_exp_date, pur_exp_amount, pur_exp_remarks, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -53,6 +50,7 @@ class ProductFamily extends RActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            'po' => array(self::BELONGS_TO, 'PurchaseOrder', 'po_id'),
         );
     }
 
@@ -61,14 +59,15 @@ class ProductFamily extends RActiveRecord {
      */
     public function attributeLabels() {
         return array(
-            'pro_family_id' => 'Pro Family',
-            'pro_family_code' => 'Pro Family Code',
-            'pro_family_name' => 'Pro Family Name',
-            'status' => 'Status',
-            'created_by' => 'Created By',
+            'pur_exp_id' => 'Pur Exp',
+            'po_id' => 'PO',
+            'pur_exp_date' => 'Date',
+            'pur_exp_amount' => 'Amount',
+            'pur_exp_remarks' => 'Remarks',
             'created_at' => 'Created At',
-            'modified_by' => 'Modified By',
+            'created_by' => 'Created By',
             'modified_at' => 'Modified At',
+            'modified_by' => 'Modified By',
         );
     }
 
@@ -89,14 +88,15 @@ class ProductFamily extends RActiveRecord {
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('pro_family_id', $this->pro_family_id);
-        $criteria->compare('pro_family_code', $this->pro_family_code, true);
-        $criteria->compare('pro_family_name', $this->pro_family_name, true);
-        $criteria->compare('status', $this->status, true);
-        $criteria->compare('created_by', $this->created_by);
+        $criteria->compare('pur_exp_id', $this->pur_exp_id);
+        $criteria->compare('po_id', $this->po_id);
+        $criteria->compare('pur_exp_date', $this->pur_exp_date, true);
+        $criteria->compare('pur_exp_amount', $this->pur_exp_amount, true);
+        $criteria->compare('pur_exp_remarks', $this->pur_exp_remarks, true);
         $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('created_by', $this->created_by, true);
+        $criteria->compare('modified_at', $this->modified_at);
         $criteria->compare('modified_by', $this->modified_by);
-        $criteria->compare('modified_at', $this->modified_at, true);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
@@ -110,7 +110,7 @@ class ProductFamily extends RActiveRecord {
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return ProductFamily the static model class
+     * @return PurchaseExpenses the static model class
      */
     public static function model($className = __CLASS__) {
         return parent::model($className);
@@ -124,27 +124,13 @@ class ProductFamily extends RActiveRecord {
         ));
     }
 
-    public static function ProductFamilyList($is_active = TRUE, $key = NULL) {
-        if ($is_active && $key == NULL)
-            $lists = CHtml::listData(self::model()->active()->findAll(array('order' => 'pro_family_name')), 'pro_family_id', 'pro_family_name');
-        else
-            $lists = CHtml::listData(self::model()->findAll(array('order' => 'pro_family_name')), 'pro_family_id', 'pro_family_name');
-        if ($key != NULL)
-            return $lists[$key];
-        return $lists;
+    protected function beforeSave() {
+        $this->pur_exp_date = date('Y-m-d', strtotime($this->pur_exp_date));
+        return parent::beforeSave();
     }
-
-    public function checkFamily_code($id) {
-        return "PF" . str_pad($id, 4, 0, STR_PAD_LEFT);
+    
+    protected function afterFind() {
+        $this->pur_exp_date = date(PHP_USER_DATE_FORMAT, strtotime($this->pur_exp_date));
+        return parent::afterFind();
     }
-
-    protected function afterSave() {
-        parent::afterSave();
-        if ($this->isNewRecord) {
-            $this->pro_family_code = $this->checkFamily_code($this->pro_family_id);
-            $this->isNewRecord = false;
-            $this->saveAttributes(array('pro_family_code'));
-        }
-    }
-
 }

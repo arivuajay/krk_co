@@ -28,8 +28,13 @@
  * @property ProductVariety $poDetVariety
  * @property ProductFamily $poDetProdFmly
  */
-class PurchaseOrderDetails extends CActiveRecord {
+class PurchaseOrderDetails extends RActiveRecord {
 
+    public $page_size = true;
+    public $f_from_date;
+    public $f_to_date;
+    public $f_purchase_order_code;
+    public $f_po_vendor_id;
     /**
      * @return string the associated database table name
      */
@@ -52,6 +57,7 @@ class PurchaseOrderDetails extends CActiveRecord {
             array('po_det_net_weight, po_det_container_qty, po_det_cotton_qty, po_det_price', 'numerical', 'integerOnly' => false),
             array('status', 'length', 'max' => 1),
             array('po_det_currency,created_at, created_by', 'safe'),
+            array('f_from_date, f_to_date, f_purchase_order_code, f_po_vendor_id', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('po_det_id, po_id, po_det_prod_fmly_id, po_det_product_id, po_det_variety_id, po_det_grade, po_det_size, po_det_net_weight, po_det_container_qty, po_det_cotton_qty, po_det_currency, po_det_price, created_at, created_by, modified_at, modified_by, status', 'safe', 'on' => 'search'),
@@ -93,7 +99,14 @@ class PurchaseOrderDetails extends CActiveRecord {
             'created_by' => 'Created By',
             'modified_at' => 'Modified At',
             'modified_by' => 'Modified By',
-            'status' => 'Status',
+            'createdbyname' => 'Created By',
+            'postatus' => 'Status',
+            'familyname' => 'Family',
+            'productname' => 'Product',
+            'varietyname' => 'Variety',
+            'sizenames' => 'Size',
+            'gradenames' => 'Grade',
+            'totalamount' => 'Amount',
         );
     }
 
@@ -151,10 +164,28 @@ class PurchaseOrderDetails extends CActiveRecord {
     }
 
     public function dataProvider() {
+        $criteria = new CDbCriteria;
+
+        $criteria->with = array('po');
+        $criteria->compare('po.purchase_order_code', $this->f_purchase_order_code, true);
+        $criteria->compare('po.po_vendor_id', $this->f_po_vendor_id);
+        
+//        echo "<pre>";
+//        var_dump($this->f_po_vendor_id);
+//        exit;
+
+        if ($this->f_from_date != '' && $this->f_to_date != '') {
+            $criteria->addBetweenCondition('po.po_date', date('Y-m-d', strtotime($this->f_from_date)), date('Y-m-d', strtotime($this->f_to_date)));
+        }
+
+        if($this->page_size)
+            $pagination = array('pageSize' => PAGE_SIZE);
+        else
+            $pagination = false;
+        
         return new CActiveDataProvider($this, array(
-            'pagination' => array(
-                'pageSize' => PAGE_SIZE,
-            )
+            'criteria' => $criteria,
+            'pagination' => $pagination
         ));
     }
 
@@ -185,4 +216,51 @@ class PurchaseOrderDetails extends CActiveRecord {
         return parent::afterFind();
     }
 
+    public function getCompanyname() {
+        return $this->po->poCompany->company_name;
+    }
+    
+    public function getVendorname() {
+        return $this->po->poVendor->vendor_name;
+    }
+    
+    public function getPostatus() {
+        return PurchaseOrder::StatusList($this->po->status);
+    }
+    
+    public function getCreatedbyname() {
+        return $this->po->createdBy->first_name;
+    }
+    
+    public function getPurchasecode() {
+        return $this->po->purchase_order_code;
+    }
+    
+    public function getPurchasedate() {
+        return $this->po->po_date;
+    }
+    
+    public function getFamilyname() {
+        return $this->poDetProdFmly->pro_family_name;
+    }
+    
+    public function getProductname() {
+        return $this->poDetProduct->pro_name;
+    }
+    
+    public function getVarietyname() {
+        return $this->poDetVariety->variety_name;
+    }
+    
+    public function getSizenames() {
+        return implode(', ', CHtml::listData(ProductSize::model()->findAllByAttributes(array("size_id" => $this->po_det_size)), 'size_id', 'size_name'));
+    }
+    
+    public function getGradenames() {
+        return implode(', ', CHtml::listData(ProductGrade::model()->findAllByAttributes(array("grade_id" => $this->po_det_grade)), 'grade_id', 'grade_long_name'));
+    }
+    
+    public function getTotalamount() {
+        return $this->po_det_cotton_qty * $this->po_det_price;
+    }
 }

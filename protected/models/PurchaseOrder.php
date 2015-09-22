@@ -27,7 +27,7 @@
  * @property Liner $poLiner
  * @property PurchaseOrderDetails[] $purchaseOrderDetails
  */
-class PurchaseOrder extends CActiveRecord {
+class PurchaseOrder extends RActiveRecord {
 
     public $page_size = true;
     public $from_date;
@@ -76,6 +76,8 @@ class PurchaseOrder extends CActiveRecord {
             'poCompany' => array(self::BELONGS_TO, 'Company', 'po_company_id'),
             'poLiner' => array(self::BELONGS_TO, 'Liner', 'po_liner_id'),
             'purchaseOrderDetails' => array(self::HAS_MANY, 'PurchaseOrderDetails', 'po_id'),
+            'createdBy' => array(self::BELONGS_TO, 'User', 'created_by'),
+            'modifiedBy' => array(self::BELONGS_TO, 'User', 'modified_by'),
         );
     }
 
@@ -99,6 +101,8 @@ class PurchaseOrder extends CActiveRecord {
             'from_date' => 'From date',
             'to_date' => 'To date',
             'po_remarks' => 'Remarks',
+            'postatus' => 'Status',
+            'createdbyname' => 'Created By',
         );
     }
 
@@ -175,22 +179,12 @@ class PurchaseOrder extends CActiveRecord {
         
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
-            'pagination' => array(
-                'pageSize' => PAGE_SIZE,
-            )
+            'pagination' => $pagination
         ));
     }
 
     protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
         $this->po_date = date('Y-m-d', strtotime($this->po_date));
-
         return parent::beforeValidate();
     }
 
@@ -218,11 +212,19 @@ class PurchaseOrder extends CActiveRecord {
         return $status;
     }
 
-    public function getCompanyname() {
-        return $this->poCompany->company_name;
-    }
-    
-    public function getVendorname() {
-        return $this->poVendor->vendor_name;
-    }
+//    public function getCompanyname() {
+//        return $this->poCompany->company_name;
+//    }
+//    
+//    public function getVendorname() {
+//        return $this->poVendor->vendor_name;
+//    }
+//    
+//    public function getPostatus() {
+//        return PurchaseOrder::StatusList($this->status);
+//    }
+//    
+//    public function getCreatedbyname() {
+//        return $this->createdBy->first_name;
+//    }
 }

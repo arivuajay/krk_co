@@ -27,15 +27,15 @@ class MyMenu extends CMenu {
                                     $this->items[$key][$second_key][$third_key]['visible'] = UserIdentity::checkAccess($_id, $controller, 'view');
                                 }
                             }
-//                            if (isset($third_item['items'])) {
-//                                foreach ($third_item['items'] as $fourth_key => $fourth_value) {
-//                                    $controller = $this->splitController($fourth_value['url'][0]);
-//                                    if (!in_array($_controller, $ignore_list) && !in_array($controller, $ignore_list)) {
-//                                        $this->items[$key][$second_key][$third_key]['items'][$fourth_key]['visible'] = UserIdentity::checkAccess($_id, $controller, 'view');
-//                                        $this->items[$key][$second_key][$third_key]['items'][$fourth_key]['active'] = $_controller == $controller;
-//                                    }
-//                                }
-//                            }
+                            if (isset($third_item['items'])) {
+                                foreach ($third_item['items'] as $fourth_key => $fourth_value) {
+                                    $controller = $this->splitController($fourth_value['url'][0]);
+                                    if (!in_array($_controller, $ignore_list) && !in_array($controller, $ignore_list)) {
+                                        $this->items[$key][$second_key][$third_key]['items'][$fourth_key]['visible'] = UserIdentity::checkAccess($_id, $controller, 'view');
+                                        $this->items[$key][$second_key][$third_key]['items'][$fourth_key]['active'] = $_controller == $controller;
+                                    }
+                                }
+                            }
                         }
                     }
                 }

@@ -1,39 +1,33 @@
 <?php
 
 /**
- * This is the model class for table "{{product}}".
+ * This is the model class for table "{{sales_expenses}}".
  *
- * The followings are the available columns in table '{{product}}':
+ * The followings are the available columns in table '{{sales_expenses}}':
+ * @property integer $sale_exp_id
  * @property integer $product_id
- * @property integer $pro_family_id
- * @property string $product_code
- * @property string $pro_name
- * @property string $status
- * @property integer $created_by
+ * @property string $sale_exp_date
+ * @property string $sale_exp_amount
+ * @property string $sale_exp_remarks
+ * @property string $sales_exp_cust_name
+ * @property string $sales_exp_address
  * @property string $created_at
- * @property integer $modified_by
+ * @property integer $created_by
  * @property string $modified_at
+ * @property integer $modified_by
  *
  * The followings are the available model relations:
- * @property ProductFamily $proFamily
+ * @property Product $product
  */
-class Product extends RActiveRecord {
-
-    /**
-     * @return string the associated database table name
-     */
-    public function scopes() {
-        $alias = $this->getTableAlias(false, false);
-        return array(
-            'active' => array('condition' => "$alias.status = '1'"),
-        );
-    }
+class SalesExpenses extends RActiveRecord {
+    
+    public $sale_exp_fam_id;
 
     /**
      * @return string the associated database table name
      */
     public function tableName() {
-        return '{{product}}';
+        return '{{sales_expenses}}';
     }
 
     /**
@@ -43,14 +37,14 @@ class Product extends RActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('pro_family_id, pro_name, created_by, created_at', 'required'),
-            array('pro_family_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
-            array('pro_name', 'length', 'max' => 255),
-            array('status', 'length', 'max' => 1),
-            array('modified_at,product_code', 'safe'),
+            array('product_id, sale_exp_date, sale_exp_amount, created_at, sale_exp_fam_id', 'required'),
+            array('product_id, created_by, modified_by', 'numerical', 'integerOnly' => true),
+            array('sale_exp_amount', 'numerical', 'integerOnly' => false),
+            array('sales_exp_cust_name', 'length', 'max' => 100),
+            array('sale_exp_remarks, sales_exp_address, modified_at, sale_exp_fam_id', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('product_id, product_code, pro_family_id, pro_name, status, created_by, created_at, modified_by, modified_at', 'safe', 'on' => 'search'),
+            array('sale_exp_id, product_id, sale_exp_date, sale_exp_amount, sale_exp_remarks, sales_exp_cust_name, sales_exp_address, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -61,7 +55,7 @@ class Product extends RActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
-            'proFamily' => array(self::BELONGS_TO, 'ProductFamily', 'pro_family_id'),
+            'product' => array(self::BELONGS_TO, 'Product', 'product_id'),
         );
     }
 
@@ -70,15 +64,18 @@ class Product extends RActiveRecord {
      */
     public function attributeLabels() {
         return array(
+            'sale_exp_fam_id' => 'Product Family',
+            'sale_exp_id' => 'Sale Exp',
             'product_id' => 'Product',
-            'product_code' => 'Product Code',
-            'pro_family_id' => 'Pro Family',
-            'pro_name' => 'Pro Name',
-            'status' => 'Status',
-            'created_by' => 'Created By',
+            'sale_exp_date' => 'Date',
+            'sale_exp_amount' => 'Amount',
+            'sale_exp_remarks' => 'Remarks',
+            'sales_exp_cust_name' => 'Customer Name',
+            'sales_exp_address' => 'Address',
             'created_at' => 'Created At',
-            'modified_by' => 'Modified By',
+            'created_by' => 'Created By',
             'modified_at' => 'Modified At',
+            'modified_by' => 'Modified By',
         );
     }
 
@@ -99,15 +96,17 @@ class Product extends RActiveRecord {
 
         $criteria = new CDbCriteria;
 
+        $criteria->compare('sale_exp_id', $this->sale_exp_id);
         $criteria->compare('product_id', $this->product_id);
-        $criteria->compare('product_code', $this->product_code, true);
-        $criteria->compare('pro_family_id', $this->pro_family_id);
-        $criteria->compare('pro_name', $this->pro_name, true);
-        $criteria->compare('status', $this->status, true);
-        $criteria->compare('created_by', $this->created_by);
+        $criteria->compare('sale_exp_date', $this->sale_exp_date, true);
+        $criteria->compare('sale_exp_amount', $this->sale_exp_amount, true);
+        $criteria->compare('sale_exp_remarks', $this->sale_exp_remarks, true);
+        $criteria->compare('sales_exp_cust_name', $this->sales_exp_cust_name, true);
+        $criteria->compare('sales_exp_address', $this->sales_exp_address, true);
         $criteria->compare('created_at', $this->created_at, true);
-        $criteria->compare('modified_by', $this->modified_by);
+        $criteria->compare('created_by', $this->created_by);
         $criteria->compare('modified_at', $this->modified_at, true);
+        $criteria->compare('modified_by', $this->modified_by);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
@@ -121,7 +120,7 @@ class Product extends RActiveRecord {
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return Product the static model class
+     * @return SalesExpenses the static model class
      */
     public static function model($className = __CLASS__) {
         return parent::model($className);
@@ -135,27 +134,13 @@ class Product extends RActiveRecord {
         ));
     }
 
-    public static function ProductList($is_active = TRUE, $key = NULL) {
-        if ($is_active && $key == NULL)
-            $lists = CHtml::listData(self::model()->active()->findAll(array('order' => 'pro_name')), 'product_id', 'pro_name');
-        else
-            $lists = CHtml::listData(self::model()->findAll(array('order' => 'pro_name')), 'product_id', 'pro_name');
-        if ($key != NULL)
-            return $lists[$key];
-        return $lists;
+    protected function beforeSave() {
+        $this->sale_exp_date = date('Y-m-d', strtotime($this->sale_exp_date));
+        return parent::beforeSave();
     }
-
-    public function checkProduct_code($id) {
-        return "P" . str_pad($id, 3, 0, STR_PAD_LEFT);
+    
+    protected function afterFind() {
+        $this->sale_exp_date = date(PHP_USER_DATE_FORMAT, strtotime($this->sale_exp_date));
+        return parent::afterFind();
     }
-
-    protected function afterSave() {
-        parent::afterSave();
-        if ($this->isNewRecord) {
-            $this->product_code = $this->checkProduct_code($this->product_id);
-            $this->isNewRecord = false;
-            $this->saveAttributes(array('product_code'));
-        }
-    }
-
 }

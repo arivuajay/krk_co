@@ -23,7 +23,7 @@
  * @property Vendor $vendor
  * @property Company $company
  */
-class Permit extends CActiveRecord {
+class Permit extends RActiveRecord {
 
     const FILE_SIZE = 10;
 
@@ -167,13 +167,6 @@ class Permit extends CActiveRecord {
     }
 
     protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
         $this->doissue = date('Y-m-d', strtotime($this->doissue));
         $this->valupto = date('Y-m-d', strtotime($this->valupto));
 

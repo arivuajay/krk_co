@@ -29,7 +29,7 @@
  * @property Vendor $vendor
  * @property InvoiceItems[] $invoiceItems
  */
-class Invoice extends CActiveRecord {
+class Invoice extends RActiveRecord {
 
     const FILE_SIZE = 10;
 
@@ -169,13 +169,6 @@ class Invoice extends CActiveRecord {
     }
 
     protected function beforeValidate() {
-        if ($this->isNewRecord) {
-            $this->created_at = new CDbExpression('NOW()');
-            $this->created_by = Yii::app()->user->id;
-        } else {
-            $this->modified_at = new CDbExpression('NOW()');
-            $this->modified_by = Yii::app()->user->id;
-        }
         $this->inv_date = date('Y-m-d', strtotime($this->inv_date));
 
         return parent::beforeValidate();
