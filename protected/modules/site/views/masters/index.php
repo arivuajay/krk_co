@@ -33,6 +33,8 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                 <li><a href="#variety" data-toggle="tab">Manage Variety</a></li>
                 <li><a href="#size" data-toggle="tab">Manage Size</a></li>
                 <li><a href="#grade" data-toggle="tab">Manage Grade</a></li>
+                <li><a href="#exptype" data-toggle="tab">Manage Expense Type</a></li>
+                <li><a href="#expsubtype" data-toggle="tab">Manage Expense Sub-Type</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane" id="company">
@@ -119,6 +121,30 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                         </div>
                         <div class="panel-footer" id="foot_grade_form">
                             <?php $this->renderPartial('_grade_form', compact('grade_model')); ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="exptype">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Expense Type Master</h3></div>
+                        <div class="panel-body">
+                            <?php $this->renderPartial('_exp_type_index', compact('exp_type_model')); ?>
+                        </div>
+                        <div class="panel-footer" id="foot_exp_type_form">
+                            <?php $this->renderPartial('_exp_type_form', compact('exp_type_model')); ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="expsubtype">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Expense Sub-Type Master</h3></div>
+                        <div class="panel-body">
+                            <?php $this->renderPartial('_exp_sub_type_index', compact('exp_subtype_model')); ?>
+                        </div>
+                        <div class="panel-footer" id="foot_exp_subtype_form">
+                            <?php $this->renderPartial('_exp_sub_type_form', compact('exp_subtype_model')); ?>
                         </div>
                     </div>
                 </div>

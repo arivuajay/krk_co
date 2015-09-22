@@ -45,6 +45,11 @@ class DefaultController extends Controller {
                     'getLinerInfo',
                     'downloadFile',
                     'getPermitByClient',
+                    'getPODetails',
+                    'getInvoiceByBol',
+                    'getContainerByInvoice',
+                    'getExpSubTypeByType',
+                    'report',
                 ),
                 'users' => array('*'),
             ),
@@ -442,4 +447,74 @@ class DefaultController extends Controller {
         return Yii::app()->getRequest()->sendFile(basename($file), @file_get_contents(Yii::app()->getBasePath() . DS . '..' . $file));
     }
 
+    public function actionGetPODetails() {
+        if (isset($_POST['po_id'])) {
+            $model = PurchaseOrder::model()->findByPk($_POST['po_id']);
+            $this->renderPartial('_po_details', compact('model'));
+        }
+        Yii::app()->end();
+    }
+
+    public function actionGetInvoiceByBol($selected = '') {
+        $bol = $_GET['id'];
+        if (!empty($bol)) {
+            $invoices = Invoice::model()->findAll("bol_no = '$bol'");
+            $data = CHtml::listData($invoices, 'inv_no', 'inv_no');
+            foreach ($data as $value => $name) {
+                $htmlOpt = array();
+                $htmlOpt['value'] = $value;
+                if (!empty($selected) && $selected == $value)
+                    $htmlOpt['selected'] = 'selected';
+                echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+            }
+        }
+    }
+
+    public function actionGetContainerByInvoice($selected = '') {
+        $inv_id = $_GET['id'];
+        if (!empty($inv_id)) {
+            $data = array();
+            $criteria = new CDbCriteria();
+            $criteria->select = 'inv_det_ctnr_no';
+            $criteria->group = 'inv_det_ctnr_no';
+            $criteria->with = array('inv');
+            $criteria->condition = "inv.inv_no = $inv_id";
+            $cont_nos = InvoiceItems::model()->findAll($criteria);
+            foreach ($cont_nos as $key => $cont_no) {
+                $data[$cont_no->inv_det_ctnr_no] = $cont_no->inv_det_ctnr_no;
+            }
+            foreach ($data as $value => $name) {
+                $htmlOpt = array();
+                $htmlOpt['value'] = $value;
+                if (!empty($selected) && $selected == $value)
+                    $htmlOpt['selected'] = 'selected';
+
+                echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+            }
+        }
+    }
+
+    public function actionGetExpSubTypeByType($selected = '') {
+        $exp_type_id = $_GET['id'];
+        if (!empty($exp_type_id)) {
+            $data = array();
+            $sub_types = ExpenseSubtype::model()->findAllByAttributes(array('exp_type_id' => $exp_type_id));
+            foreach ($sub_types as $key => $sub_type) {
+                $data[$sub_type->exp_subtype_id] = $sub_type->exp_subtype_name;
+            }
+            echo "<option value=''>Select Sub Type</option>";
+            foreach ($data as $value => $name) {
+                $htmlOpt = array();
+                $htmlOpt['value'] = $value;
+                if (!empty($selected) && $selected == $value)
+                    $htmlOpt['selected'] = 'selected';
+
+                echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+            }
+        }
+    }
+
+    public function actionReport(){
+        $this->renderPartial('reportico.views.reportico.index');
+    }
 }

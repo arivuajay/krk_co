@@ -8,7 +8,6 @@ class PurchaseorderController extends Controller {
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
-
     public function behaviors() {
         return array(
             'exportableGrid' => array(
@@ -17,6 +16,7 @@ class PurchaseorderController extends Controller {
 //                'csvDelimiter' => ',', //i.e. Excel friendly csv delimiter
         ));
     }
+
     /**
      * @return array action filters
      */
@@ -269,13 +269,20 @@ class PurchaseorderController extends Controller {
 
     public function actionReport() {
         $model = new PurchaseOrder();
-        if (isset($_REQUEST['PurchaseOrder']) && !empty($_REQUEST['PurchaseOrder'])) {
-            $model->unsetAttributes();
-            $model->attributes = $_GET['PurchaseOrder'];
+        $detail_model = new PurchaseOrderDetails();
+        $f_from_date = $f_to_date = $f_vendor = $f_po = $_status = '';
+        
+        if (isset($_REQUEST['PurchaseOrderDetails']) && !empty($_REQUEST['PurchaseOrderDetails'])) {
+            $detail_model->unsetAttributes();
+            $detail_model->attributes = $_GET['PurchaseOrderDetails'];
+            $f_from_date = $_GET['PurchaseOrderDetails']['f_from_date'];
+            $f_to_date = $_GET['PurchaseOrderDetails']['f_to_date'];
+            $f_vendor = Vendor::model()->findByPk($_GET['PurchaseOrderDetails']['f_po_vendor_id'])->vendor_name;
+            $f_po = $_GET['PurchaseOrderDetails']['f_purchase_order_code'];
         }
 
         $export = isset($_REQUEST['export']) && $_REQUEST['export'] == 'PDF';
-        $compact = compact('model', 'export');
+        $compact = compact('model', 'export', 'detail_model');
         if ($export) {
             $model->page_size = false;
             $mPDF1 = Yii::app()->ePdf->mpdf();
@@ -285,9 +292,12 @@ class PurchaseorderController extends Controller {
             $mPDF1->Output("PurchaseOrder.pdf", EYiiPdf::OUTPUT_TO_DOWNLOAD);
         } else {
             if ($this->isExportRequest()) {
-//                $model->unsetAttributes();
-                $this->exportCSV(array('PurchaseOrder:'), null, false);
-                $this->exportCSV($model->dataProvider(), array('purchase_order_code', 'po_date', 'companyname', 'vendorname'));
+                $this->exportCSV(array('PO Report:', '', 'Filter', 'From Date', $f_from_date, 'To Date', $f_to_date, 'Vendor', $f_vendor, 'PO No', $f_po, 'Status', $f_po), null, false);
+                $this->exportCSV(array(''), null, false);
+                $this->exportCSV(array(''), null, false);
+                $this->exportCSV(array(''), null, false);
+                $this->exportCSV(array(SITENAME, '', '', 'PURCHASE ORDER REPORT'), null, false);
+                $this->exportCSV($detail_model->dataProvider(), array('vendorname', 'purchasecode', 'purchasedate', 'postatus', 'createdbyname', 'familyname', 'productname', 'varietyname', 'sizenames', 'gradenames', 'po_det_cotton_qty', 'po_det_price', 'po_det_container_qty', 'po_det_net_weight', 'totalamount'));
             }
             $this->render('report', $compact);
         }
@@ -353,7 +363,7 @@ class PurchaseorderController extends Controller {
                     foreach ($model->purchaseOrderDetails as $item)
                         $po_products[] = CJSON::encode($item->attributes);
                 }
-            }else{
+            } else {
                 $po_products = $tmp_data->session_data['PurchaseOrderDetails'];
             }
         }

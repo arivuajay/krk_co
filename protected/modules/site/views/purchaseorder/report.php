@@ -42,25 +42,25 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
                     <div class="col-lg-4 col-md-4">
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'purchase_order_code', array('class' => ' control-label')); ?>
-                            <?php echo $form->textField($model, 'purchase_order_code', array('class' => 'form-control', 'size' => 60, 'maxlength' => 255)); ?>
+                            <?php echo $form->textField($detail_model, 'f_purchase_order_code', array('class' => 'form-control', 'size' => 60, 'maxlength' => 255)); ?>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4">
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'po_vendor_id', array('class' => ' control-label')); ?>
-                            <?php echo $form->dropDownList($model, 'po_vendor_id', $vendors, array('class' => 'form-control', 'prompt' => '')); ?>
+                            <?php echo $form->dropDownList($detail_model, 'f_po_vendor_id', $vendors, array('class' => 'form-control', 'prompt' => '')); ?>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4">
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'from_date', array('class' => ' control-label')); ?>
-                            <?php echo $form->textField($model, 'from_date', array('class' => 'form-control datepicker')); ?>
+                            <?php echo $form->textField($detail_model, 'f_from_date', array('class' => 'form-control datepicker')); ?>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4">
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'to_date', array('class' => ' control-label')); ?>
-                            <?php echo $form->textField($model, 'to_date', array('class' => 'form-control datepicker')); ?>
+                            <?php echo $form->textField($detail_model, 'f_to_date', array('class' => 'form-control datepicker')); ?>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-2">
@@ -110,7 +110,7 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
 
 <div class="col-lg-12 col-md-12">
     <div class="row">
-        <?php $this->renderPartial('_grid', compact('model')); ?>
+        <?php $this->renderPartial('_grid', compact('model', 'detail_model')); ?>
     </div>
 </div>
 

@@ -42,6 +42,10 @@ class MastersController extends Controller {
                     'liner_delete',
                     'vendor_view',
                     'terms',
+                    'exp_type_save',
+                    'exp_type_delete',
+                    'exp_subtype_save',
+                    'exp_subtype_delete',
                 ),
                 'users' => array('@'),
             ),
@@ -61,6 +65,8 @@ class MastersController extends Controller {
         $grade_model = new ProductGrade();
         $vendor_model = new Vendor();
         $liner_model = new Liner();
+        $exp_type_model = new ExpenseType();
+        $exp_subtype_model = new ExpenseSubtype();
 
         if ($this->isExportRequest()) {
             $vendor_model->unsetAttributes();
@@ -68,7 +74,7 @@ class MastersController extends Controller {
             $this->exportCSV($vendor_model->search(), array('vendor_code', 'vendortype', 'vendor_name', 'vendor_address', 'vendor_city', 'vendor_country', 'vendor_contact_person', 'vendor_mobile_no', 'vendor_office_no', 'vendor_email', 'vendor_website', 'vendor_trade_mark', 'vendor_remarks'));
         }
         
-        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model', 'vendor_model', 'liner_model'));
+        $this->render('index', compact('tab', 'comp_model', 'perm_model', 'pro_family_model', 'product_model', 'variety_model', 'size_model', 'grade_model', 'vendor_model', 'liner_model', 'exp_type_model', 'exp_subtype_model'));
         
     }
 
@@ -636,6 +642,116 @@ class MastersController extends Controller {
             $vendor = Vendor::model()->findByPk($_GET['id']);
             $this->renderPartial('_terms', compact('vendor'));
         }else{
+            Yii::app()->end();
+        }
+    }
+    
+    public function actionExp_type_save($id = null) {
+        $new = false;
+        if (is_null($id)) {
+            $exp_type_model = new ExpenseType;
+            $new = true;
+        } else {
+            $exp_type_model = $this->loadExpenseTypeModel($id);
+        }
+
+        // Uncomment the following line if AJAX validation is needed
+        $this->performExpenseTypeAjaxValidation($exp_type_model);
+
+        if (isset($_POST['ExpenseType'])) {
+            $exp_type_model->attributes = $_POST['ExpenseType'];
+            if ($exp_type_model->save()) {
+                $note = ($new) ? "Created Expense Type successfully." : "Updated Expense Type successfully.";
+                Myclass::addAuditTrail($note, "user");
+                Yii::app()->user->setFlash('success', $note);
+                $this->redirect(array('index', 'tab' => 'exptype'));
+            }
+        }
+        echo $this->renderPartial('_exp_type_form', compact('exp_type_model'), true, true);
+        Yii::app()->end();
+    }
+    
+    public function actionExp_type_delete($id) {
+        try {
+            $model = $this->loadExpenseTypeModel($id);
+            $model->delete();
+            Myclass::addAuditTrail("Deleted Expense Type successfully.", "user");
+        } catch (CDbException $e) {
+            throw new CHttpException(404, $e->getMessage());
+        }
+
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (!isset($_GET['ajax'])) {
+            Yii::app()->user->setFlash('success', 'Expense Type Deleted Successfully!!!');
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        }
+    }
+    
+    public function loadExpenseTypeModel($id) {
+        $model = ExpenseType::model()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    protected function performExpenseTypeAjaxValidation($model) {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'expense-type-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+    }
+    
+    public function actionExp_subtype_save($id = null) {
+        $new = false;
+        if (is_null($id)) {
+            $exp_subtype_model = new ExpenseSubtype();
+            $new = true;
+        } else {
+            $exp_subtype_model = $this->loadExpenseSubTypeModel($id);
+        }
+
+        // Uncomment the following line if AJAX validation is needed
+        $this->performExpenseSubTypeAjaxValidation($exp_subtype_model);
+
+        if (isset($_POST['ExpenseSubtype'])) {
+            $exp_subtype_model->attributes = $_POST['ExpenseSubtype'];
+            if ($exp_subtype_model->save()) {
+                $note = ($new) ? "Created Expense Sub-Type successfully." : "Updated Expense Sub-Type successfully.";
+                Myclass::addAuditTrail($note, "user");
+                Yii::app()->user->setFlash('success', $note);
+                $this->redirect(array('index', 'tab' => 'expsubtype'));
+            }
+        }
+        echo $this->renderPartial('_exp_sub_type_form', compact('exp_subtype_model'), true, true);
+        Yii::app()->end();
+    }
+    
+    public function actionExp_subtype_delete($id) {
+        try {
+            $model = $this->loadExpenseSubTypeModel($id);
+            $model->delete();
+            Myclass::addAuditTrail("Deleted Expense Sub-Type successfully.", "user");
+        } catch (CDbException $e) {
+            throw new CHttpException(404, $e->getMessage());
+        }
+
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (!isset($_GET['ajax'])) {
+            Yii::app()->user->setFlash('success', 'Expense Sub-Type Deleted Successfully!!!');
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        }
+    }
+    
+    public function loadExpenseSubTypeModel($id) {
+        $model = ExpenseSubtype::model()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    protected function performExpenseSubTypeAjaxValidation($model) {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'expense-sub-type-form') {
+            echo CActiveForm::validate($model);
             Yii::app()->end();
         }
     }
