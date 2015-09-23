@@ -50,6 +50,7 @@ class DefaultController extends Controller {
                     'getContainerByInvoice',
                     'getExpSubTypeByType',
                     'report',
+                    'poreport',
                 ),
                 'users' => array('*'),
             ),
@@ -515,6 +516,18 @@ class DefaultController extends Controller {
     }
 
     public function actionReport(){
-        $this->renderPartial('reportico.views.reportico.index');
+        $reportico = Yii::app()->getModule('reportico');
+	$engine = $reportico->getReporticoEngine();
+	$reportico->engine->initial_execute_mode = "PREPARE";
+	$reportico->engine->initial_report = "PO_REPORT.xml";
+	$reportico->engine->access_mode = "ONEREPORT";
+	$reportico->engine->initial_project = "KRK";
+	$reportico->engine->clear_reportico_session = true;
+	$reportico->generate();
+
+    }
+    
+    public function actionPoreport(){
+        $this->render('poreport');
     }
 }
