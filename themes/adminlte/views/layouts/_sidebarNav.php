@@ -72,6 +72,7 @@
                         array('label' => '<i class="fa fa-user"></i> <span>Invoice Report</span>', 'url' => array('/site/invoice/report'), 'active' => (Yii::app()->controller->id == 'invoice' && Yii::app()->controller->action->id == 'report')),
                         array('label' => '<i class="fa fa-user"></i> <span>Bill Of Lading Report</span>', 'url' => array('/site/billlading/report'), 'active' => (Yii::app()->controller->id == 'billlading' && Yii::app()->controller->action->id == 'report')),
                         array('label' => '<i class="fa fa-user"></i> <span>Payment Report</span>', 'url' => array('/site/payment/report'), 'active' => (Yii::app()->controller->id == 'payment' && Yii::app()->controller->action->id == 'report')),
+                        array('label' => '<i class="fa fa-user"></i> <span>Vendor Balance Sheet</span>', 'url' => array('/site/invoice/vendorreport'), 'active' => (Yii::app()->controller->id == 'invoice' && Yii::app()->controller->action->id == 'vendorreport')),
                     ),
                 ),
             ),

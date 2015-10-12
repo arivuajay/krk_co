@@ -17,6 +17,8 @@
  * @property string $inv_file
  * @property string $pkg_list_file
  * @property integer $status
+ * @property string $inv_remarks
+ * @property string $inv_amount
  * @property string $created_at
  * @property integer $created_by
  * @property string $modified_at
@@ -67,10 +69,11 @@ class Invoice extends RActiveRecord {
             array('vendor_id, company_id, po_id, po_cur_status,status, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('permit_no, bol_no, inv_no, vessel_name', 'length', 'max' => 100),
             array('inv_file, pkg_list_file', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
+            array('inv_amount', 'length', 'max' => 10),
             array('inv_date, modified_at, inv_remarks', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('invoice_id, vendor_id, company_id, po_id, permit_no, bol_no, inv_no, vessel_name, inv_date, inv_file, pkg_list_file, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('invoice_id, vendor_id, company_id, po_id, permit_no, bol_no, inv_no, vessel_name, inv_date, inv_file, pkg_list_file, status, inv_remarks, inv_amount, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -86,6 +89,7 @@ class Invoice extends RActiveRecord {
             'po' => array(self::BELONGS_TO, 'PurchaseOrder', 'po_id'),
             'vendor' => array(self::BELONGS_TO, 'Vendor', 'vendor_id'),
             'invoiceItems' => array(self::HAS_MANY, 'InvoiceItems', 'inv_id'),
+            'invoiceAmont' => array(self::STAT, 'InvoiceItems', 'inv_id', 'select' => 'SUM(inv_det_net_amount)'),
         );
     }
 
@@ -107,6 +111,8 @@ class Invoice extends RActiveRecord {
             'inv_file' => 'Upload Invoice',
             'pkg_list_file' => 'Upload Packing List',
             'status' => 'Status',
+            'inv_remarks' => 'Inv Remarks',
+            'inv_amount' => 'Inv Amount',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'modified_at' => 'Modified At',
@@ -144,6 +150,8 @@ class Invoice extends RActiveRecord {
         $criteria->compare('inv_date', $this->inv_date, true);
         $criteria->compare('inv_file', $this->inv_file, true);
         $criteria->compare('pkg_list_file', $this->pkg_list_file, true);
+        $criteria->compare('inv_remarks', $this->inv_remarks, true);
+        $criteria->compare('inv_amount', $this->inv_amount, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('created_at', $this->created_at, true);
         $criteria->compare('created_by', $this->created_by);
@@ -170,7 +178,6 @@ class Invoice extends RActiveRecord {
 
     protected function beforeValidate() {
         $this->inv_date = date('Y-m-d', strtotime($this->inv_date));
-
         return parent::beforeValidate();
     }
 
@@ -182,8 +189,12 @@ class Invoice extends RActiveRecord {
 
     protected function afterSave() {
         parent::afterSave();
-
         PurchaseOrder::model()->updateByPk($this->po_id, array('status' => $this->po_cur_status));
+    }
+
+    static function updateInvoiceAmount($invID) {
+        $model = Invoice::model()->findByPk($invID);
+        $model->updateByPk($invID,array('inv_amount' => $model->invoiceAmont));
     }
 
 }

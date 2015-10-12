@@ -281,7 +281,7 @@ class DefaultController extends Controller {
             $totQty = 0;
             foreach ($invoiceItems as $item):
                 $options[] = "{$item->inv_det_ctnr_no} - {$item->CntrQty}";
-                $total_inv_amount += $item->invoiceamount;
+                $total_inv_amount += $item->inv_det_net_amount;
                 $totQty += $item->CntrQty;
             endforeach;
 
@@ -523,10 +523,12 @@ class DefaultController extends Controller {
 	$reportico->engine->access_mode = "ONEREPORT";
 	$reportico->engine->initial_project = "KRK";
 	$reportico->engine->clear_reportico_session = true;
+        $reportico->engine->output_template_parameters["show_hide_prepare_page_style"] = "hide";
+        $reportico->engine->output_template_parameters["show_hide_prepare_section_boxes"] = "hide";
 	$reportico->generate();
 
     }
-    
+
     public function actionPoreport(){
         $this->render('poreport');
     }

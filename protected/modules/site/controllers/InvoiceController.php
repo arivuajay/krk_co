@@ -27,7 +27,7 @@ class InvoiceController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct', 'preview', 'report'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct', 'preview', 'report', 'vendorreport'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -155,6 +155,7 @@ class InvoiceController extends Controller {
         }
         TempSession::model()->byMe()->deleteAll("session_name = '{$this->sess_name}' AND session_key = '{$posession}'");
 
+        Invoice::updateInvoiceAmount($po['invoice_id']);
         return true;
     }
 
@@ -325,4 +326,9 @@ class InvoiceController extends Controller {
     public function actionReport() {
         $this->render('report');
     }
+
+    public function actionVendorreport() {
+        $this->render('vendorreport');
+    }
+
 }

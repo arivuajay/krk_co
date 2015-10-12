@@ -14,6 +14,7 @@
  * @property string $inv_det_cotton_qty
  * @property string $inv_det_currency
  * @property string $inv_det_price
+ * @property string $inv_det_net_amount
  * @property string $inv_det_net_weight
  * @property string $inv_det_gross_weight
  * @property string $inv_det_ctnr_no
@@ -35,6 +36,8 @@
 class InvoiceItems extends RActiveRecord {
 
     public $CntrQty;
+    public $TotalInvAmount;
+
 //    public $invoiceamount;
 
     /**
@@ -55,13 +58,13 @@ class InvoiceItems extends RActiveRecord {
             array('inv_id', 'required', 'on' => 'save'),
             array('inv_id, inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id,inv_det_grade, inv_det_size, modified_at, modified_by', 'numerical', 'integerOnly' => true),
             array('inv_det_grade, inv_det_size', 'length', 'max' => 500),
-            array('inv_det_cotton_qty, inv_det_price, inv_det_net_weight, inv_det_gross_weight', 'length', 'max' => 10),
+            array('inv_det_cotton_qty, inv_det_price,inv_det_net_amount, inv_det_net_weight, inv_det_gross_weight', 'length', 'max' => 10),
             array('inv_det_currency, inv_det_ctnr_no', 'length', 'max' => 100),
             array('is_delivered, status', 'length', 'max' => 1),
             array('inv_det_currency,created_at, created_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('inv_det_id, inv_id, inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id, inv_det_grade, inv_det_size, inv_det_cotton_qty, inv_det_currency, inv_det_price, inv_det_net_weight, inv_det_gross_weight, inv_det_ctnr_no, is_delivered, created_at, created_by, modified_at, modified_by, status', 'safe', 'on' => 'search'),
+            array('inv_det_id, inv_id, inv_det_prod_fmly_id, inv_det_product_id, inv_det_variety_id, inv_det_grade, inv_det_size, inv_det_cotton_qty, inv_det_currency, inv_det_price, inv_det_net_weight,inv_det_net_amount, inv_det_gross_weight, inv_det_ctnr_no, is_delivered, created_at, created_by, modified_at, modified_by, status', 'safe', 'on' => 'search'),
         );
     }
 
@@ -96,6 +99,7 @@ class InvoiceItems extends RActiveRecord {
             'inv_det_cotton_qty' => 'Invoiced Qty in CTN',
             'inv_det_currency' => 'Currency Type',
             'inv_det_price' => 'Invoiced Price/CTN',
+            'inv_det_net_amount' => 'Invoice Net Amount',
             'inv_det_net_weight' => 'Net Weight(kg)',
             'inv_det_gross_weight' => 'Gross Weight(kg)',
             'inv_det_ctnr_no' => 'Container No',
@@ -135,6 +139,7 @@ class InvoiceItems extends RActiveRecord {
         $criteria->compare('inv_det_cotton_qty', $this->inv_det_cotton_qty, true);
         $criteria->compare('inv_det_currency', $this->inv_det_currency, true);
         $criteria->compare('inv_det_price', $this->inv_det_price, true);
+        $criteria->compare('inv_det_net_amount',$this->inv_det_net_amount,true);
         $criteria->compare('inv_det_net_weight', $this->inv_det_net_weight, true);
         $criteria->compare('inv_det_gross_weight', $this->inv_det_gross_weight, true);
         $criteria->compare('inv_det_ctnr_no', $this->inv_det_ctnr_no, true);
@@ -171,7 +176,8 @@ class InvoiceItems extends RActiveRecord {
         ));
     }
 
-    public function getInvoiceAmount() {
-        return $this->inv_det_cotton_qty * $this->inv_det_price;
+    protected function afterSave() {
+        $this->inv_det_net_amount = $this->inv_det_cotton_qty * $this->inv_det_price;
+        return parent::afterSave();
     }
 }
