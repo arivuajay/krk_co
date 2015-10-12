@@ -515,11 +515,11 @@ class DefaultController extends Controller {
         }
     }
 
-    public function actionReport(){
+    public function actionReport($xml){
         $reportico = Yii::app()->getModule('reportico');
 	$engine = $reportico->getReporticoEngine();
 	$reportico->engine->initial_execute_mode = "PREPARE";
-	$reportico->engine->initial_report = "PO_REPORT.xml";
+	$reportico->engine->initial_report = "$xml.xml";
 	$reportico->engine->access_mode = "ONEREPORT";
 	$reportico->engine->initial_project = "KRK";
 	$reportico->engine->clear_reportico_session = true;

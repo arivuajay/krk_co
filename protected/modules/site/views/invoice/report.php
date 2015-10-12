@@ -2,15 +2,15 @@
 /* @var $this PurchaseorderController */
 /* @var $dataProvider CActiveDataProvider */
 
-$this->title = 'PO Report';
+$this->title = 'Invoice Report';
 $this->breadcrumbs = array(
-    'PO Report',
+    $this->title,
 );
 $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
-$get_report = Yii::app()->createAbsoluteUrl('/site/default/report', array('xml' => 'PO_REPORT'));
+$get_report = Yii::app()->createAbsoluteUrl('/site/default/report', array('xml' => 'INVOICE_REPORT'));
 ?>
 
 <div id="report_area"></div>

@@ -58,6 +58,6 @@ class MyMenu extends CMenu {
     }
 
     public static function ignoreActiveList(){
-        return array('purchaseorder', 'payment');
+        return array('purchaseorder', 'invoice', 'billlading', 'payment');
     }
 }

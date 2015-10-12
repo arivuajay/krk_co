@@ -1,120 +1,28 @@
 <?php
-/* @var $this PaymentController */
+/* @var $this PurchaseorderController */
 /* @var $dataProvider CActiveDataProvider */
 
-$this->title = 'Payments';
+$this->title = 'Payment Report';
 $this->breadcrumbs = array(
-    'Payments',
+    $this->title,
 );
 $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
-$cs->registerScriptFile($themeUrl . '/js/datatables/jquery.dataTables.js', $cs_pos_end);
-$cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $cs_pos_end);
+//$get_report = Yii::app()->createAbsoluteUrl('/site/default/report', array('xml' => 'VENDOR_BALANCE_SHEET'));
+$get_report = Yii::app()->createAbsoluteUrl('/site/default/report', array('xml' => 'PAYMENT_REPORT'));
 ?>
-<div class="col-lg-12 col-md-12" id="advance-search-block">
-    <div class="row mb10" id="advance-search-label">
-        <?php echo CHtml::link('<i class="fa fa-angle-right"></i> Hide Advance Search', 'javascript:void(0);', array('class' => 'pull-right')); ?>
-    </div>
-    <div class="row" id="advance-search-form" style="display: block">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    <i class="glyphicon glyphicon-search"></i>  Search
-                </h3>
-                <div class="clearfix"></div>
-            </div>
-            <section class="content">
-                <div class="row">
-                    <?php
-                    $form = $this->beginWidget('CActiveForm', array(
-                        'id' => 'search-form',
-                        'method' => 'get',
-                        'action' => array('/site/payment/report'),
-                        'htmlOptions' => array('role' => 'form')
-                    ));
-                    $vendors = Vendor::VendorList();
-                    $payment_types = Payment::PaymentTypelist();
-                    ?>
 
-                    <div class="col-lg-4 col-md-4">
-                        <div class="form-group">
-                            <?php echo $form->labelEx($model, 'vendor_id', array('class' => ' control-label')); ?>
-                            <?php echo $form->dropDownList($model, 'vendor_id', $vendors, array('class' => 'form-control', 'prompt' => '')); ?>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4">
-                        <div class="form-group">
-                            <?php echo $form->labelEx($model, 'pay_type', array('class' => ' control-label')); ?>
-                            <?php echo $form->dropDownList($model, 'pay_type', $payment_types, array('class' => 'form-control', 'prompt' => '')); ?>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4">
-                        <div class="form-group">
-                            <?php echo $form->labelEx($model, 'invoice_id', array('class' => ' control-label')); ?>
-                            <?php echo $form->textField($model, 'invoice_id', array('class' => 'form-control')); ?>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-2">
-                        <div class="form-group">
-                            <label>&nbsp;</label>
-                            <?php echo CHtml::submitButton('Search', array('class' => 'btn btn-primary form-control')); ?>
-                        </div>
-                    </div>
-                    <?php $this->endWidget(); ?>
-                </div>
-            </section>
+<div id="report_area"></div>
 
-
-        </div>
-    </div>
-</div>
-
-<div class="col-lg-12 col-md-12">
-    <div class="row">
-        <!--        <div class="col-lg-4 col-md-4 row">
-                    <div class="form-group">
-                        <label class="control-label">Search: </label>
-                        <input type="text" class="form-control inline" name="base_table_search" id="base_table_search" />
-                    </div>
-                </div>-->
-        <?php
-        echo CHtml::link('<i class="fa fa-plus"></i>&nbsp;&nbsp;Create Payment', array('/site/payment/create'), array('class' => 'btn btn-success pull-right mb10'));
-        echo '<div class="col-md-1">';
-        $this->widget(
-                'booster.widgets.TbButton', array(
-            'label' => ' Export PDF',
-            'icon' => 'fa fa-file-pdf-o',
-            'url' => '#',
-            'buttonType' => 'link',
-            'context' => 'warning',
-            'htmlOptions' => array('id' => 'export_pdf')
-//                    
-                )
-        );
-        echo '</div>';
-        echo '<div class="col-md-1">';
-        echo $this->renderExportGridButton('payment-base-grid', '<i class="fa fa-file-excel-o"></i> Export CSV', array('class' => 'btn btn-danger'));
-        echo '</div>';
-        ?>
-
-    </div>
-</div>
-
-
-<div class="col-lg-12 col-md-12">
-    <div class="row">
-        <?php $this->renderPartial('_grid', compact('model')); ?>
-    </div>
-</div>
-
-<?php 
-Yii::app()->clientScript->registerScript('exportgrid', "$('#export_pdf').on('click',function() {
-    var downloadUrl=$('#payment-base-grid').yiiGridView('getUrl');
-    downloadUrl+=((downloadUrl.indexOf('?')==-1)?'?':'&');
-    downloadUrl+='export=PDF';
-    window.open( downloadUrl ,'_blank');
-});");
-    
+<?php
+$js = <<< EOD
+    $(document).ready(function () {
+        $.get("$get_report", function (data, status) {
+            $('#report_area').html(data);
+        });
+    });
+EOD;
+$cs->registerScript('_po_report', $js);
 ?>

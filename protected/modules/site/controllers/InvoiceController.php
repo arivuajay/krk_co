@@ -27,7 +27,7 @@ class InvoiceController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct', 'preview'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct', 'preview', 'report'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -322,4 +322,7 @@ class InvoiceController extends Controller {
         $this->renderPartial('_preview', compact('company', 'vendor', 'liner', 'lbldate', 'inv_products'));
     }
 
+    public function actionReport() {
+        $this->render('report');
+    }
 }

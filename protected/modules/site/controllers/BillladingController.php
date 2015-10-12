@@ -28,7 +28,7 @@ class BillladingController extends Controller {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'report'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -190,5 +190,7 @@ class BillladingController extends Controller {
             Yii::app()->end();
         }
     }
-
+    public function actionReport() {
+        $this->render('report');
+    }
 }
