@@ -26,7 +26,9 @@ $auth_menu = array(
         'pytoorigin' => 'Pyto & Origin',
         'invoice' => 'Invoice & Packing List',
         'permit' => 'Permit',
-        'purchaseexpense' => 'Purchase Expense',
+        'expense' => 'Expense',
+        'payment' => 'Payment',
+        'billentry' => 'Bill Entry',
     ),
     'Purchase Reports' => array(
         'balancesheet' => 'Balance Sheet',

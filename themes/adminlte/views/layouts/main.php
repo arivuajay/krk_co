@@ -15,11 +15,12 @@
         $cs->registerCssFile($themeUrl . '/css/bootstrap-theme.css');
         $cs->registerCssFile($themeUrl . '/css/custom.css');
         $cs->registerCssFile($themeUrl . '/css/treeview/css/style.css');
-        $cs->registerCssFile($themeUrl . '/css/loading/style.css');
+//        $cs->registerCssFile($themeUrl . '/css/loading/style.css');
+        $cs->registerCssFile($themeUrl . '/css/holdon/HoldOn.min.css');
         ?>
     </head>
     <body class="skin-green">
-        <div class="load-pace hide">Loading&#8230;</div>
+        <!--<div class="load-pace hide">Loading&#8230;</div>-->
         <?php $this->renderPartial('//layouts/_headerBar'); ?>
         <div class="wrapper row-offcanvas row-offcanvas-left">
             <?php $this->renderPartial('//layouts/_sidebarNav'); ?>
@@ -35,7 +36,20 @@
         $cs->registerScriptFile($themeUrl . '/js/dropdown.js', $cs_pos_end);
         $cs->registerScriptFile($themeUrl . '/js/iCheck/icheck.js', $cs_pos_end);
         $cs->registerScriptFile($themeUrl . '/js/app.js', $cs_pos_end);
+        $cs->registerScriptFile($themeUrl . '/js/holdon/HoldOn.min.js', $cs_pos_end);
 
-//d        ?>
+//d        
+        ?>
+        <script type="text/javascript">
+            $(function () {
+                HoldOn.open({
+                    theme: 'sk-fading-circle',
+                    message: "<h4>Please Wait</h4>"
+                });
+            });
+            window.onload = function () {
+                HoldOn.close();
+            }
+        </script>
     </body>
 </html>

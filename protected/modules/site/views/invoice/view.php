@@ -34,12 +34,12 @@ $this->breadcrumbs = array(
             array(
                 'name' => 'inv_file',
                 'type' => 'raw',
-                'value' => !empty($model->inv_file) ? CHtml::link('Click to view', $model->getFilePath(false, 'inv_file'), array('target' => '_blank', 'id' => 'inv_file')) : 'Not set'
+                'value' => !empty($model->inv_file) ? CHtml::link('Click to view', $model->getFilePath(false, 'inv_file'), array('target' => '_blank', 'id' => 'inv_file', 'class' => 'btn btn-xs btn-primary')) : 'Not set'
             ),
             array(
                 'name' => 'pkg_list_file',
                 'type' => 'raw',
-                'value' => !empty($model->pkg_list_file) ? CHtml::link('Click to view', $model->getFilePath(false, 'pkg_list_file'), array('target' => '_blank', 'id' => 'pkg_list_file')) : 'Not set'
+                'value' => !empty($model->pkg_list_file) ? CHtml::link('Click to view', $model->getFilePath(false, 'pkg_list_file'), array('target' => '_blank', 'id' => 'pkg_list_file', 'class' => 'btn btn-xs btn-primary')) : 'Not set'
             ),
             'inv_remarks',
         ),

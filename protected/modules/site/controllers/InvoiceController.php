@@ -27,7 +27,7 @@ class InvoiceController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct', 'preview', 'report', 'vendorreport'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct', 'preview', 'report', 'vendorreport', 'companyreport'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -36,9 +36,12 @@ class InvoiceController extends Controller {
         );
     }
 
-    public function actionView($id) {
+    public function actionView($id, $partial = false) {
         $model = $this->loadModel($id);
-        $this->render('view', compact('model'));
+        if($partial)
+            $this->renderPartial('view', compact('model'));
+        else
+            $this->render('view', compact('model'));
     }
 
     /**
@@ -329,6 +332,10 @@ class InvoiceController extends Controller {
 
     public function actionVendorreport() {
         $this->render('vendorreport');
+    }
+
+    public function actionCompanyreport() {
+        $this->render('companyreport');
     }
 
 }

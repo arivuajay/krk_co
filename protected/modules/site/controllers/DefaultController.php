@@ -51,6 +51,7 @@ class DefaultController extends Controller {
                     'getExpSubTypeByType',
                     'report',
                     'poreport',
+                    'getInvoiceIdByBol',
                 ),
                 'users' => array('*'),
             ),
@@ -471,6 +472,22 @@ class DefaultController extends Controller {
         }
     }
 
+    public function actionGetInvoiceIdByBol($selected = '') {
+        $bol = $_GET['id'];
+        if (!empty($bol)) {
+            $invoices = Invoice::model()->findAll("bol_no = '$bol'");
+            $data = CHtml::listData($invoices, 'invoice_id', 'inv_no');
+            echo "<option value=''></option>";
+            foreach ($data as $value => $name) {
+                $htmlOpt = array();
+                $htmlOpt['value'] = $value;
+                if (!empty($selected) && $selected == $value)
+                    $htmlOpt['selected'] = 'selected';
+                echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+            }
+        }
+    }
+
     public function actionGetContainerByInvoice($selected = '') {
         $inv_id = $_GET['id'];
         if (!empty($inv_id)) {
@@ -526,7 +543,6 @@ class DefaultController extends Controller {
         $reportico->engine->output_template_parameters["show_hide_prepare_page_style"] = "hide";
         $reportico->engine->output_template_parameters["show_hide_prepare_section_boxes"] = "hide";
 	$reportico->generate();
-
     }
 
     public function actionPoreport(){
