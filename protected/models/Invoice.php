@@ -24,6 +24,8 @@
  * @property string $modified_at
  * @property integer $modified_by
  * @property string $inv_remarks
+ * @property string $inv_eta_date
+ * @property string $inv_onboard_date
  *
  * The followings are the available model relations:
  * @property Company $company
@@ -70,7 +72,7 @@ class Invoice extends RActiveRecord {
             array('permit_no, bol_no, inv_no, vessel_name', 'length', 'max' => 100),
             array('inv_file, pkg_list_file', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
             array('inv_amount', 'length', 'max' => 10),
-            array('inv_date, modified_at, inv_remarks', 'safe'),
+            array('inv_date, modified_at, inv_remarks, inv_onboard_date, inv_eta_date', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('invoice_id, vendor_id, company_id, po_id, permit_no, bol_no, inv_no, vessel_name, inv_date, inv_file, pkg_list_file, status, inv_remarks, inv_amount, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
@@ -118,6 +120,8 @@ class Invoice extends RActiveRecord {
             'modified_at' => 'Modified At',
             'modified_by' => 'Modified By',
             'inv_remarks' => 'Remarks',
+            'inv_onboard_date' => 'Onboard',
+            'inv_eta_date' => 'ETA',
         );
     }
 
@@ -178,11 +182,15 @@ class Invoice extends RActiveRecord {
 
     protected function beforeValidate() {
         $this->inv_date = date('Y-m-d', strtotime($this->inv_date));
+        $this->inv_eta_date = date('Y-m-d', strtotime($this->inv_eta_date));
+        $this->inv_onboard_date = date('Y-m-d', strtotime($this->inv_onboard_date));
         return parent::beforeValidate();
     }
 
     protected function afterFind() {
         $this->inv_date = date(PHP_USER_DATE_FORMAT, strtotime($this->inv_date));
+        $this->inv_eta_date = date(PHP_USER_DATE_FORMAT, strtotime($this->inv_eta_date));
+        $this->inv_onboard_date = date(PHP_USER_DATE_FORMAT, strtotime($this->inv_onboard_date));
 
         return parent::afterFind();
     }

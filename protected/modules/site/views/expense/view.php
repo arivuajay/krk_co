@@ -32,6 +32,7 @@ $this->breadcrumbs = array(
                 'name' => 'exp_containers',
                 'value' => implode(', ', $model->exp_containers),
             ),
+            'exp_agent_party'
         ),
     ));
     ?>

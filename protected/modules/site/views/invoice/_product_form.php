@@ -148,7 +148,7 @@ $cs_pos_end = CClientScript::POS_END;
                 <div class="form-group">
                     <?php echo $form->labelEx($detail_model, 'inv_det_ctnr_no', array('class' => 'col-sm-3 control-label')); ?>
                     <div class="col-sm-6">
-                        <?php echo $form->textField($detail_model, 'inv_det_ctnr_no', array('class' => 'form-control', 'size' => 10, 'maxlength' => 10)); ?>
+                        <?php echo $form->textField($detail_model, 'inv_det_ctnr_no', array('class' => 'form-control', 'size' => 10, 'maxlength' => 100)); ?>
                         <?php echo $form->error($detail_model, 'inv_det_ctnr_no'); ?>
                     </div>
                 </div>

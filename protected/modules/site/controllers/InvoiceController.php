@@ -38,7 +38,7 @@ class InvoiceController extends Controller {
 
     public function actionView($id, $partial = false) {
         $model = $this->loadModel($id);
-        if($partial)
+        if ($partial)
             $this->renderPartial('view', compact('model'));
         else
             $this->render('view', compact('model'));
@@ -52,7 +52,8 @@ class InvoiceController extends Controller {
         $posession = 'new';
 
         if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
-            empSession::model()->byMe()->deleteAll("session_name = '{$this->sess_name}' AND session_key = '{$posession}'");
+            TempSession::model()->byMe()->deleteAll("session_name = '{$this->sess_name}' AND session_key = '{$posession}'");
+            Yii::app()->user->setFlash('success', 'Reset Completed');
             $this->redirect(array('/site/invoice/create'));
         }
 
@@ -78,6 +79,11 @@ class InvoiceController extends Controller {
                     $redir = array('index');
                 }
             }
+            if (isset($redir)) {
+                Myclass::addAuditTrail($notes, "user");
+                Yii::app()->user->setFlash('success', $notes);
+                $this->redirect($redir);
+            }
         } else if ($tmp_data = TempSession::model()->byMe()->find("session_name = '{$this->sess_name}' AND session_key = '{$posession}'")) {
             $model->attributes = $tmp_data->session_data['Invoice'];
             $inv_products = $tmp_data->session_data['InvoiceItems'];
@@ -101,6 +107,7 @@ class InvoiceController extends Controller {
 
         if (isset($_REQUEST['open']) && ($_REQUEST['open'] == 'fresh')) {
             TempSession::model()->byMe()->deleteAll("session_name = '$this->sess_name' AND session_key = '{$posession}'");
+            Yii::app()->user->setFlash('success', 'Reset Completed');
             $this->redirect(array('/site/invoice/update', 'id' => $model->invoice_id));
         }
 
@@ -236,7 +243,11 @@ class InvoiceController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Invoice successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+            if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser

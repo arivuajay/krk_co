@@ -42,6 +42,8 @@ $this->breadcrumbs = array(
                 'value' => !empty($model->pkg_list_file) ? CHtml::link('Click to view', $model->getFilePath(false, 'pkg_list_file'), array('target' => '_blank', 'id' => 'pkg_list_file', 'class' => 'btn btn-xs btn-primary')) : 'Not set'
             ),
             'inv_remarks',
+            'inv_eta_date',
+            'inv_onboard_date',
         ),
     ));
 

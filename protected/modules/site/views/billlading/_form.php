@@ -67,6 +67,10 @@ $liners = Liner::LinerList();
                             <?php echo $form->labelEx($model, 'bl_po_id', array('class' => 'col-sm-3 control-label')); ?>
                             <div class="col-sm-6">
                                 <?php
+                                $po = '';
+                                if (!$model->isNewRecord) {
+                                    $po = $model->blPo->purchase_order_code;
+                                }
                                 $this->widget('application.components.myAutoComplete', array(
                                     'source' => 'js: function(request, response) {
                                     $.ajax({
@@ -108,6 +112,7 @@ $liners = Liner::LinerList();
                                                 }
                                             }'
                                     ),
+                                    'value' => $po,
                                     'htmlOptions' => array(
                                         'class' => 'form-control'
                                     ),
@@ -303,8 +308,25 @@ $liners = Liner::LinerList();
 
 <?php
 $user_js_format = JS_USER_DATE_FORMAT;
+$new = $model->isNewRecord;
+$get_inv_url = Yii::app()->createUrl('/site/default/getInvoiceByPo');
+$po_html_id = CHtml::activeId($model, 'bl_po_id');
+$inv_html_id = CHtml::activeId($model, 'bl_invoice_id');
+
 $js = <<< EOD
 $(document).ready(function(){
+    var is_new = '$new';
+    
+    if(!is_new){
+        $.ajax({
+            url: "$get_inv_url",
+            data: { id: {$model->bl_po_id} },
+            success: function (data) {
+               $("#$inv_html_id").html(data);
+               $("#$inv_html_id").val($model->bl_invoice_id);
+            }
+        });
+    }
     $('.datepicker').datepicker({ format: '$user_js_format' });
 });
 EOD;

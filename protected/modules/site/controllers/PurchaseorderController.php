@@ -35,7 +35,7 @@ class PurchaseorderController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct', 'preview', 'report', 'sendvendor'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'poAddedProducts', 'editPoPrduct', 'deletePoPrduct', 'preview', 'report', 'sendvendor', 'changestatus'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -244,7 +244,12 @@ class PurchaseorderController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted PurchaseOrder successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
 // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -408,4 +413,16 @@ class PurchaseorderController extends Controller {
         }
     }
 
+    public function actionChangestatus() {
+        if(isset($_POST)){
+            $model = PurchaseOrder::model()->findByPk($_POST['po_id']);
+            $save = $model->saveAttributes(array('status' => $_POST['status']));
+            $newsts = PurchaseOrder::StatusList($_POST['status']);
+            if($save)
+                echo "Purchase Order: '{$model->purchase_order_code}' Status Changed to '{$newsts}' Successfully";
+            else
+                echo 'Failed to change the Status. Try again later !!!';
+            Yii::app()->end();
+        }
+    }
 }

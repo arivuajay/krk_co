@@ -4,7 +4,8 @@ $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
 $cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
-$cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
+$cs->registerScriptFile('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.1/js/bootstrap-datepicker.min.js', CClientScript::POS_READY);
+//$cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
 if ($model->isNewRecord)
     $posession = Yii::app()->user->getState('guid');
 else
@@ -108,7 +109,10 @@ else
     $user_js_format = JS_USER_DATE_FORMAT;
     $js = <<< EOD
 $(document).ready(function(){
-    $('.datepicker').datepicker({ format: '$user_js_format' });
+            var datepicker = $.fn.datepicker.noConflict(); // return $.fn.datepicker to previously assigned value
+            $.fn.bootstrapDP = datepicker;                 // give $().bootstrapDP the bootstrap-datepicker functionality
+            
+    $('.datepicker').bootstrapDP({ format: '$user_js_format' });
     var invForm = $('#invoice-form');
     $('#submit_inv,#save_inv').click(function(){
         $('#invoice-form input#action').val($(this).attr('name'));

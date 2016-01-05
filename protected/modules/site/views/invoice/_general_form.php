@@ -129,6 +129,22 @@ unset($poStatus[1]);
                     <?php echo $form->error($model, 'company_id'); ?>
                 </div>
             </div>
+            
+            <div class="form-group">
+                <?php echo $form->labelEx($model, 'inv_eta_date', array('class' => 'col-sm-4 control-label')); ?>
+                <div class="col-sm-6">
+                    <?php echo $form->textField($model, 'inv_eta_date', array('class' => 'form-control datepicker')); ?>
+                    <?php echo $form->error($model, 'inv_eta_date'); ?>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <?php echo $form->labelEx($model, 'inv_onboard_date', array('class' => 'col-sm-4 control-label')); ?>
+                <div class="col-sm-6">
+                    <?php echo $form->textField($model, 'inv_onboard_date', array('class' => 'form-control datepicker')); ?>
+                    <?php echo $form->error($model, 'inv_onboard_date'); ?>
+                </div>
+            </div>
         </div>
         <div class="col-lg-6">
 

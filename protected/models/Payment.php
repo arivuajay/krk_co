@@ -18,6 +18,7 @@
  * @property string $pay_mode
  * @property string $pay_ref_info
  * @property string $pay_transaction_id
+ * @property string $pay_transaction_date
  * @property string $pay_bank_name
  * @property string $pay_remarks
  * @property string $pay_shift_advise
@@ -54,14 +55,14 @@ class Payment extends RActiveRecord {
             array('vendor_id, pay_type, po_id, invoice_id, pay_amount, pay_deal_id, pay_inr_rate, pay_date, pay_mode', 'required'),
             array('vendor_id, po_id, invoice_id, modified_at, modified_by', 'numerical', 'integerOnly' => true),
             array('pay_type', 'length', 'max' => 25),
-            array('invoice_amount, pay_amount, pay_inr_rate, pay_inr_amount', 'length', 'max' => 10),
+            array('invoice_amount, pay_amount, pay_inr_rate', 'length', 'max' => 10),
             array('pay_deal_id, pay_ref_info', 'length', 'max' => 100),
             array('pay_mode, pay_transaction_id, pay_bank_name', 'length', 'max' => 50),
             array('invoice_currency', 'length', 'max' => 30),
             array('pay_shift_advise, pay_debit_advise, pay_other_doc, pay_deal_id_copy', 'length', 'max' => 255),
             array('pay_amount, pay_inr_rate', 'numerical', 'integerOnly' => false),
             array('pay_amount','compare','compareAttribute'=>'invoice_amount','operator'=>'<=','message'=>'Paid Amount must be less than Invoice Amount'),
-            array('pay_remarks, created_at, created_by, invoice_currency', 'safe'),
+            array('pay_remarks, created_at, created_by, invoice_currency, pay_transaction_date', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('pay_id, vendor_id, pay_type, po_id, invoice_id, invoice_amount, pay_amount, pay_deal_id, pay_inr_rate, pay_date, pay_inr_amount, pay_mode, pay_ref_info, pay_transaction_id, pay_bank_name, pay_remarks, pay_shift_advise, pay_debit_advise, pay_other_doc, pay_deal_id_copy, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
@@ -113,7 +114,8 @@ class Payment extends RActiveRecord {
             'vendorname' => 'Vendor Name', 
             'paymenttype' => 'Payment Type', 
             'ponumber' => 'PO Number', 
-            'invoicenumber'=> 'Invoice Number'
+            'invoicenumber'=> 'Invoice Number',
+            'pay_transaction_date'=> 'Transaction Date'
         );
     }
 
@@ -240,11 +242,13 @@ class Payment extends RActiveRecord {
     
     protected function beforeSave() {
         $this->pay_date = date('Y-m-d', strtotime($this->pay_date));
+        $this->pay_transaction_date = date('Y-m-d', strtotime($this->pay_transaction_date));
         return parent::beforeSave();
     }
     
     protected function afterFind() {
         $this->pay_date = date(PHP_USER_DATE_FORMAT, strtotime($this->pay_date));
+        $this->pay_transaction_date = date(PHP_USER_DATE_FORMAT, strtotime($this->pay_transaction_date));
         return parent::afterFind();
     }
     

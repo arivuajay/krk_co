@@ -81,6 +81,7 @@ $this->breadcrumbs=array(
 		'pay_mode',
 		'pay_ref_info',
 		'pay_transaction_id',
+		'pay_transaction_date',
 		'pay_bank_name',
 		'pay_remarks',
                 array(

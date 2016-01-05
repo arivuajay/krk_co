@@ -125,7 +125,12 @@ class PurchaseexpensesController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted PurchaseExpenses successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser

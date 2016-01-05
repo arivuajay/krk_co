@@ -97,7 +97,8 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
             array(
                 'name' => 'status',
                 'value' => function($data) {
-            return PurchaseOrder::StatusList($data->status);
+            return CHtml::dropDownList('change_status', $data->status, PurchaseOrder::StatusList(), array('class' => 'form-control chgsts', 'data-poid' => $data->po_id));
+//            return PurchaseOrder::StatusList($data->status);
         },
                 'type' => 'raw'
             ),
@@ -120,3 +121,26 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
         ?>
     </div>
 </div>
+<?php
+$sts_url = Yii::app()->createAbsoluteUrl('/site/purchaseorder/changestatus');
+$js = <<< EOD
+    $(document).ready(function(){
+        $('body').on('change', '.chgsts', function(){
+            poid = $(this).data('poid');
+            sts = $(this).val();
+          $.ajax({
+                type: 'POST',
+                url: '$sts_url',
+                data:{'po_id': poid, 'status': sts},
+                success:function(data){
+                    alert(data);
+                },
+                error: function(data) {
+                },
+            });
+        });
+    });
+EOD;
+Yii::app()->clientScript->registerScript('index', $js);
+?>
+  

@@ -195,10 +195,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                                 <?php echo $form->error($model, 'pay_inr_amount'); ?>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-lg-6 col-xs-6">
-
+                        
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'pay_mode', array('class' => 'col-sm-3 control-label')); ?>
                             <div class="col-sm-6">
@@ -206,6 +203,9 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                                 <?php echo $form->error($model, 'pay_mode'); ?>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="col-lg-6 col-xs-6">
 
                         <div class="form-group">
                             <?php echo $form->labelEx($model, 'pay_ref_info', array('class' => 'col-sm-3 control-label')); ?>
@@ -220,6 +220,14 @@ $cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $c
                             <div class="col-sm-6">
                                 <?php echo $form->textField($model, 'pay_transaction_id', array('class' => 'form-control', 'size' => 50, 'maxlength' => 50)); ?>
                                 <?php echo $form->error($model, 'pay_transaction_id'); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <?php echo $form->labelEx($model, 'pay_transaction_date', array('class' => 'col-sm-3 control-label')); ?>
+                            <div class="col-sm-6">
+                                <?php echo $form->textField($model, 'pay_transaction_date', array('class' => 'form-control datepicker')); ?>
+                                <?php echo $form->error($model, 'pay_transaction_date'); ?>
                             </div>
                         </div>
 

@@ -17,6 +17,8 @@
  * @property integer $exp_bol_no
  * @property string $exp_invoices
  * @property string $exp_containers
+ * @property string $exp_agent_party
+ * @property string $exp_file
  * @property string $status
  * @property string $created_at
  * @property integer $created_by
@@ -49,7 +51,7 @@ class Expense extends RActiveRecord {
             array('exp_paid_amount', 'numerical', 'integerOnly' => false, 'min' => 1),
             array('exp_invoices, exp_containers', 'length', 'max' => 500),
             array('status', 'length', 'max' => 1),
-            array('exp_remarks, created_at, modified_at', 'safe'),
+            array('exp_remarks, created_at, modified_at, exp_agent_party, exp_file', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('exp_id, exp_type_id, exp_subtype_id, exp_voucher, exp_pay_mode, exp_ref_no, exp_bank_name, exp_transaction_id, exp_remarks, exp_paid_amount, exp_bol_no, exp_invoices, exp_containers, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
@@ -91,6 +93,8 @@ class Expense extends RActiveRecord {
             'created_by' => 'Created By',
             'modified_at' => 'Modified At',
             'modified_by' => 'Modified By',
+            'exp_agent_party' => 'Agent/Party',
+            'exp_file' => 'Expense File',
         );
     }
 
@@ -157,19 +161,22 @@ class Expense extends RActiveRecord {
     }
     
     protected function beforeValidate() {
-        if ($this->exp_invoices)
-            $this->exp_invoices = CJSON::encode($this->exp_invoices);
-        if ($this->exp_containers)
-            $this->exp_containers = CJSON::encode($this->exp_containers);
+        $this->encodeJSON();
         return parent::beforeValidate();
     }
 
     protected function beforeSave() {
+        $this->encodeJSON();
+        return parent::beforeSave();
+    }
+    
+    protected function encodeJSON() {
         if ($this->exp_invoices && is_array($this->exp_invoices))
             $this->exp_invoices = CJSON::encode($this->exp_invoices);
         if ($this->exp_containers && is_array($this->exp_containers))
             $this->exp_containers = CJSON::encode($this->exp_containers);
-        return parent::beforeSave();
+        if ($this->exp_file && is_array($this->exp_file))
+            $this->exp_file = CJSON::encode($this->exp_file);
     }
     
     protected function afterFind() {
@@ -177,6 +184,8 @@ class Expense extends RActiveRecord {
             $this->exp_invoices = CJSON::decode($this->exp_invoices);
         if ($this->exp_containers)
             $this->exp_containers = CJSON::decode($this->exp_containers);
+        if ($this->exp_file)
+            $this->exp_file = CJSON::decode($this->exp_file);
 
         return parent::afterFind();
     }

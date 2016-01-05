@@ -110,7 +110,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Company successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -179,7 +184,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Permit successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -235,7 +245,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Product Family successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -355,7 +370,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Product Variety successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -415,7 +435,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Product Size successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -474,7 +499,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Product Grade successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -553,7 +583,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Vendor successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -609,7 +644,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Liner successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -677,7 +717,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Expense Type successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -732,7 +777,12 @@ class MastersController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted Expense Sub-Type successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser

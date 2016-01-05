@@ -26,7 +26,7 @@ $gridColumns = array(
 
 
 $this->widget('booster.widgets.TbExtendedGridView', array(
-    'id' => 'master_family',
+    'id' => 'master_grade',
     'type' => 'striped bordered datatable',
     'dataProvider' => $grade_model->dataProvider(),
     'responsiveTable' => true,

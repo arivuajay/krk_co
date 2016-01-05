@@ -101,13 +101,16 @@ class BillladingController extends Controller {
 
         if (isset($_POST['BillLading'])) {
             $model->attributes = $_POST['BillLading'];
-            if ($model->save()) {
+            if ($model->validate()) {
+                $model->setUploadDirectory(UPLOAD_DIR);
+                $model->uploadFile();
+                $model->save(false);
                 Myclass::addAuditTrail("Updated BillLading successfully.", "user");
                 Yii::app()->user->setFlash('success', 'BillLading Updated Successfully!!!');
                 $this->redirect(array('index'));
             }
         }
-
+        
         $this->render('update', array(
             'model' => $model,
         ));
@@ -124,7 +127,12 @@ class BillladingController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted BillLading successfully.", "user");
         } catch (CDbException $e) {
-            throw new CHttpException(404, $e->getMessage());
+                        if ($e->errorInfo[1] == 1451) {
+                throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
+            } else {
+                throw $e;
+            }
+
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser

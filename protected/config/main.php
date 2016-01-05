@@ -15,6 +15,9 @@ return array(
         'application.models.*',
         'application.components.*',
     ),
+    'aliases' => array(
+        'xupload' => 'ext.xupload'
+    ),
     'modules' => array(
         'site', 'user',
         'reportico' => array(),
