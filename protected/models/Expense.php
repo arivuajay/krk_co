@@ -159,7 +159,7 @@ class Expense extends RActiveRecord {
             )
         ));
     }
-    
+
     protected function beforeValidate() {
         $this->encodeJSON();
         return parent::beforeValidate();
@@ -169,7 +169,7 @@ class Expense extends RActiveRecord {
         $this->encodeJSON();
         return parent::beforeSave();
     }
-    
+
     protected function encodeJSON() {
         if ($this->exp_invoices && is_array($this->exp_invoices))
             $this->exp_invoices = CJSON::encode($this->exp_invoices);
@@ -178,7 +178,7 @@ class Expense extends RActiveRecord {
         if ($this->exp_file && is_array($this->exp_file))
             $this->exp_file = CJSON::encode($this->exp_file);
     }
-    
+
     protected function afterFind() {
         if ($this->exp_invoices)
             $this->exp_invoices = CJSON::decode($this->exp_invoices);
@@ -189,4 +189,18 @@ class Expense extends RActiveRecord {
 
         return parent::afterFind();
     }
+
+    public function getFileview() {
+        $download = '';
+        if (!empty($this->exp_file)) {
+            foreach ($this->exp_file as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
+    }
+
 }

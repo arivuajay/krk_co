@@ -32,7 +32,17 @@ $this->breadcrumbs = array(
                 'name' => 'exp_containers',
                 'value' => implode(', ', $model->exp_containers),
             ),
-            'exp_agent_party'
+            'exp_agent_party',
+            array(
+                'name' => 'exp_file',
+                'type' => 'raw',
+                'value' => $model->fileview
+//                'value' => function($model){
+//                    foreach ($model->exp_file as $file) {
+//                        echo CHtml::link(Yii::app()->createAbsoluteUrl(UPLOAD_DIR.'/'.$file)).'<br />';
+//                    }
+//                },
+            ),
         ),
     ));
     ?>
