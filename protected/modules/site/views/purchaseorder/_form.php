@@ -6,8 +6,9 @@ $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
-$cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
-$cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
+$cs->registerCssFile($themeUrl . '/css/datepick/jquery.datepick.css');
+$cs->registerScriptFile($themeUrl . '/js/datepick/jquery.plugin.js', $cs_pos_end);
+$cs->registerScriptFile($themeUrl . '/js/datepick/jquery.datepick.js', $cs_pos_end);
 
 if ($model->isNewRecord)
     $posession = 'new';
@@ -123,7 +124,7 @@ else
     $user_js_format = JS_USER_DATE_FORMAT;
     $js = <<< EOD
     $(document).ready(function(){
-        $('.datepicker').datepicker({ format: '$user_js_format' });
+        $('.datepicker').datepick({dateFormat: '$user_js_format'});
         var poForm = $('#purchase-order-form');
         $('#submit_po,#save_po').click(function(){
             $('#purchase-order-form input#action').val($(this).attr('name'));

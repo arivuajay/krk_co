@@ -155,7 +155,7 @@ $cs_pos_end = CClientScript::POS_END;
 $user_js_format = JS_USER_DATE_FORMAT;
 $js = <<< EOD
     $(document).ready(function(){
-        $('.datepicker').datepicker({ format: '$user_js_format' });
+        $('.datepicker').datepick({dateFormat: '$user_js_format'});
     });
 EOD;
 $cs->registerScript('_form', $js);

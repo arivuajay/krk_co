@@ -36,7 +36,8 @@ return array(
             'packages' => array(
                 'jquery' => array(
                     'baseUrl' => '//code.jquery.com/',
-                    'js' => array('jquery-1.10.1.min.js', 'jquery-migrate-1.2.1.min.js'),
+//                    'js' => array('jquery-1.10.1.min.js', 'jquery-migrate-1.2.1.min.js'),
+                    'js' => array('jquery-1.11.0.min.js', 'jquery-migrate-1.2.1.min.js'),
                 ),
             )
         ),

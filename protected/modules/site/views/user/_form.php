@@ -3,8 +3,9 @@ $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
-$cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
-$cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
+$cs->registerCssFile($themeUrl . '/css/datepick/jquery.datepick.css');
+$cs->registerScriptFile($themeUrl . '/js/datepick/jquery.plugin.js', $cs_pos_end);
+$cs->registerScriptFile($themeUrl . '/js/datepick/jquery.datepick.js', $cs_pos_end);
 $form = $this->beginWidget('CActiveForm', array(
     'id' => 'user-form',
     'htmlOptions' => array('role' => 'form', 'class' => 'form-horizontal'),

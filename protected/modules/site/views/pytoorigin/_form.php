@@ -3,8 +3,9 @@ $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
-$cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
-$cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
+$cs->registerCssFile($themeUrl . '/css/datepick/jquery.datepick.css');
+$cs->registerScriptFile($themeUrl . '/js/datepick/jquery.plugin.js', $cs_pos_end);
+$cs->registerScriptFile($themeUrl . '/js/datepick/jquery.datepick.js', $cs_pos_end);
 
 $companies = Company::CompanyList();
 $vendors = Vendor::VendorList();
@@ -199,7 +200,7 @@ $vendors = Vendor::VendorList();
 $user_js_format = JS_USER_DATE_FORMAT;
 $js = <<< EOD
 $(document).ready(function(){
-    $('.datepicker').datepicker({ format: '$user_js_format' });
+    $('.datepicker').datepick({dateFormat: '$user_js_format'});
 });
 EOD;
 $cs->registerScript('_pyto_origin_form', $js);

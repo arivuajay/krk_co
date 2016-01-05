@@ -3,8 +3,9 @@ $themeUrl = $this->themeUrl;
 $cs = Yii::app()->getClientScript();
 $cs_pos_end = CClientScript::POS_END;
 
-$cs->registerCssFile($themeUrl . '/css/datepicker/bootstrap-datepicker.css');
-$cs->registerScriptFile($themeUrl . '/js/datepicker/bootstrap-datepicker.js', $cs_pos_end);
+$cs->registerCssFile($themeUrl . '/css/datepick/jquery.datepick.css');
+$cs->registerScriptFile($themeUrl . '/js/datepick/jquery.plugin.js', $cs_pos_end);
+$cs->registerScriptFile($themeUrl . '/js/datepick/jquery.datepick.js', $cs_pos_end);
 ?>
 
 <?php
@@ -100,7 +101,10 @@ $liners = Liner::LinerList();
                                                 url: "' . $this->createUrl('/site/default/getInvoiceByPo') . '",
                                                 data: { id: ui.item.po_id },
                                                 success: function (data) {
-                                                   $("#BillLading_bl_invoice_id").html(data);
+                                                data = data.replace("<option value=\'\'>Select Invoice</option>","");
+                                                   $("#select-from, #BillLading_bl_invoice_id").html(data);
+                                                   $("#select-to").html("");
+//                                                   $("#BillLading_bl_invoice_id").html(data);
                                                 }
                                             });
                                             return false;
@@ -131,20 +135,41 @@ $liners = Liner::LinerList();
                         </div>
 
                         <div class="form-group">
-                            <?php echo $form->labelEx($model, 'bl_invoice_id', array('class' => 'col-sm-3 control-label')); ?>
-                            <div class="col-sm-6">
-                                <?php
-                                echo $form->dropDownList($model, 'bl_invoice_id', array(), array('class' => 'form-control',
-                                    'prompt' => 'Select Invoice',
-                                    'ajax' => array(
-                                        'type' => 'GET',
-                                        'datatType' => 'json',
-                                        'url' => $this->createUrl('/site/default/getInvoiceDetail'),
-                                        'data' => array('id' => 'js:this.value'),
-                                        'success' => 'function(data){ data = JSON.parse(data); $("#BillLading_bl_number").val(data.bol_no); $("#bl_info #container_list").html(data.containers); $("#BillLading_bl_container_count").val(data.tot_qty); }',
-                                )));
-                                ?>
-                                <?php echo $form->error($model, 'bl_invoice_id'); ?>
+                            <div class="col-sm-9">
+                                <?php echo $form->labelEx($model, 'bl_invoice_id', array('class' => '')); ?>
+                                <div class="row">
+                                    <?php
+//                                echo $form->dropDownList($model, 'bl_invoice_id', array(), array('class' => 'form-control',
+//                                    'prompt' => 'Select Invoice',
+//                                    'ajax' => array(
+//                                        'type' => 'GET',
+//                                        'datatType' => 'json',
+//                                        'url' => $this->createUrl('/site/default/getInvoiceDetail'),
+//                                        'data' => array('id' => 'js:this.value'),
+//                                        'success' => 'function(data){ data = JSON.parse(data); $("#BillLading_bl_number").val(data.bol_no); $("#bl_info #container_list").html(data.containers); $("#BillLading_bl_container_count").val(data.tot_qty); }',
+//                                )));
+                                    ?>
+                                    <?php
+                                    $selected_options = $invoices = array();
+                                    if ($selected_options && is_array($selected_options)) {
+                                        $selected_keys = array_flip(array_keys($selected_options));
+                                        $remain_invoices = array_diff_key($invoices, $selected_keys);
+                                        $selected_invoices = array_intersect_key($invoices, $selected_keys);
+                                    } else {
+                                        $remain_invoices = $invoices;
+                                        $selected_invoices = array();
+                                    }
+
+                                    echo '<div class="col-sm-5">';
+                                    echo CHtml::dropDownList('Invoice_Source', array(), $remain_invoices, array('class' => 'form-control', 'multiple' => true, 'id' => 'select-from', 'size' => 7));
+                                    echo '</div><div class="col-sm-2 mt30"><button type="button" id="btn-add-select" class="btn btn-default btn-sm">>></button><br />';
+                                    echo '<br /><button type="button" id="btn-remove-select" class="btn btn-default btn-sm"><<</button></div><div class="col-sm-5">';
+                                    echo CHtml::dropDownList('Invoice_Destination', array(), $selected_invoices, array('class' => 'form-control', 'multiple' => true, 'id' => 'select-to', 'size' => 7));
+                                    echo $form->dropDownList($model, 'bl_invoice_id', $invoices, array('class' => 'hide', 'multiple' => true, 'options' => $selected_options, 'size' => 7));
+                                    echo '</div>';
+                                    ?>
+                                    <?php echo $form->error($model, 'bl_invoice_id'); ?>
+                                </div>
                             </div>
 
                         </div>
@@ -308,8 +333,9 @@ $liners = Liner::LinerList();
 
 <?php
 $user_js_format = JS_USER_DATE_FORMAT;
-$new = $model->isNewRecord;
+$new = $model->isNewRecord ? 'true' : 'false';
 $get_inv_url = Yii::app()->createUrl('/site/default/getInvoiceByPo');
+$get_inv_det_url = Yii::app()->createUrl('/site/default/getInvoiceDetail');
 $po_html_id = CHtml::activeId($model, 'bl_po_id');
 $inv_html_id = CHtml::activeId($model, 'bl_invoice_id');
 
@@ -317,17 +343,63 @@ $js = <<< EOD
 $(document).ready(function(){
     var is_new = '$new';
     
-    if(!is_new){
+    if(is_new == 'false'){
         $.ajax({
             url: "$get_inv_url",
-            data: { id: {$model->bl_po_id} },
+            data: { id: '{$model->bl_po_id}' },
             success: function (data) {
-               $("#$inv_html_id").html(data);
-               $("#$inv_html_id").val($model->bl_invoice_id);
+                data = data.replace("<option value=\'\'>Select Invoice</option>","");
+                $("#select-from, #BillLading_bl_invoice_id").html(data);
+                $("#select-to").html("");
+//               $("#$inv_html_id").html(data);
+//               $("#$inv_html_id").val($model->bl_invoice_id);
             }
         });
     }
-    $('.datepicker').datepicker({ format: '$user_js_format' });
+    $('.datepicker').datepick({dateFormat: '$user_js_format'});
+                    
+    $('#btn-add-select').click(function(){
+        $('#select-from option:selected').each( function() {
+            $('#select-to').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+            $('#BillLading_bl_invoice_id option[value="'+$(this).val()+'"]').attr('selected','selected');
+            $(this).remove();
+            
+            updateInvDetails($(this).val());
+        });
+        return false;
+    });
+    $('#btn-remove-select').click(function(){
+        $('#select-to option:selected').each( function() {
+            $('#select-from').append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+            $('#BillLading_bl_invoice_id option[value="'+$(this).val()+'"]').removeAttr('selected','selected');
+            $(this).remove();
+        });
+                    
+        $("#bl_info #container_list").html(''); 
+        $("#BillLading_bl_container_count").val(0);
+        $('#select-to option').each( function() {
+            updateInvDetails($(this).val());
+        });
+        return false;
+    });
+    
+    function updateInvDetails(inv_id){
+        $.ajax({
+            url: "$get_inv_det_url",
+            data: { id: inv_id },
+            success: function (data) {
+                data = JSON.parse(data); 
+                $("#BillLading_bl_number").val(data.bol_no); 
+                $("#bl_info #container_list").append('<br />'+data.containers);
+                old_val = $("#BillLading_bl_container_count").val();
+                if(old_val == ''){
+                    old_val = 0;
+                }
+                tot = parseFloat(old_val) + parseFloat(data.tot_qty); 
+                $("#BillLading_bl_container_count").val(tot); 
+            }
+        });
+    }
 });
 EOD;
 $cs->registerScript('_bill_lad_form', $js);
