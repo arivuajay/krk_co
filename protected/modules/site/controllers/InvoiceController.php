@@ -27,7 +27,7 @@ class InvoiceController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct', 'preview', 'report', 'vendorreport', 'companyreport'),
+                'actions' => array('index', 'view', 'create', 'update', 'admin', 'delete', 'addProduct', 'invAddedProducts', 'editInvPrduct', 'deleteInvPrduct', 'preview', 'report', 'vendorreport', 'companyreport','upload'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -65,6 +65,13 @@ class InvoiceController extends Controller {
 
         if (isset($_POST['Invoice'])) {
             $model->attributes = $_POST['Invoice'];
+            $rand = $_SESSION['invoice_rand'];
+            $temp= $_SESSION['invoice_files'][$rand];
+            if(!empty($temp)){
+                $model->inv_file = $_SESSION['invoice_files'][$rand];
+            }  else {
+                $model->inv_file='';
+            }
             if (isset($_POST['action']) && ($_POST['action'] == 'save_inv')) {
                 $this->tempSave($posession, $model->attributes, $_POST['OrderDetails']);
                 $notes = "Invoice Saved successfully.";
@@ -74,6 +81,7 @@ class InvoiceController extends Controller {
                     $model->setUploadDirectory(UPLOAD_DIR);
                     $model->uploadFile();
                     $model->save(false);
+                    $this->deleteFiles();
                     $this->itemSave($posession, $model->attributes, $_POST['OrderDetails']);
                     $notes = "Created Invoice successfully.";
                     $redir = array('index');
@@ -88,6 +96,7 @@ class InvoiceController extends Controller {
             $model->attributes = $tmp_data->session_data['Invoice'];
             $inv_products = $tmp_data->session_data['InvoiceItems'];
         } else {
+            $_SESSION['invoice_rand'] = Myclass::getRandomString(6);
             foreach ($model->invoiceItems as $item)
                 $inv_products[] = CJSON::encode($item->attributes);
         }
@@ -115,17 +124,29 @@ class InvoiceController extends Controller {
         $this->performAjaxValidation($model);
 
         if (isset($_POST['Invoice'])) {
+            
+            
             $model->attributes = $_POST['Invoice'];
-
             if (isset($_POST['action']) && ($_POST['action'] == 'save_inv')) {
                 $this->tempSave($posession, $model->attributes, $_POST['OrderDetails']);
                 $notes = "Invoice Saved successfully.";
                 $redir = array('update', 'id' => $id);
             } else if (isset($_POST['action']) && ($_POST['action'] == 'submit_inv')) {
+                $rand = $_SESSION['invoice_rand'];
+                $temp= $_SESSION['invoice_files'][$rand];
+                $model->inv_file = !empty($temp) ? $_SESSION['invoice_files'][$rand] : '';
+                 
+
+                $pkg = $_SESSION['invoice_pkg'];
+                $temp= $_SESSION['invoice_files'][$pkg];
+                $model->pkg_list_file = !empty($temp) ? $_SESSION['invoice_files'][$pkg] : '';
+                
                 if ($model->validate()) {
-                    $model->setUploadDirectory(UPLOAD_DIR);
-                    $model->uploadFile();
+                    
+//                    $model->setUploadDirectory(UPLOAD_DIR);
+//                    $model->uploadFile();
                     $model->save(false);
+                    $this->deleteFiles();
                     InvoiceItems::model()->deleteAll("inv_id = '{$model->invoice_id}'");
                     $this->itemSave($posession, $model->attributes, $_POST['OrderDetails']);
                     $notes = "Updated Invoice successfully.";
@@ -139,6 +160,8 @@ class InvoiceController extends Controller {
             $model->attributes = $tmp_data->session_data['Invoice'];
             $inv_products = $tmp_data->session_data['InvoiceItems'];
         } else {
+            $_SESSION['invoice_pkg'] = Myclass::getRandomString(6);
+            $_SESSION['invoice_rand'] = Myclass::getRandomString(6);
             foreach ($model->invoiceItems as $item)
                 $inv_products[] = CJSON::encode($item->attributes);
         }
@@ -347,6 +370,104 @@ class InvoiceController extends Controller {
 
     public function actionCompanyreport() {
         $this->render('companyreport');
+    }
+    
+    public function actionUpload() {
+        if($_POST["upload_type"] == 1 || (isset($_GET['upload_type']) && $_GET['upload_type'] == 1)){
+            $rand = $_SESSION['invoice_rand'];
+        }else if($_POST["upload_type"] == 2 || (isset($_GET['upload_type']) && $_GET['upload_type'] == 2)){
+            $rand = $_SESSION['invoice_pkg'];
+        }
+        Yii::import("xupload.models.XUploadForm");
+        $path = realpath(Yii::app()->getBasePath() . "/../".UPLOAD_DIR."/invoice") . '/';
+        $publicPath = Yii::app()->getBaseUrl() . "/".UPLOAD_DIR."/invoice" . '/';
+        //This is for IE which doens't handle 'Content-type: application/json' correctly
+        header('Vary: Accept');
+        if (isset($_SERVER['HTTP_ACCEPT']) && (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+            header('Content-type: application/json');
+        } else {
+            header('Content-type: text/plain');
+        }
+
+        //Here we check if we are deleting and uploaded file
+        if (isset($_GET["_method"])) {
+            if ($_GET["_method"] == "delete") {
+                if ($_GET["file"] [0] !== '.') {
+                    $file = $path . $_GET["file"];
+                    if (is_file($file)) {
+                        $_SESSION['invoice_files_delete'][$rand][] = $file;
+//                        unlink($file);
+                    }
+                }
+                
+                $key = array_search('/invoice/'.@$_GET["file"], @$_SESSION['invoice_files'][$rand]);
+                unset($_SESSION['invoice_files'][$rand][$key]);
+                echo json_encode(array(true, 'file' => $_GET["file"], 'file2' => $file));
+            }
+        } else {
+            $model = new XUploadForm;
+            $model->file = CUploadedFile::getInstance($model, 'file');
+            
+            //We check that the file was successfully uploaded
+            if ($model->file !== null) {
+                //Grab some data
+                $model->mime_type = $model->file->getType();
+                $model->size = $model->file->getSize();
+                $model->name = $model->file->getName();
+                $fname = $model->name;
+                $fn = explode('.', $fname);
+                //(optional) Generate a random name for our file
+                $filename = md5(Yii::app()->user->id . microtime()) . '_' . $fn[0];
+                $filename .= "." . $model->file->getExtensionName();
+                if ($model->validate()) {
+                    //Move our file to our temporary dir
+                    $model->file->saveAs($path . $filename);
+                    chmod($path . $filename, 0777);
+                    $_SESSION['invoice_files'][$rand][] = '/invoice/' . $filename;
+                    // https://github.com/blueimp/jQuery-File-Upload/wiki/Setup
+                    echo json_encode(array(array(
+                            "name" => $model->name,
+                            "type" => $model->mime_type,
+                            "size" => $model->size,
+                            "url" => $publicPath . $filename,
+                            "thumbnail_url" => $publicPath . $filename,
+                            "delete_url" => $this->createUrl("upload", array(
+                                "_method" => "delete",
+                                "file" => $filename,
+                                "upload_type" => $_POST["upload_type"],
+                            )),
+                            "delete_type" => "POST",
+                            "rand" => $rand,
+                            "img_name" => $fname,
+                    )));
+                } else {
+                    //If the upload failed for some reason we log some data and let the widget know
+                    echo json_encode(array(
+                        array("error" => $model->getErrors('file'),
+                    )));
+                    Yii::log("XUploadAction: " . CVarDumper::dumpAsString($model->getErrors()), CLogger:: LEVEL_ERROR, "xupload.actions.XUploadAction"
+                    );
+                }
+            } else {
+                throw new CHttpException(500, "Could not upload file");
+            }
+        }
+    }
+
+    protected function deleteFiles() {
+        $rand = $_SESSION['invoice_rand'];
+        $pkg = $_SESSION['invoice_pkg'];
+        foreach ($_SESSION['invoice_files_delete'][$rand] as $file) {
+            if (is_file($file)) {
+            unlink($file);
+            }
+        }
+        foreach ($_SESSION['invoice_files_delete'][$pkg] as $file) {
+            if (is_file($file)) {
+            unlink($file);
+            }
+        }
+        session_unset($_SESSION['invoice_files_delete']);
     }
 
 }

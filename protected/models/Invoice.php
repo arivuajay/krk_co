@@ -184,14 +184,28 @@ class Invoice extends RActiveRecord {
         $this->inv_date = date('Y-m-d', strtotime($this->inv_date));
         $this->inv_eta_date = date('Y-m-d', strtotime($this->inv_eta_date));
         $this->inv_onboard_date = date('Y-m-d', strtotime($this->inv_onboard_date));
+        $this->encodeJSON();
         return parent::beforeValidate();
     }
-
+    protected function beforeSave() {
+        $this->encodeJSON();
+        return parent::beforeSave();
+    }
+    protected function encodeJSON() {
+        if ($this->inv_file && is_array($this->inv_file))
+            $this->inv_file = CJSON::encode($this->inv_file);
+        if ($this->pkg_list_file && is_array($this->pkg_list_file))
+            $this->pkg_list_file = CJSON::encode($this->pkg_list_file);
+    }
     protected function afterFind() {
         $this->inv_date = date(PHP_USER_DATE_FORMAT, strtotime($this->inv_date));
         $this->inv_eta_date = date(PHP_USER_DATE_FORMAT, strtotime($this->inv_eta_date));
         $this->inv_onboard_date = date(PHP_USER_DATE_FORMAT, strtotime($this->inv_onboard_date));
-
+                
+        if ($this->inv_file)
+            $this->inv_file = CJSON::decode($this->inv_file);
+        if ($this->pkg_list_file)
+            $this->pkg_list_file = CJSON::decode($this->pkg_list_file);
         return parent::afterFind();
     }
 
@@ -204,5 +218,7 @@ class Invoice extends RActiveRecord {
         $model = Invoice::model()->findByPk($invID);
         $model->updateByPk($invID,array('inv_amount' => $model->invoiceAmont));
     }
-
+    
+    
+    
 }
