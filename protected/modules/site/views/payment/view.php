@@ -87,22 +87,22 @@ $this->breadcrumbs=array(
                 array(
                     'name' => 'pay_shift_advise',
                     'type' => 'raw',
-                    'value' => !empty($model->pay_shift_advise) ? CHtml::link('Click to view', $model->getFilePath(false, 'pay_shift_advise'), array('target' => '_blank', 'id' => 'pay_shift_advise')) : 'Not set'
+                    'value' => !empty($model->pay_shift_advise) ? $model->fileview : 'Not set',
                 ),
                 array(
                     'name' => 'pay_debit_advise',
                     'type' => 'raw',
-                    'value' => !empty($model->pay_debit_advise) ? CHtml::link('Click to view', $model->getFilePath(false, 'pay_debit_advise'), array('target' => '_blank', 'id' => 'pay_debit_advise')) : 'Not set'
+                    'value' => !empty($model->pay_debit_advise) ? $model->fileview1 : 'Not set',
                 ),
                 array(
                     'name' => 'pay_other_doc',
                     'type' => 'raw',
-                    'value' => !empty($model->pay_other_doc) ? CHtml::link('Click to view', $model->getFilePath(false, 'pay_other_doc'), array('target' => '_blank', 'id' => 'pay_other_doc')) : 'Not set'
+                    'value' => !empty($model->pay_other_doc) ? $model->fileview2 : 'Not set',
                 ),
                 array(
                     'name' => 'pay_deal_id_copy',
                     'type' => 'raw',
-                    'value' => !empty($model->pay_deal_id_copy) ? CHtml::link('Click to view', $model->getFilePath(false, 'pay_deal_id_copy'), array('target' => '_blank', 'id' => 'pay_deal_id_copy')) : 'Not set'
+                    'value' => !empty($model->pay_deal_id_copy) ? $model->fileview3 : 'Not set',
                 ),
 	),
 )); ?>

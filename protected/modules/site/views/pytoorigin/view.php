@@ -25,12 +25,12 @@ $this->breadcrumbs = array(
             array(
                 'name' => 'pyto_file',
                 'type' => 'raw',
-                'value' => !empty($model->pyto_file) ? CHtml::link('Click to view', $model->getFilePath(false, 'pyto_file'), array('target' => '_blank', 'id' => 'pyto_file')) : 'Not set'
+                'value' => !empty($model->pyto_file) ? $model->fileview : 'Not set'
             ),
             array(
                 'name' => 'origin_file',
                 'type' => 'raw',
-                'value' => !empty($model->origin_file) ? CHtml::link('Click to view', $model->getFilePath(false, 'origin_file'), array('target' => '_blank', 'id' => 'origin_file')) : 'Not set'
+                'value' => !empty($model->origin_file) ? $model->fileview1 : 'Not set'
             ),
         ),
     ));

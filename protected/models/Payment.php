@@ -59,7 +59,7 @@ class Payment extends RActiveRecord {
             array('pay_deal_id, pay_ref_info', 'length', 'max' => 100),
             array('pay_mode, pay_transaction_id, pay_bank_name', 'length', 'max' => 50),
             array('invoice_currency', 'length', 'max' => 30),
-            array('pay_shift_advise, pay_debit_advise, pay_other_doc, pay_deal_id_copy', 'length', 'max' => 255),
+            array('pay_shift_advise, pay_debit_advise, pay_other_doc, pay_deal_id_copy', 'safe'),
             array('pay_amount, pay_inr_rate', 'numerical', 'integerOnly' => false),
             array('pay_amount','compare','compareAttribute'=>'invoice_amount','operator'=>'<=','message'=>'Paid Amount must be less than Invoice Amount'),
             array('pay_remarks, created_at, created_by, invoice_currency, pay_transaction_date', 'safe'),
@@ -243,12 +243,31 @@ class Payment extends RActiveRecord {
     protected function beforeSave() {
         $this->pay_date = date('Y-m-d', strtotime($this->pay_date));
         $this->pay_transaction_date = date('Y-m-d', strtotime($this->pay_transaction_date));
+        $this->encodeJSON();
         return parent::beforeSave();
+    }
+    protected function encodeJSON() {
+        if ($this->pay_shift_advise && is_array($this->pay_shift_advise))
+            $this->pay_shift_advise = CJSON::encode($this->pay_shift_advise);
+        if ($this->pay_debit_advise && is_array($this->pay_debit_advise))
+            $this->pay_debit_advise = CJSON::encode($this->pay_debit_advise);
+        if ($this->pay_other_doc && is_array($this->pay_other_doc))
+            $this->pay_other_doc = CJSON::encode($this->pay_other_doc);
+        if ($this->pay_deal_id_copy && is_array($this->pay_deal_id_copy))
+            $this->pay_deal_id_copy = CJSON::encode($this->pay_deal_id_copy);
     }
     
     protected function afterFind() {
         $this->pay_date = date(PHP_USER_DATE_FORMAT, strtotime($this->pay_date));
         $this->pay_transaction_date = date(PHP_USER_DATE_FORMAT, strtotime($this->pay_transaction_date));
+        if ($this->pay_shift_advise)
+            $this->pay_shift_advise = CJSON::decode($this->pay_shift_advise);
+        if ($this->pay_debit_advise)
+            $this->pay_debit_advise = CJSON::decode($this->pay_debit_advise);
+        if ($this->pay_other_doc)
+            $this->pay_other_doc = CJSON::decode($this->pay_other_doc);
+        if ($this->pay_deal_id_copy)
+            $this->pay_deal_id_copy = CJSON::decode($this->pay_deal_id_copy);
         return parent::afterFind();
     }
     
@@ -267,4 +286,56 @@ class Payment extends RActiveRecord {
     public function getInvoicenumber() {
         return $this->invoice->inv_no;
     }
+    
+    public function getFileview() {
+        
+        $download = '';
+        if (!empty($this->pay_shift_advise)) {
+            foreach ($this->pay_shift_advise as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
+    }
+    public function getFileview1() {
+        $download = '';
+        if (!empty($this->pay_debit_advise)) {
+            foreach ($this->pay_debit_advise as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
+    }
+    public function getFileview2() {
+        $download = '';
+        if (!empty($this->pay_other_doc)) {
+            foreach ($this->pay_other_doc as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
+    }
+    public function getFileview3() {
+        $download = '';
+        if (!empty($this->pay_deal_id_copy)) {
+            foreach ($this->pay_deal_id_copy as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
+    }
 }
+
+

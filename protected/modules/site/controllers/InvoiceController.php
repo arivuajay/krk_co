@@ -77,9 +77,18 @@ class InvoiceController extends Controller {
                 $notes = "Invoice Saved successfully.";
                 $redir = array('create');
             } else if (isset($_POST['action']) && ($_POST['action'] == 'submit_inv')) {
+                $rand = $_SESSION['invoice_rand'];
+                $temp= $_SESSION['invoice_files'][$rand];
+                $model->inv_file = !empty($temp) ? $_SESSION['invoice_files'][$rand] : '';
+                 
+
+                $pkg = $_SESSION['invoice_pkg'];
+                $temp= $_SESSION['invoice_files'][$pkg];
+                $model->pkg_list_file = !empty($temp) ? $_SESSION['invoice_files'][$pkg] : '';
+                
                 if ($model->validate()) {
-                    $model->setUploadDirectory(UPLOAD_DIR);
-                    $model->uploadFile();
+//                    $model->setUploadDirectory(UPLOAD_DIR);
+//                    $model->uploadFile();
                     $model->save(false);
                     $this->deleteFiles();
                     $this->itemSave($posession, $model->attributes, $_POST['OrderDetails']);
@@ -96,6 +105,7 @@ class InvoiceController extends Controller {
             $model->attributes = $tmp_data->session_data['Invoice'];
             $inv_products = $tmp_data->session_data['InvoiceItems'];
         } else {
+            $_SESSION['invoice_pkg'] = Myclass::getRandomString(6);
             $_SESSION['invoice_rand'] = Myclass::getRandomString(6);
             foreach ($model->invoiceItems as $item)
                 $inv_products[] = CJSON::encode($item->attributes);
@@ -378,9 +388,14 @@ class InvoiceController extends Controller {
         }else if($_POST["upload_type"] == 2 || (isset($_GET['upload_type']) && $_GET['upload_type'] == 2)){
             $rand = $_SESSION['invoice_pkg'];
         }
+        
         Yii::import("xupload.models.XUploadForm");
         $path = realpath(Yii::app()->getBasePath() . "/../".UPLOAD_DIR."/invoice") . '/';
-        $publicPath = Yii::app()->getBaseUrl() . "/".UPLOAD_DIR."/invoice" . '/';
+       $publicPath = Yii::app()->getBaseUrl() . "/".UPLOAD_DIR."/invoice" . '/';
+        $folderpath=Yii::getPathOfAlias('webroot'). "/".UPLOAD_DIR."/invoice" . '/';
+        if (!is_dir($folderpath)) {
+            mkdir($folderpath, 0777, true);
+        }
         //This is for IE which doens't handle 'Content-type: application/json' correctly
         header('Vary: Accept');
         if (isset($_SERVER['HTTP_ACCEPT']) && (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
@@ -411,6 +426,7 @@ class InvoiceController extends Controller {
             //We check that the file was successfully uploaded
             if ($model->file !== null) {
                 //Grab some data
+                
                 $model->mime_type = $model->file->getType();
                 $model->size = $model->file->getSize();
                 $model->name = $model->file->getName();
@@ -420,8 +436,11 @@ class InvoiceController extends Controller {
                 $filename = md5(Yii::app()->user->id . microtime()) . '_' . $fn[0];
                 $filename .= "." . $model->file->getExtensionName();
                 if ($model->validate()) {
+                    
+                    
                     //Move our file to our temporary dir
                     $model->file->saveAs($path . $filename);
+                    
                     chmod($path . $filename, 0777);
                     $_SESSION['invoice_files'][$rand][] = '/invoice/' . $filename;
                     // https://github.com/blueimp/jQuery-File-Upload/wiki/Setup

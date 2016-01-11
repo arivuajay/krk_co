@@ -219,6 +219,28 @@ class Invoice extends RActiveRecord {
         $model->updateByPk($invID,array('inv_amount' => $model->invoiceAmont));
     }
     
-    
-    
+    public function getFileview() {
+        $download = '';
+        if (!empty($this->inv_file)) {
+            foreach ($this->inv_file as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
+    }
+    public function getFileview1() {
+        $download = '';
+        if (!empty($this->pkg_list_file)) {
+            foreach ($this->pkg_list_file as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
+    }
 }

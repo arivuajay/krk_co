@@ -201,12 +201,32 @@ class BillLading extends RActiveRecord {
 
         return parent::beforeValidate();
     }
-
+    protected function beforeSave() {
+        $this->encodeJSON();
+        return parent::beforeSave();
+    }
+    protected function encodeJSON() {
+        if ($this->bl_documents && is_array($this->bl_documents))
+            $this->bl_documents = CJSON::encode($this->bl_documents);
+    }
     protected function afterFind() {
         $this->bl_issue_date = date(PHP_USER_DATE_FORMAT, strtotime($this->bl_issue_date));
         $this->bl_shipped_date = date(PHP_USER_DATE_FORMAT, strtotime($this->bl_shipped_date));
-
+        
+        if ($this->bl_documents)
+            $this->bl_documents = CJSON::decode($this->bl_documents);
         return parent::afterFind();
+    }    
+    public function getFileview() {
+        $download = '';
+        if (!empty($this->bl_documents)) {
+            foreach ($this->bl_documents as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
     }
-
 }

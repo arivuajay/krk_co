@@ -34,7 +34,7 @@ $this->breadcrumbs=array(
             array(
                 'name' => 'bl_documents',
                 'type' => 'raw',
-                'value' => !empty($model->bl_documents) ? CHtml::link('Click to view', $model->getFilePath(false, 'bl_documents'), array('target' => '_blank', 'id' => 'bl_documents', 'class' => 'btn btn-xs btn-primary')) : 'Not set'
+                'value' => !empty($model->bl_documents) ? $model->fileview : 'Not set',
             ),
 		'bl_remarks',
 	),

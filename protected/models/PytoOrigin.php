@@ -57,7 +57,7 @@ class PytoOrigin extends RActiveRecord {
             array('pyto_company_id, pyto_vendor_id, pyto_po_id, pyto_invoice_id, status, created_by, modified_by', 'numerical', 'integerOnly' => true),
             array('pyto_file, origin_file', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
             array('pyto_cert_no, origin_cert_no', 'length', 'max' => 150),
-            array('pyto_file, origin_file', 'length', 'max' => 255),
+            array('pyto_file, origin_file', 'safe'),
             array('modified_at', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -158,11 +158,48 @@ class PytoOrigin extends RActiveRecord {
 
         return parent::beforeValidate();
     }
-
+    
+    protected function beforeSave() {
+        $this->encodeJSON();
+        return parent::beforeSave();
+    }
+    protected function encodeJSON() {
+        if ($this->pyto_file && is_array($this->pyto_file))
+            $this->pyto_file = CJSON::encode($this->pyto_file);
+        if ($this->origin_file && is_array($this->origin_file))
+            $this->origin_file = CJSON::encode($this->origin_file);
+    }
     protected function afterFind() {
         $this->doinspection = date(PHP_USER_DATE_FORMAT, strtotime($this->doinspection));
-
+                
+        if ($this->pyto_file)
+            $this->pyto_file = CJSON::decode($this->pyto_file);
+        if ($this->origin_file)
+            $this->origin_file = CJSON::decode($this->origin_file);
         return parent::afterFind();
     }
-
+    public function getFileview() {
+        $download = '';
+        if (!empty($this->pyto_file)) {
+            foreach ($this->pyto_file as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
+    }
+    public function getFileview1() {
+        $download = '';
+        if (!empty($this->origin_file)) {
+            foreach ($this->origin_file as $file) {
+                $exp = explode('/', $file);
+                $fName = $exp[2];
+                $VName = substr($fName, 33);
+                $download .= CHtml::link($VName, Yii::app()->createAbsoluteUrl(UPLOAD_DIR . $file), array('target' => '_blank')) . '<br />';
+            }
+        }
+        return $download;
+    }
 }

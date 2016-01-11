@@ -206,6 +206,10 @@ class ExpenseController extends Controller {
         Yii::import("xupload.models.XUploadForm");
         $path = realpath(Yii::app()->getBasePath() . "/../".UPLOAD_DIR."/expense") . '/';
         $publicPath = Yii::app()->getBaseUrl() . "/".UPLOAD_DIR."/expense" . '/';
+        $folderpath=Yii::getPathOfAlias('webroot'). "/".UPLOAD_DIR."/expense" . '/';
+        if (!is_dir($folderpath)) {
+            mkdir($folderpath, 0777, true);
+        }
         //This is for IE which doens't handle 'Content-type: application/json' correctly
         header('Vary: Accept');
         if (isset($_SERVER['HTTP_ACCEPT']) && (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
