@@ -73,18 +73,46 @@ class BillladingController extends Controller {
 
         if (isset($_POST['BillLading'])) {
             $model->attributes = $_POST['BillLading'];
-            $rand = $_SESSION['billlading_rand'];
-            $model->bl_documents = $_SESSION['billlading_files'][$rand];
+            $bl_no = $_POST['BillLading']['bl_number'];
+            $invoices = Invoice::model()->active()->findAll("bol_no = '$bl_no'");
             if ($model->validate()) {
-//                $model->setUploadDirectory(UPLOAD_DIR);
-//                $model->uploadFile();
-                $model->save(false);
-                $this->deleteFiles();
+                $rand = $_SESSION['billlading_rand'];
+                $temp = $_SESSION['billlading_files'][$rand];
+                $files = !empty($temp) ? $_SESSION['billlading_files'][$rand] : '';
+
+                foreach ($invoices as $key => $invoice) {
+                    $new_bol_model = new BillLading;
+                    $new_bol_model->attributes = $_POST['BillLading'];
+                    
+                    $inv = Myclass::GetInvoiceDetail1($invoice->invoice_id);
+                    $new_bol_model->bl_invoice_id = $invoice->invoice_id;
+                    $new_bol_model->bl_container_count = $inv['tot_qty'];
+
+                    if ($key == 0) {
+                        $new_bol_model->bl_documents = $files;
+                    } else {
+                        $fileArr = array();
+                        foreach ($files as $file) {
+                            $exp = explode('/', $file);
+                            $fName = $exp[2];
+                            $VName = substr($fName, 33);
+                            $new_fname = md5(Yii::app()->user->id . microtime()) . '_' . $VName;
+                            $source = Yii::getPathOfAlias('webroot').'/'.UPLOAD_DIR.$file;
+                            $dest = Yii::getPathOfAlias('webroot').'/'.UPLOAD_DIR.'/billlading/'.$new_fname;
+                            copy($source,$dest);
+                            $fileArr[] = '/billlading/'.$new_fname;
+                        }
+                        $new_bol_model->bl_documents = $fileArr;
+                    }
+                    
+                    $new_bol_model->save(false);
+                    $this->deleteFiles();
+                }
                 Myclass::addAuditTrail("Created BillLading successfully.", "user");
                 Yii::app()->user->setFlash('success', 'BillLading Created Successfully!!!');
                 $this->redirect(array('index'));
             }
-        }else {
+        } else {
             $_SESSION['billlading_rand'] = Myclass::getRandomString(6);
         }
 
@@ -108,19 +136,18 @@ class BillladingController extends Controller {
             $model->attributes = $_POST['BillLading'];
             $rand = $_SESSION['billlading_rand'];
             $model->bl_documents = $_SESSION['billlading_files'][$rand];
+
             if ($model->validate()) {
-//                $model->setUploadDirectory(UPLOAD_DIR);
-//                $model->uploadFile();
                 $model->save(false);
                 $this->deleteFiles();
                 Myclass::addAuditTrail("Updated BillLading successfully.", "user");
                 Yii::app()->user->setFlash('success', 'BillLading Updated Successfully!!!');
                 $this->redirect(array('index'));
             }
-        }else {
+        } else {
             $_SESSION['billlading_rand'] = Myclass::getRandomString(6);
         }
-        
+
         $this->render('update', array(
             'model' => $model,
         ));
@@ -137,12 +164,11 @@ class BillladingController extends Controller {
             $model->delete();
             Myclass::addAuditTrail("Deleted BillLading successfully.", "user");
         } catch (CDbException $e) {
-                        if ($e->errorInfo[1] == 1451) {
+            if ($e->errorInfo[1] == 1451) {
                 throw new CHttpException(400, Yii::t('err', 'Relation Restriction Error.'));
             } else {
                 throw $e;
             }
-
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -208,15 +234,17 @@ class BillladingController extends Controller {
             Yii::app()->end();
         }
     }
+
     public function actionReport() {
         $this->render('report');
     }
+
     public function actionUpload() {
         $rand = $_SESSION['billlading_rand'];
         Yii::import("xupload.models.XUploadForm");
-        $path = realpath(Yii::app()->getBasePath() . "/../".UPLOAD_DIR."/billlading") . '/';
-        $publicPath = Yii::app()->getBaseUrl() . "/".UPLOAD_DIR."/billlading" . '/';
-        $folderpath=Yii::getPathOfAlias('webroot'). "/".UPLOAD_DIR."/billlading" . '/';
+        $path = realpath(Yii::app()->getBasePath() . "/../" . UPLOAD_DIR . "/billlading") . '/';
+        $publicPath = Yii::app()->getBaseUrl() . "/" . UPLOAD_DIR . "/billlading" . '/';
+        $folderpath = Yii::getPathOfAlias('webroot') . "/" . UPLOAD_DIR . "/billlading" . '/';
         if (!is_dir($folderpath)) {
             mkdir($folderpath, 0777, true);
         }
@@ -238,7 +266,7 @@ class BillladingController extends Controller {
 //                        unlink($file);
                     }
                 }
-                $key = array_search('/billlading/'.@$_GET["file"], @$_SESSION['billlading_files'][$rand]);
+                $key = array_search('/billlading/' . @$_GET["file"], @$_SESSION['billlading_files'][$rand]);
                 unset($_SESSION['billlading_files'][$rand][$key]);
                 echo json_encode(array(true, 'file' => $_GET["file"], 'file2' => $file));
             }
@@ -294,9 +322,10 @@ class BillladingController extends Controller {
         $rand = $_SESSION['billlading_rand'];
         foreach ($_SESSION['billlading_files_delete'][$rand] as $file) {
             if (is_file($file)) {
-            unlink($file);
+                unlink($file);
             }
         }
         session_unset($_SESSION['billlading_files_delete']);
     }
+
 }

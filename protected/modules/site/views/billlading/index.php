@@ -29,7 +29,7 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
     <div class="row">
 <?php
         $gridColumns = array(
-		'bl_number',
+//		'bl_number',
 		'blPo.purchase_order_code',
 		'blInvoice.inv_no',
 		'blCompany.company_name',
@@ -43,14 +43,33 @@ $cs->registerScriptFile($themeUrl . '/js/datatables/dataTables.bootstrap.js', $c
             )
             );
 
-            $this->widget('booster.widgets.TbExtendedGridView', array(
-            'type' => 'striped bordered datatable',
-            'dataProvider' => $model->dataProvider(),
-            'responsiveTable' => true,
-            'template' => '<div class="panel panel-primary"><div class="panel-heading"><div class="pull-right">{summary}</div><h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Bill of Lading</h3></div><div class="panel-body">{items}{pager}</div></div>',
-            'columns' => $gridColumns
-                )
-        );
+//            $this->widget('booster.widgets.TbExtendedGridView', array(
+//            'type' => 'striped bordered datatable',
+//            'dataProvider' => $model->dataProvider(),
+//            'responsiveTable' => true,
+//            'template' => '<div class="panel panel-primary"><div class="panel-heading"><div class="pull-right">{summary}</div><h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Bill of Lading</h3></div><div class="panel-body">{items}{pager}</div></div>',
+//            'columns' => $gridColumns
+//                )
+//        );
+//            
+                $groupGridColumns = $gridColumns;
+    $groupGridColumns[] = array(
+        'name' => 'firstLetter',
+        'value' => '$data->bl_number',
+        'headerHtmlOptions' => array('style'=>'display:none'),
+        'htmlOptions' =>array('style'=>'display:none')
+    );
+     
+    $this->widget('booster.widgets.TbGroupGridView', array(
+//        'filter'=>$model->search(),
+        'type'=>'striped bordered',
+        'dataProvider' => $model->dataProvider(),
+        'template' => '<div class="panel panel-primary"><div class="panel-heading"><div class="pull-right">{summary}</div><h3 class="panel-title"><i class="glyphicon glyphicon-book"></i>  Bill of Lading</h3></div><div class="panel-body">{items}{pager}</div></div>',
+        'extraRowColumns'=> array('firstLetter'),
+        'extraRowExpression' => '"<b style=\"font-size: 1.5em; color: #333;\">BOL: ".$data->bl_number."</b>"',
+        'extraRowHtmlOptions' => array('style'=>'padding:10px'),
+        'columns' => $groupGridColumns
+    ));
         ?>
     </div>
 </div>

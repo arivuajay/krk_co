@@ -38,6 +38,7 @@
 class BillLading extends RActiveRecord {
 
     const FILE_SIZE = 5;
+    public $invoice_ids;
 
     /**
      * @return string the associated database table name
@@ -62,15 +63,15 @@ class BillLading extends RActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_number', 'required'),
-            array('bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_liner_id, bl_free_days, modified_by', 'numerical', 'integerOnly' => true),
+            array('bl_company_id, bl_vendor_id, bl_po_id, bl_number', 'required'),
+            array('bl_company_id, bl_vendor_id, bl_po_id, bl_liner_id, bl_free_days, modified_by', 'numerical', 'integerOnly' => true),
             array('bl_number, bl_issue_place, bl_load_port, bl_discharge_port, bl_vessal_name', 'length', 'max' => 100),
             array('bl_frieght_paid, status', 'length', 'max' => 1),
             array('bl_documents', 'file', 'allowEmpty' => true, 'maxSize' => 1024 * 1024 * self::FILE_SIZE, 'tooLarge' => 'File should be smaller than ' . self::FILE_SIZE . 'MB'),
-            array('bl_issue_date, bl_shipped_date, bl_documents, created_at, created_by, bl_remarks', 'safe'),
+            array('bl_issue_date,bl_invoice_id, bl_shipped_date, bl_documents, created_at, created_by, bl_remarks,invoice_ids', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('bl_id, bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_number, bl_issue_date, bl_issue_place, bl_load_port, bl_discharge_port, bl_vessal_name, bl_shipped_date, bl_liner_id, bl_container_count, bl_free_days, bl_frieght_paid, bl_documents, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
+            array('bl_id, bl_company_id, bl_vendor_id, bl_po_id, bl_invoice_id, bl_number, bl_issue_date, bl_issue_place,invoice_ids, bl_load_port, bl_discharge_port, bl_vessal_name, bl_shipped_date, bl_liner_id, bl_container_count, bl_free_days, bl_frieght_paid, bl_documents, status, created_at, created_by, modified_at, modified_by', 'safe', 'on' => 'search'),
         );
     }
 
@@ -150,7 +151,7 @@ class BillLading extends RActiveRecord {
         $criteria->compare('bl_discharge_port', $this->bl_discharge_port, true);
         $criteria->compare('bl_vessal_name', $this->bl_vessal_name, true);
         $criteria->compare('bl_shipped_date', $this->bl_shipped_date, true);
-        $criteria->compare('bl_container_number', $this->bl_container_number, true);
+//        $criteria->compare('bl_container_number', $this->bl_container_number, true);
         $criteria->compare('bl_liner_id', $this->bl_liner_id);
         $criteria->compare('bl_container_count', $this->bl_container_count);
         $criteria->compare('bl_free_days', $this->bl_free_days);

@@ -79,8 +79,8 @@ class PytooriginController extends Controller {
                  
 
                 $pkg = $_SESSION['origin_rand'];
-                $temp= $_SESSION['pytoorigin_files'][$pkg];
-                $model->origin_file = !empty($temp) ? $_SESSION['pytoorigin_files'][$pkg] : '';
+                $temp1= $_SESSION['pytoorigin_files'][$pkg];
+                $model->origin_file = !empty($temp1) ? $_SESSION['pytoorigin_files'][$pkg] : '';
             if ($model->validate()) {
 //                $model->setUploadDirectory(UPLOAD_DIR);
 //                $model->uploadFile();

@@ -61,5 +61,36 @@ class Myclass extends CController {
         $obj->save(false);
         return;
     }
+    
+    public static function GetInvoiceDetail1($id) {
+        
+        $invoices = Invoice::model()->active()->findByPk($id);
+        $result = $options = array();
+
+        if ($invoices) {
+            $options = array();
+            $criteria = new CDbCriteria();
+            $criteria->select = array('*', 'SUM(inv_det_cotton_qty) as CntrQty');
+            $criteria->condition = "inv_id = '{$id}'";
+            $criteria->group = 'inv_det_ctnr_no';
+
+            $invoiceItems = InvoiceItems::model()->findAll($criteria);
+
+            $total_inv_amount = 0;
+            $totQty = 0;
+            foreach ($invoiceItems as $item):
+                $options[] = "{$item->inv_det_ctnr_no} - {$item->CntrQty}";
+                $total_inv_amount += $item->inv_det_net_amount;
+                $totQty += $item->CntrQty;
+            endforeach;
+
+            $result['bol_no'] = $invoices->bol_no;
+            $result['total_inv_amount'] = $total_inv_amount;
+            $result['containers'] = implode("<br />", $options);
+            $result['tot_qty'] = $totQty;
+        }
+        
+        return $result;
+    }
 
 }

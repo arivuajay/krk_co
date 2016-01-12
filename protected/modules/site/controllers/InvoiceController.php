@@ -65,13 +65,7 @@ class InvoiceController extends Controller {
 
         if (isset($_POST['Invoice'])) {
             $model->attributes = $_POST['Invoice'];
-            $rand = $_SESSION['invoice_rand'];
-            $temp= $_SESSION['invoice_files'][$rand];
-            if(!empty($temp)){
-                $model->inv_file = $_SESSION['invoice_files'][$rand];
-            }  else {
-                $model->inv_file='';
-            }
+            
             if (isset($_POST['action']) && ($_POST['action'] == 'save_inv')) {
                 $this->tempSave($posession, $model->attributes, $_POST['OrderDetails']);
                 $notes = "Invoice Saved successfully.";
@@ -83,8 +77,8 @@ class InvoiceController extends Controller {
                  
 
                 $pkg = $_SESSION['invoice_pkg'];
-                $temp= $_SESSION['invoice_files'][$pkg];
-                $model->pkg_list_file = !empty($temp) ? $_SESSION['invoice_files'][$pkg] : '';
+                $temp1= $_SESSION['invoice_files'][$pkg];
+                $model->pkg_list_file = !empty($temp1) ? $_SESSION['invoice_files'][$pkg] : '';
                 
                 if ($model->validate()) {
 //                    $model->setUploadDirectory(UPLOAD_DIR);
@@ -148,8 +142,8 @@ class InvoiceController extends Controller {
                  
 
                 $pkg = $_SESSION['invoice_pkg'];
-                $temp= $_SESSION['invoice_files'][$pkg];
-                $model->pkg_list_file = !empty($temp) ? $_SESSION['invoice_files'][$pkg] : '';
+                $temp1 = $_SESSION['invoice_files'][$pkg];
+                $model->pkg_list_file = !empty($temp1) ? $_SESSION['invoice_files'][$pkg] : '';
                 
                 if ($model->validate()) {
                     

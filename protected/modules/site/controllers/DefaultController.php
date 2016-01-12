@@ -30,7 +30,10 @@ class DefaultController extends Controller {
                     'getSizeByProduct',
                     'getVarietybyProductId',
                     'getInvoiceByPo',
+                    'getPolById1',
+                    'getInvoiceByPo1',
                     'getInvoiceDetail',
+                    'getInvoiceDetail1',
                     'getfamilycode',
                     'getgradecode',
                     'getlinercode',
@@ -249,12 +252,39 @@ class DefaultController extends Controller {
         }
     }
 
-    public function actionGetInvoiceByPo($id, $sel = '') {
+    public function actionGetInvoiceByPo($id,$sel='') {
         $invoices = Invoice::model()->active()->findAll("po_id = '$id'");
-
         $data = CHtml::listData($invoices, 'invoice_id', 'inv_no');
-
         echo "<option value=''>Select Invoice</option>";
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($sel) && $sel == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+    public function actionGetPolById1($id,$sel='') {
+        $invoices = Invoice::model()->active()->findAll(array(
+    'select'=>'bol_no',
+    'condition'=>'po_id ='.$id,
+    'distinct'=>true,
+));
+        $data = CHtml::listData($invoices, 'bol_no', 'bol_no');
+        echo "<option value=''>Select Bill of Lading</option>";
+        foreach ($data as $value => $name) {
+            $htmlOpt = array();
+            $htmlOpt['value'] = $value;
+            if (!empty($sel) && $sel == $value)
+                $htmlOpt['selected'] = 'selected';
+
+            echo CHtml::tag('option', $htmlOpt, CHtml::encode($name), true);
+        }
+    }
+    public function actionGetInvoiceByPo1($id,$sel='') {
+        $invoices = Invoice::model()->active()->findAll("bol_no = '$id'");
+        $data = CHtml::listData($invoices, 'invoice_id', 'inv_no');
         foreach ($data as $value => $name) {
             $htmlOpt = array();
             $htmlOpt['value'] = $value;
@@ -292,6 +322,14 @@ class DefaultController extends Controller {
             $result['tot_qty'] = $totQty;
         }
 
+        echo CJSON::encode($result);
+        Yii::app()->end();
+    }
+    
+    public function actionGetInvoiceDetail1($id) {
+        
+        $result = Myclass::GetInvoiceDetail1($id);
+        
         echo CJSON::encode($result);
         Yii::app()->end();
     }

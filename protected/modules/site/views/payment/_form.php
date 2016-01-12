@@ -428,7 +428,7 @@ $cs->registerScriptFile($themeUrl . '/js/datepick/jquery.datepick.js', $cs_pos_e
 <!-- The template to display files available for download -->
 <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
 <script id="template-on-preview" type="text/x-jQuery-tmpl">
-    <li class="col-sm-6 col-md-3">
+    <li class="col-sm-12 col-md-6">
     <div class="thumbnail tile tile-medium tile-teal">
     <a class="delete_diary_image" href="javascript:void(0);" data-type="POST" data-url="${delete_url}">
     <i class="fa fa-times-circle fa-lg overlay-icon top-right"></i>
